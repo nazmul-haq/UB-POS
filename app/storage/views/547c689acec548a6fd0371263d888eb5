@@ -1,0 +1,142 @@
+<style>
+	.modal-body {max-height: 450px;}
+</style>
+<?php echo Form::model($iteminfos,  array('route' => 'admin.editItemSave.post', $iteminfos->item_id, 'id' => 'addItemform', 'class' => 'form-horizontal')); ?>
+
+	<?php echo Form::hidden('item_id', $iteminfos->item_id); ?>
+
+	<div class="control-group">
+		<?php echo Form::label('company_id', 'Company Name', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('company_id', $company, $iteminfos->company_id, array('class' => 'span3', 'required' => 'required')); ?>
+
+		</div> <!-- /controls -->
+	</div> <!-- /control-group -->
+	<div class="control-group">
+		<?php echo Form::label('item_name', 'Item Name', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::text('item_name', null, array('class' => 'span3', 'placeholder' => 'Enter Item Name')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="control-group">		
+		<?php echo Form::label('upc_code', 'UPC Code', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::text('upc_code', null, array('class' => 'span3', 'placeholder' => 'Enter UPC Code')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->
+	<div class="control-group">
+		<?php echo Form::label('supplier_id', 'Supplier Name', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('supplier_id', $suppliers, null, array('class' => 'span3')); ?>
+
+		</div> <!-- /controls -->
+	</div> <!-- /control-group -->
+	<div class="control-group">		
+		<?php echo Form::label('item_company_id', 'Item Company', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('item_company_id', $item_company, null, array('class' => 'span3')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="control-group">		
+		<?php echo Form::label('category_id', 'Item Category', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('category_id', $item_categorys, null, array('class' => 'span3', 'required' => 'required')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="control-group">		
+		<?php echo Form::label('brand_id', 'Brand Name', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('brand_id', $item_brands, null,  array('class' => 'span3')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="control-group">		
+		<?php echo Form::label('location_id', 'Location Name', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::select('location_id', $item_locations, null,  array('class' => 'span3')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->
+	<div class="control-group">		
+		<?php echo Form::label('unit', 'Unit(PCS or Dozz)', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<select class="span3" name="unit">
+				<option value="1" <?php if($iteminfos->unit == 1): ?> selected <?php endif; ?>>PCS</option>
+				<option value="2" <?php if($iteminfos->unit == 2): ?> selected <?php endif; ?>>Dozzen</option>
+				<option value="2" <?php if($iteminfos->unit == 3): ?> selected <?php endif; ?>>Set</option>
+			</select>
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="control-group">
+		<?php echo Form::label('carton', 'PCS/Dozz for Carton', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::text('carton', $iteminfos->carton, array('class' => 'span3', 'placeholder' => 'Enter PCS or Dozzen for 1 carton')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->		
+	<div class="control-group">		
+		<?php echo Form::label('description', 'Description', ['class' => 'control-label']); ?>
+
+		<div class="controls">
+			<?php echo Form::textarea('description', null, array('rows'=>'1', 'class' => 'span3', 'placeholder' => 'Enter Description')); ?>
+
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
+	<div class="modal-footer">
+		<?php echo Form::submit('Save Changes', array('class' => 'btn btn-primary')); ?>
+
+		<button type="button" class="btn" data-dismiss="modal">Close</button>
+	</div>
+<?php echo Form::close(); ?>
+
+
+<script>
+	$(function(){
+		var addItemform = $('#addItemform');
+
+		jQuery.validator.addMethod("alphaspace", function(value, element) {
+		   return this.optional(element) || value == value.match(/^[-a-zA-Z0-9_ ]+$/);
+		}, "Only letters, Numbers & Space/underscore Allowed.");
+
+		jQuery.validator.addMethod("floatNumber", function(value, element) {
+		   return this.optional(element) || value == value.match(/^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d{1,2})?$/);
+		}, "Value must be float or int after (.) only contain two decimal place.");
+		// validate form for Item Category
+		addItemform.validate({
+		  rules: {
+		   item_name: {
+			   required: true
+			},
+		   upc_code: {
+			   alphaspace: true,
+			   required: true
+			},
+		   tax_amount: {
+			   floatNumber: true,
+			   required: true
+			},
+		   location: {
+			   alphaspace: true,
+			   required: true
+			}
+		  }, messages: {
+				//'category_name'	: { required:  '<span class="error">Category Name required.</span>' },					
+			},
+			ignore : ':hidden'
+		});
+	});
+</script>

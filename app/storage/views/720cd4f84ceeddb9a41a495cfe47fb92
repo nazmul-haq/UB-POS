@@ -1,0 +1,108 @@
+<?php $__env->startSection('content'); ?>
+
+	<div class="row">
+		<div class="span12" id="print_preview">
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+              <h3>Supplier Wise Items View</h3>
+			  <span style="float:right; margin:0 15px;"><button class='btn btn-info btn-small print-btn' onclick="window.print();">Print</button></span>
+			</div>
+			<div class="print">	
+				<div class="payment-header">
+					<strong>
+						Supplier Name : <span style="font-weight:normal; color: green;"><?php echo $supplierInfo->user_name; ?></span>
+					</strong>
+					<strong style="float:right;">
+						Report On: <span style="font-weight:normal;"><?php echo date("d.m.Y"); ?></span>
+					</strong>
+				</div>
+				<table class="table table-striped" width="100%">
+					<thead class="table-head">
+						<tr>
+							<th>#SL No.</th>
+							<th>Item Name</th>
+							<th>UPC Code</th>
+							<th>Status</th>
+							<th>Category Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if(!empty($itemsInfo)): ?>
+						<?php $i=0;?>
+							<?php foreach($itemsInfo as $item): ?>
+							
+							<tr>
+								<td><?php echo ++$i; ?></td>
+								<td><?php echo $item->item_name; ?></td>
+								<td><?php echo $item->upc_code; ?></td>
+								<td><?php echo $item->status; ?></td>
+								<td><?php echo $item->category_name; ?></td>
+							</tr>
+							<?php endforeach; ?>	
+							
+						<?php else: ?>
+							<tr>
+								<td colspan="3" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
+							</tr>						
+						<?php endif; ?>
+					</tbody>
+				</table>
+				
+			</div>	
+		</div>
+	</div>
+							
+
+	<script>
+		$(function(){ 			
+			$('#amount').keyup(function(){
+				var total_due = parseFloat($("#due_amount").html());
+				var now_pay = parseFloat($("#amount").val());
+				this.value  = Math.abs(this.value);
+				$this_value = parseFloat(this.value); 
+				if($('#amount').val() == 0){
+					this.value = '';
+					return false;
+				}
+				if(isNaN($this_value)){
+					this.value = '';
+				}
+				if(now_pay > total_due){
+					alert("You can't pay more than Due");
+					this.value = total_due;
+				}
+			});
+			
+			var formSupllierPayment	 = $('#formSupllierPayment');
+			// validate form for Item Brand
+			formSupllierPayment.validate({
+			  rules: {
+			   amount: {
+				   number: true,
+				   min : 1,
+				   required: true
+				}
+			  }, messages: {
+					//'brand_name'	: { required:  '<span class="error">Brand Name required.</span>' },					
+				},
+				ignore				: ':hidden'	
+			});
+		});
+		$('.Suppliers').addClass('active btn btn-fill');
+	</script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<?php
+    $string = 'Supplier Items';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+	    <?php echo $li; ?>
+
+	</ul>       
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

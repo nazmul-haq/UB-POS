@@ -1,0 +1,69 @@
+
+
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	  <div class="span12">
+		<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>	
+			<div class="invoice-reg print_disable">
+                <?php echo Form::open(array('route' => 'returnreceiving.viewReturnReceivingReport', 'class' => 'form-horizontal')); ?>
+
+					<div class="control-group" align="center">		
+						<i class="icon-calendar"></i>&nbsp; Form : <?php echo Form::text('from', date('Y-m-d'), array('class' => 'span2 datepicker', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')); ?>
+
+						&nbsp;&nbsp;&nbsp;
+						<i class="icon-calendar"></i>&nbsp; To 	 : <?php echo Form::text('to', date('Y-m-d'), array('class' => 'span2 datepicker', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')); ?>
+
+						<input class="btn btn-primary" type="submit" value="Search">						
+					</div> <!-- /control-group -->	
+					
+                <?php echo Form::close(); ?>
+
+            </div>        
+		<?php if(isset($reports)): ?>
+		<table class="table table-striped">
+			<article style="background: #EEEEEE; padding : 4px 0 5px; border-top: 1px solid #003454;">
+				<strong style="font-size: 1.5em;"><i class="icon-arrow-up"></i> Return Receiving Reports : Details</strong>
+				<strong style="float: right; margin: 1px 5px"><i class="icon-calendar"></i>&nbsp; From : <span style="font-weight: normal;"><?php echo Helper::onlyDMY($from); ?></span> &nbsp;&nbsp;&nbsp;<i class="icon-calendar"></i>&nbsp;&nbsp;To : <span style="font-weight: normal;"><?php echo Helper::onlyDMY($to); ?></span></strong>
+			</article>
+			<thead class="table-head">
+				<tr>
+					<th>SL</th>
+					<th>Item Name</th>
+					<th>Purchase Price</th>
+					<th>Sale Price</th>
+					<th>Quantity</th>
+					<th>Total Price</th>
+					<th>Receive by</th>
+					<th>Receive Date</th>
+				</tr>
+			</thead>
+			<tbody>				
+				<? $i=0; //echo'<pre>';print_r($items);exit;?>
+				<?php if($reports): ?>
+				   <?php foreach($reports as $returnRecevingItem): ?>
+						<tr>
+							<td><?php echo ++$i; ?></td>
+							<td><?php echo $returnRecevingItem->item_name; ?></td>
+							<td><?php echo $returnRecevingItem->purchase_price; ?></td>
+							<td><?php echo $returnRecevingItem->sale_price; ?></td>
+							<td><?php echo $returnRecevingItem->quantity; ?></td>
+							<td><?php echo $returnRecevingItem->sale_price * $returnRecevingItem->quantity; ?></td>
+
+							<td><?php echo $returnRecevingItem->receiving_by; ?></td>
+							<td><?php echo $returnRecevingItem->receive_cancel_date; ?></td>
+
+						</tr>
+				   <?php endforeach; ?>
+				<?php else: ?>
+					<tr>
+						<td colspan="7" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
+					</tr>						
+				<?php endif; ?>
+			</tbody>
+		</table>
+		<?php endif; ?>
+	  </div>
+	</div>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

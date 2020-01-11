@@ -1,0 +1,209 @@
+<?php $__env->startSection('content'); ?>
+	<!--Receipt-->
+	<!--First column-->
+	<div class="row">
+		<div class="span12">
+			<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		</div>
+		<!--Item Category DIV-->
+		<?php if(Session::get('role')==2): ?>
+		<div class="span4">		
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+			  <h3>Details Report</h3>
+			</div>
+			<div class="setup-items">
+                <?php if(Session::get('role')==1 ||Session::get('role')==2): ?>
+				<a href="<?php echo route('sale.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label">Sales</span>
+				</a>
+            	<?php endif; ?>
+        <?php if(Session::get('role')==2): ?>
+        		<a href="<?php echo route('saleReturn.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-undo"></i><span class="setup-label">Sale Return</span>
+				</a>
+				<a href="<?php echo route('purchase.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">Purchase</span>
+				</a>
+				<a href="<?php echo route('purchaseOrder.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">Purchase Order</span>
+				</a>
+				<a href="<?php echo route('saleOrder.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">Sale Order</span>
+				</a>
+				<a href="<?php echo route('purchasereturn.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-plane"></i><span class="setup-label">Purchase Return</span>
+				</a>
+				<a href="<?php echo route('send.report'); ?>" class="setup-item"> 
+					<i class="setup-icon icon-arrow-up"></i><span class="setup-label">Sending</span>
+				</a>
+				<a href="<?php echo route('receive.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-down"></i><span class="setup-label">Receiving</span>
+				</a>
+				<a href="<?php echo route('income.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-money"></i><span class="setup-label">Other Income</span>
+				</a>
+				<a href="<?php echo route('expense.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-plane"></i><span class="setup-label">Other Expense</span>
+				</a>
+				<a href="<?php echo route('damage.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label">Damage Items</span>
+				</a>
+				<a href="<?php echo route('returntogodowon.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-upload-alt"></i><span class="setup-label">Return To Godown</span>
+				</a>
+				<a href="<?php echo route('returnreceiving.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-left"></i><span class="setup-label">Return Receiving</span>
+				</a>
+				<a href="<?php echo route('duepaymentreport.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-left"></i><span class="setup-label">Due Payment Report</span>
+				</a>
+                <a href="<?php echo route('viewAllItem.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">View All Item Report</span>
+				</a>
+        <?php endif; ?>
+			</div>
+        </div>		
+		<div class="span4">		
+            <div class="widget-header setup-title"> <i class="icon-group"></i>
+              <h3>Summary Report</h3>
+            </div>
+			<div class="setup-items"> 				
+        <?php if(Session::get('role')==1 ||Session::get('role')==2): ?>
+				<a href="<?php echo route('summary.sales'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label">Sales</span>
+				</a>
+        <?php endif; ?>
+        <?php if(Session::get('role')==2): ?>
+				
+                <a href="<?php echo route('summary.salesReturn'); ?>" class="setup-item">
+					<i class="setup-icon icon-undo"></i><span class="setup-label">Sales Return</span>
+				</a>
+
+				<a href="<?php echo route('summary.purchaseReports'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">Purchases</span>
+				</a>
+				<a href="<?php echo route('summary.purchaseReturnReports'); ?>" class="setup-item">
+					<i class="setup-icon icon-plane"></i><span class="setup-label">Purchases Return</span>
+				</a>
+
+				<a href="<?php echo route('summary.otherIncomeReports'); ?>" class="setup-item">
+					<i class="setup-icon icon-money"></i><span class="setup-label">Other Income</span>
+				</a>
+				<a href="<?php echo route('summary.otherExpenseReports'); ?>" class="setup-item">
+					<i class="setup-icon icon-plane"></i><span class="setup-label">Other Expense</span>
+				</a>       
+				<a href="<?php echo route('dailyledger.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-left"></i><span class="setup-label">Daily Ledger</span>
+				</a>                   
+				<a href="<?php echo route('summary.damageProductReports'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label">Damage Items</span>
+				</a>
+
+                <a href="<?php echo route('viewAllItemCategoryWise.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label"> Category Wise Item View</span>
+				</a>
+
+                <a href="<?php echo route('itemWiseSalesReport.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label"> Item Wise Sales report</span>
+				</a>
+				
+                <a href="<?php echo route('categoryWiseSalesReport.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label"> Category Wise Sales Report</span>
+				</a>
+				<?php if(Session::get('role')==0 ||Session::get('role')==2): ?>
+				<a href="<?php echo route('summary.spplierWisePurchase'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label">Supplier Wise Purchase</span>
+				</a>
+				<a href="<?php echo route('summary.spplierWiseSale'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label">Supplier Wise Sale</span>
+				</a>
+				<a href="<?php echo route('summary.itemWisePurchaseReport'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label"> Item Wise Purchase </span>
+				</a>
+        		<?php endif; ?>
+        <?php endif; ?>
+			</div>
+        </div>
+        <?php endif; ?>
+        <?php if(Session::get('role')==1): ?>
+        <div class="span4">		
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+			  <h3>Details Report</h3>
+			</div>
+
+			<div class="setup-items">
+				<a href="<?php echo route('sale.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-out"></i><span class="setup-label">Sales</span>
+				</a>
+		        <a href="<?php echo route('send.report'); ?>" class="setup-item"> 
+					<i class="setup-icon icon-arrow-up"></i><span class="setup-label">Sending</span>
+				</a>
+				<a href="<?php echo route('receive.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-down"></i><span class="setup-label">Receiving</span>
+				</a>
+		        <a href="<?php echo route('saleOrder.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-zoom-in"></i><span class="setup-label">Sale Order</span>
+				</a>
+				<a href="<?php echo route('damage.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-bolt"></i><span class="setup-label">Damage Items</span>
+				</a>
+                   
+				<a href="<?php echo route('returntogodowon.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-upload-alt"></i><span class="setup-label">Return To Godown</span>
+				</a>
+				<a href="<?php echo route('returnreceiving.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-left"></i><span class="setup-label">Return Receiving</span>
+				</a>
+				<a href="<?php echo route('dailyledger.report'); ?>" class="setup-item">
+					<i class="setup-icon icon-arrow-left"></i><span class="setup-label">Daily Ledger</span>
+				</a>
+			</div>
+		</div>
+		<?php endif; ?>
+		<div class="span4">		
+            <div class="widget-header setup-title"> <i class="icon-user"></i>
+              <h3>Full Report</h3>
+            </div>
+              <div class="setup-items"> 
+              	 <?php if(Session::get('role')==2): ?>
+	              	<a href="<?php echo route('summary.fullReports'); ?>" class="setup-item"> 
+						<i class="setup-icon icon-th-large"></i><span class="setup-label">Full Report</span> 
+					</a>
+				 <?php endif; ?>
+	              	<a href="<?php echo route('summary.EmpSalesReports'); ?>" class="setup-item">
+						<i class="setup-icon icon-group"></i><span class="setup-label">Employees Sales Report</span>
+					</a>
+					<a href="<?php echo route('summary.EmpDetailSaleReport'); ?>" class="setup-item">
+						<i class="setup-icon icon-group"></i><span class="setup-label">Employees Sales Report(Details)</span>
+					</a>	
+
+
+
+			  </div>
+        </div>
+	</div>
+	
+	<style>
+	</style>
+	
+	<!--Second column-->
+	
+	
+	<?php echo $__env->make('admin.setup.jQuery_function', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<?php
+    $string = 'Reports';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+	    <?php echo $li; ?>
+
+	</ul>       
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

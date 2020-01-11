@@ -1,0 +1,153 @@
+/*Sales Receipt Css*/
+.uppercase{
+	text-transform:uppercase;
+	font-size:10px;
+}
+.head-receipt{
+	text-align:center;
+	padding-bottom: 7px;
+}
+.table-sales-receipt {
+    width: 100%;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #222;
+}
+.table-sales-receipt td {
+    vertical-align: middle;
+	color: #000;
+}
+.table-sales-receipt th, .table-sales-receipt td {
+    padding: 2px;
+    line-height: 8px;
+    text-align: center;
+    vertical-align: top;
+    border-top: 1px dotted #222;
+}
+
+.btn-sale-receipt{
+	float:right;
+	margin: 0;
+}
+.btn-sale-receipt-model{
+	float:right;
+}
+.print_modal{
+	overflow-y:visible ;
+	height: auto;
+}
+/*for Modal print*/
+.item-sales{
+    width: 100%;
+    margin-bottom: 3px;
+}
+.item-sales tbody{
+	font-size:12px;
+	
+}
+.item-sales td {
+    vertical-align: middle;
+	color: #000;
+}
+
+.item-sales th, .item-sales td {
+    padding: 5px;
+    line-height: 8px;
+    text-align: center;
+    vertical-align: top;
+	color: #000;
+}
+.table-receipt-head{
+    border-bottom: 1px dotted #000;
+}
+.tr-receipt{
+
+}
+.tr-receipt td{
+	border-bottom: 1px dotted #000;
+	color: #000;
+	
+}
+
+
+@media screen {
+  #printSection {
+      display: none;
+  }
+}
+@media print {
+	
+* { margin: 0; padding: 0; } 
+.item_name_lenght_none{
+	display:none;
+}
+.uppercase{
+	font-weight:50px;
+	text-wrap:none;
+	overflow:hidden;
+
+	
+}
+.item_name_lenght{
+	
+	display:block;
+	visibility:visible;
+}
+	body {
+		font: 13px 'Arial';
+		color: #000;
+		font-weight:20;
+		font-style:
+	}
+	h6, p, strong{
+		color: #000;
+		font-size: 12px;
+	}
+	.print_top{
+		line-height: 16px;
+	}
+	
+	.btn-sale-receipt{
+		margin: 0 10px;
+	}
+
+	.full_print{
+		width: 225px;
+	}
+	.company-name{
+		font-size: 20px;
+	}
+	ul li{
+		line-height: 13px;
+		margin: 0;
+		padding: 0;
+	}
+	.head-receipt{
+		padding-bottom: 2px;
+	}
+	#print_preview{
+		visibility: visible;
+	} 
+	.row {
+        margin-left: -13px;
+    }
+	
+	.print_disable, .print-btn, .navbar, .subnavbar, .btn, .footer,.go-top, .non-printable, #sticky{
+		display: none;
+	}
+	.receiptInfo-head{
+		text-align:center;
+	}
+	#printSection, #printSection * {
+		visibility:visible;
+	}
+	#printSection {
+		position:absolute;
+		left:0;
+		top:0;
+	}
+	@page {
+      margin: 0;
+      padding: 0;
+   }
+
+}

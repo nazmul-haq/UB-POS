@@ -1,0 +1,351 @@
+
+
+<?php $__env->startSection('content'); ?>
+<?php   $amount=0;
+if(Session::get('saleReturnItemInfo')) {
+    foreach(Session::get('saleReturnItemInfo') as $item)
+        $amount=$amount+$item['total'];
+}
+//echo'<pre>';print_r(Session::get('sale_return_invoice_info'));exit;
+?>
+<div class="row">
+    <div class="span8">
+        <?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+        <div class='label label-info'><h4><i class='icon-shopping-cart'></i> Sales Return Register</h4></div>
+        <div class="invoice-reg"><input type="hidden" id="max_dis_percent" value="<?php echo Session::get('max_inv_dis_percent');; ?>">
+            <!-- <?php echo Session::get('max_inv_dis_percent');; ?>!-->
+				<?php echo Form::open(array('route' => 'saleReturn.returnItemAddTochart', 'id' => 'formItemLocation', 'class' => 'form-horizontal')); ?>
+
+            <div class="control-group">
+						<?php echo Form::label('search_item', 'Find/Scan Invoice Id', ['class' => 'control-label', 'style' => 'font-weight: bold;']); ?>
+
+                <div class="controls">
+							<?php echo Form::text('sale_invoice_id', null, array('class' => 'span6','autofocus'=>'yes','id'=>'auto_search_item', 'placeholder' => 'Start Typing or Scan Sale Invoice Id . . . . . . . . .')); ?>
+
+                </div> <!-- /controls -->
+            </div> <!-- /control-group -->
+				<?php echo Form::close(); ?>
+
+        </div>
+
+        <table class="table table-striped" width="100%">
+            <thead class="table-head">
+                <tr>
+                    <th>SL</th>
+                    <th>Item Name</th>
+                    <th>Sale Price</th>
+                    <th>Quantity</th>
+                    <!-- <th>Disc (Tk)</th> -->
+                    <!-- <th>Tax</th> -->
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $i=0;
+                $invoice_total=0; ?>
+					<?php if(Session::get("saleReturnItemInfo")): ?>
+						<?php foreach(Session::get('saleReturnItemInfo') as $item): ?>
+<?php // $invoice_total=$invoice_total+$item['total'];?>
+							<?php echo Form::open(array('route' => 'saleReturn.editDeleteItem', 'class' => 'form-horizontal')); ?>
+
+                <tr>
+                    <td><?php echo ++$i; ?></td>
+                    <td>
+                        <span class="span3">
+										<?php echo $item['item_name']; ?><input type="hidden" name="i_sale_id" value="<?php echo $item['i_sale_id']; ?>"><input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>"><input type="hidden" name="price_id" value="<?php echo $item['price_id']; ?>"><input type="hidden" name="item_name" value="<?php echo $item['item_name']; ?>">
+                        </span>
+                    </td>
+
+                    <td>
+                        <input class="span1" type="text" readonly name="sale_price" value="<?php echo $item['total']/$item['quantity']; ?>" />
+                    </td>
+
+                    <td>
+                        <input class="span1 quantity" type="text" name="quantity"  autocomplete="off" value="<?php echo $item['quantity']; ?>" />
+                    </td>
+                    <td style="display: none;">
+                        <input class="span1" type="text" readonly="readonly" name="discount" autocomplete="off" value="<?php echo $item['discount']; ?>" />
+                    </td>
+
+                    <td style="display: none;">
+                        <input class="span1" type="text" readonly name="tax" value="<?php echo $item['tax']; ?>" />
+                    </td>
+                    <td>
+                        <input class="span1" type="text" readonly name="total" value="<?php echo $item['total']; ?>" />
+                    </td>
+                    <td class="span2">
+                        <button type="submit" class="edit btn btn-primary" name="edit_delete" value="edit"><i class="icon-edit"> Edit</i></button>
+                        <button type="submit" class="btn btn-warning" name="edit_delete"><i class="icon-trash"></i></button>
+                    </td>
+                </tr>
+							<?php echo Form::close(); ?>
+
+						<?php endforeach; ?>
+						<?php else: ?>
+                <tr>
+                    <td colspan="7" style="text-align:center; color:#E98203;"><strong>There are no items in the cart</strong><td>
+                </tr>
+					<?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <!--Supplier--->
+    <div class="span4">
+        <div class="invoice-right">
+
+
+            <div class="control-group hr">
+                <label class="control-label" for="supplier_name"><strong style="font-size: 1.1em;"><u>Customer</u></strong></label>
+                <div class="controls">
+                    <table class="table table-striped" style="margin: 0; padding:0;">
+                        <tbody>
+						<?php if(Session::has('sale_return_invoice_info.customer_name')): ?>
+                            <tr>
+                                <td width="112px">Customer Name</td>
+                                <td>:</td>
+                                <td><strong id="customer_name" style="color: green; font-size: 1.4em;">
+					
+                                        <?php echo Session::get('sale_return_invoice_info.customer_name'); ?>
+
+                                        <input type="hidden" id="customer" value="<?php echo Session::get('sale_invoice_info.user_name'); ?>">
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="112px">Previous Due</td>
+                                <td>:</td>
+                                <td style="padding:0;"><strong style="color: red; font-size: 1.2em;">&nbsp;&nbsp;<?php echo Session::get('sale_return_invoice_info.customer_due'); ?>&nbsp;Tk</strong></td>
+                            </tr>
+                            <tr>
+                                <td width="112px">Customer Point</td>
+                                <td>:</td>
+                                <td style="padding:0;"><strong style="color: red; font-size: 1.2em;">&nbsp;&nbsp;<?php echo Session::get('sale_return_invoice_info.customer_point'); ?>&nbsp;</strong></td>
+                            </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div> <!-- /controls -->
+            </div>
+            <div>
+		<?php echo Form::open(array('route' => 'saleReturn.invoiceAndSaleReturn','autocomplete'=>'off', 'class' => 'form-horizontal')); ?>
+
+                <table class="table table-striped" style="margin: 0; padding:0;">
+                    <tbody>
+                        <?php if(Session::get('backdate_return')==0): ?>
+						<input name="date" type="hidden" value="<?= date("Y-m-d") ?>">
+						<?php else: ?>
+							<tr>
+								<td>Date </td>
+								<td>:</td>
+								<td style="padding:0;">
+                                    <input id="dp3" name="date" data-date="<?= date("Y-m-d") ?>" data-date-format="yyyy-mm-dd" class="datepicker span2" type="text" value="<?= date("Y-m-d") ?>">
+								</td>
+							</tr>
+							<?php endif; ?>
+                        <tr>
+                            <td>Payment Type</td>
+                            <td>:</td>
+                            <td style="padding:0;">
+                                <?php echo Form::select('payment_type_id', $payment_type, 1, ['class' => 'span3', 'style' => 'margin-top: 3px;']); ?>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Invoiced Discount</td>
+                            <td>:</td>
+                            <td><strong id="invoiced_discount"  font-size: 1.4em;"><?php echo Session::get('sale_return_invoice_info.discount'); ?></strong></td>
+                        </tr>
+                        <?php if(Session::get('sale_return_invoice_info.point_use_taka')): ?>
+                        <tr>
+                            <td>Point Use Taka</td>
+                            <td>:</td>
+                            <td><strong id="point_use_taka"  font-size: 1.4em;"><?php echo Session::get('sale_return_invoice_info.point_use_taka'); ?></strong></td>
+                        </tr>
+                        <?php endif; ?>
+                        <tr>
+                            <td>Sub Total Amount</td>
+                            <td>:</td>
+                            <td><strong id="sub_total_amount" style="color: green; font-size: 1.4em;"><?php echo $amount; ?></strong></td>
+                        </tr>
+                        <tr>
+                            <td>Less</td>
+                            <td>:</td>
+                            <td style="padding:0;">
+                                <input style="margin-top: 3px; width:95px;" readonly type="text" maxlength="5" id="less_percent" name="less_percent" data-toggle="tooltip" title="Less Amount (%)"  placeholder="Less (%)">&nbsp;&nbsp;
+                                <input style="margin-top: 3px; width:95px;"  type="text" maxlength="10" id="less_taka" name="less_taka"  data-toggle="tooltip" title="Less Amount (Tk.)" placeholder="Less (Taka)">
+                            </td>
+                        </tr>
+                        
+                    <tr>
+                        <td>Total Amount (Tk)</td>
+                        <td>:</td>
+                        <td><strong id="total_amount" style="color: red; font-size: 2.4em; font-family:Times;"><?php echo $amount; ?></strong></td>
+                    </tr>
+                    <tr>
+                        <td>Pay</td>
+                        <td>:</td>
+                        <td style="padding:0;">
+                            <div class="input-prepend input-append">
+                                <input class="span2" type="text" readonly="readonly" id="pay_amount" maxlength="10" class="span2" name="pay_amount" value="<?php echo $amount; ?>">
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    </tbody>
+                </table>
+                <div style="text-align: left; margin-left: 10px; margin-top: 7px;">
+                    <button type="submit" class="btn btn-danger" onclick="return isUnRegisteredCustomer();">Complete Sale Return</button>
+                </div>
+	<?php echo Form::close(); ?>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<?php echo HTML::script('js/jquery-ui.min.js'); ?>
+
+<script>
+    $().ready(function(){
+        //Auto Complete for Item Search
+        $("#auto_search_item").autocomplete("<?php echo route('saleReturn.invoiceAutoSuggest'); ?>", {
+            width: 260,
+            matchContains: true,
+            queryDelay : 0
+        });
+        //Submit Search Item Form
+        $("#auto_search_item").result(function(event, data, formatted) {
+            $("#formItemLocation").submit();
+        });
+
+        //Customer auto suggest
+        $("#customerAutoSugg").autocomplete("<?php echo route('sale.autoCustomerSuggest'); ?>", {
+            width: 260,
+            matchContains: true,
+            queryDelay : 0,
+            formatItem: function(row) {
+                return row[1];
+            }
+        });
+        //Submit Supplier Form
+        $("#customerAutoSugg").result(function(event, data, formatted) {
+            $("#customerForm").submit();
+        });
+
+       
+        //Discount Calculate for Taka
+        $('#less_taka').keyup(function(){
+            
+            var $sub_total_amount = parseFloat($('#sub_total_amount').html());
+            var less_taka=parseFloat(this.value);
+            var confirm_less_taka=0;
+            var less_taka_percent=0;
+            if(isNaN(less_taka)){
+                less_taka = 0;
+
+            }
+            var intRegex = /^\d+$/;
+            var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+            var str = $(this).val();
+
+
+            if(this.value==''){
+                this.value=null;
+                $('#less_percent').val(0);
+                $('#total_amount').html($sub_total_amount);
+                $('#pay_amount').val($sub_total_amount.toFixed(2));
+            }
+            else if(intRegex.test(str) || floatRegex.test(str)) {
+
+               if(less_taka>$sub_total_amount){
+                   confirm_less_taka=$sub_total_amount;
+               }
+               else{
+                    confirm_less_taka=less_taka;
+                }
+             less_taka_percent=(confirm_less_taka*100)/$sub_total_amount;
+            $('#less_percent').val(less_taka_percent.toFixed(2));
+            this.value=confirm_less_taka;
+            $('#total_amount').html(($sub_total_amount-confirm_less_taka).toFixed(2));
+            $('#pay_amount').val(($sub_total_amount-confirm_less_taka).toFixed(2));
+
+               
+            }
+
+            else{
+                alert('Wrong Data');
+		this.value = '';
+                $('#less_percent').val(0);
+                $('#total_amount').html($sub_total_amount);
+                $('#pay_amount').val($sub_total_amount.toFixed(2));
+                return false;
+            }
+        });
+       
+
+       
+        $('.floatingCheck').keyup(function(){
+
+            var intRegex = /^\d+$/;
+            var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+            var str = $(this).val();
+            if(this.value==''){
+                this.value=0;
+            }
+            else if(intRegex.test(str) || floatRegex.test(str)) {
+
+            }
+            else{
+                alert('Wrong Data');
+                this.value = 0;
+            }
+        });
+
+        $('.quantity').blur(function(){
+            var intRegex = /^\d+$/;
+            var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+            var str = $(this).val();
+            if(this.value==''){
+                this.value=1;
+            }
+            else if(this.value=='0') {
+                this.value=1;
+            }
+            else if(intRegex.test(str) || floatRegex.test(str)) {
+
+
+            }
+            else{
+                alert('Wrong Data');
+                this.value = 1;
+            }
+
+        });
+
+        //for input box tooltip
+        $('input[type=text][name=discount_percent]').tooltip({
+            placement: "right",
+            trigger: "hover"
+        });
+    });
+
+    function saleQuantyCheck() {
+        saleQuanty.value=22;
+    }
+
+    function isUnRegisteredCustomer() {
+
+            var confirmation=confirm("Are you sure to complete the sale?");
+            if(confirmation){
+                return true;
+            }
+            return false;
+    }
+
+</script>
+
+<!--end purchase-->
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

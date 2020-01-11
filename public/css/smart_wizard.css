@@ -1,0 +1,365 @@
+.error{
+	color: red;
+	text-align: center;
+}
+.alert {
+    background-color: #faf9f9;
+    color: #5daad0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    width: 92%;
+	z-index: 99;
+}
+.swMain {
+  position:relative;
+  display:block;
+  margin:0;
+  padding:0;
+  border: 0 solid #CCC;
+  overflow:visible;
+  float:left;
+  width:980px;
+}
+.setup_img{
+	float: left;
+	margin: 4px 7px 0 7px;
+	border: 0;
+}
+.form_heading{
+	width: 100%;
+	height: 40px;
+	background: -webkit-linear-gradient(#FCFCFC, #F1F1F1); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#FCFCFC, #F1F1F1); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#FCFCFC, #F1F1F1); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#FCFCFC, #F1F1F1); /* Standard syntax */
+	border-bottom: 2px solid #222;
+	border-radius: 0 0 7px 7px;
+}
+.heading{
+	color: #757575;
+	margin-left: 7px;
+}
+.heading span{
+	color: #5CB0CF;
+	margin-left: 5px;
+}
+.swMain .stepContainer {
+	display:block;
+	position: relative;
+	margin: 0;
+	padding:0;    
+	border: 0 solid #CCC;
+	overflow-y: auto;
+        overflow-x: hidden;
+	clear:both;
+	height:360px;
+}
+
+.swMain .stepContainer div.content {
+	display:block;
+	position: absolute;  
+	float:left;
+	margin: 0;
+	padding:5px;    
+	border: 1px solid #CCC; 
+	font: normal 12px Verdana, Arial, Helvetica, sans-serif; 
+	color:#5A5655;   
+	background-color:#F8F8F8;  
+	height:360px;
+	text-align:left;
+	overflow:visible;    
+	z-index:88; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius  : 5px;
+	width:968px;
+	clear:both;
+}
+.tbl_wrp{
+	background: #F2F7F9;
+}
+
+.swMain div.actionBar {
+	display:block;
+	position: relative; 
+	clear:both;
+	margin:             3px 0 0 0;   
+	border:             1px solid #CCC;
+	padding:            0;    
+	color:              #5A5655;   
+	background-color:   #F8F8F8;
+	height:40px;
+	text-align:left;
+	overflow:auto;    
+	z-index:88; 
+	border-radius: 0 0 7px 7px;
+	-webkit-border-radius: 0 0 7px 7px;
+	-moz-border-radius  : 0 0 7px 7px;
+	left:0;
+}
+
+.swMain .stepContainer .StepTitle {
+	display:block;
+	position: relative;
+	margin:0;   
+	border:1px solid #E0E0E0;
+	padding:5px;   
+	font: bold 16px Verdana, Arial, Helvetica, sans-serif; 
+	color:#5A5655;   
+	background: -webkit-linear-gradient(#FCFCFC, #F1F1F1); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(#FCFCFC, #F1F1F1); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(#FCFCFC, #F1F1F1); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(#FCFCFC, #F1F1F1); /* Standard syntax */
+	clear:both;
+	text-align:left; 
+	z-index:88;
+	-webkit-border-radius: 5px;
+	-moz-border-radius  : 5px;    
+}
+.swMain ul.anchor {
+	position: relative;
+	display:block;
+	float:left;
+	list-style: none;
+	padding: 0 2px 10px 2px;  
+	margin: 0;      
+	clear: both;
+	border: 0 solid #CCCCCC;
+	background: #EEEEEE;
+}
+.swMain ul.anchor li{ 
+  position: relative; 
+  display:block;
+  margin: 0;
+  padding: 0 3px;
+  border: 0 solid #E0E0E0;
+  float: left;
+}
+/* Anchor Element Style */
+.swMain ul.anchor li a {
+  display:block;
+  position:relative;
+  float:left;
+  margin: 5px 0 0 0;
+  padding:3px;
+  height:60px;
+  width:230px;
+  text-decoration: none;
+  outline-style:none;
+  -moz-border-radius  : 5px;
+  -webkit-border-radius: 5px;
+  z-index:99;
+}
+.swMain ul.anchor li a .stepNumber{
+  position:relative;
+  float:left;
+  width:30px;
+  text-align: center;
+  padding: 0 5px 5px;
+  font: bold 45px Verdana, Arial, Helvetica, sans-serif;
+  color: #E1E1E1;
+}
+.swMain ul.anchor li a .stepDesc{
+  position:relative;
+  display:block;
+  float:left;
+  text-align: left;
+  padding:5px;
+  font: bold 18px Verdana, Arial, Helvetica, sans-serif;
+}
+.swMain ul.anchor li a .stepDesc small{
+  font: normal 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+.swMain ul.anchor li a.selected  {
+    color: #F8F8F8;
+    background: none repeat scroll 0% 0% #EA8511;
+    border: 1px solid #EA8511;
+    cursor: text;
+    box-shadow: 2px 2px 2px #888;
+}
+
+.swMain ul.anchor li a.selected{
+  color:#F8F8F8;
+  background: #EA8511;  /* EA8511 */
+  border: 1px solid #EA8511;
+  cursor:text;
+  -moz-box-shadow: 2px 2px 2px #888;
+  -webkit-box-shadow: 2px 2px 2px #888;
+  box-shadow: 2px 2px 2px #888;
+}
+.swMain ul.anchor li a.selected:hover {
+  color:#F8F8F8;  
+  background: #EA8511;  
+}
+
+.swMain ul.anchor li a.done { 
+  position:relative;
+  color:#FFF;  
+  background: #8CC63F;  
+  border: 1px solid #8CC63F;   
+  z-index:99;
+}
+.swMain ul.anchor li a.done:hover {
+  color:#5A5655;  
+  background: #8CC63F; 
+  border: 1px solid #5A5655;   
+}
+.swMain ul.anchor li a.disabled {
+  color:#CCCCCC;  
+  background: #F8F8F8;
+  border: 1px solid #CCC;  
+  cursor:text;   
+}
+.swMain ul.anchor li a.disabled:hover {
+  color:#CCCCCC;  
+  background: #F8F8F8;     
+}
+
+.swMain ul.anchor li a.error {
+  color:#6c6c6c !important;  
+  background: #f08f75 !important;
+  border: 1px solid #fb3500 !important;      
+}
+.swMain ul.anchor li a.error:hover {
+  color:#000 !important;       
+}
+
+.swMain .buttonNext {
+	display:block;
+	float:right;
+	margin:5px 3px 0 3px;
+	padding:5px;
+	text-decoration: none;
+	text-align: center;
+	font: bold 13px Verdana, Arial, Helvetica, sans-serif;
+	width:100px;
+	background-image: linear-gradient(rgba(126, 178, 22, 0), rgba(0, 0, 0, 0.1));
+	background-color: #7EB216;
+	border-color: rgba(0, 0, 0, 0.05) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.15);
+	color: #FFF;
+	text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15); 
+}
+.swMain .buttonNext:hover {
+	text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.25);
+	color: #FFF;
+}
+.swMain .buttonDisabled {
+  color:#F8F8F8  !important;
+  background-color: #CCCCCC !important;
+  border: 1px solid #CCCCCC  !important;
+  cursor:text;    
+}
+.swMain .buttonPrevious {
+	display:block;
+	float:right;
+	margin:5px 3px 0 3px;
+	padding:5px;
+	text-decoration: none;
+	text-align: center;
+	font: bold 13px Verdana, Arial, Helvetica, sans-serif;
+	width:100px;
+	outline-style:none; 
+	background-image: linear-gradient(rgba(33, 169, 236, 0), rgba(1, 9, 13, 0.1));
+	background-color: #005387;
+	border-color: rgba(0, 0, 0, 0.05) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.15);
+	color: #FFF;
+	text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
+}
+.swMain .buttonFinish {
+	display:block;
+	float:right;
+	margin:5px 10px 0 3px;
+	padding:5px;
+	text-decoration: none;
+	text-align: center;
+	font: bold 13px Verdana, Arial, Helvetica, sans-serif;
+	width:100px;
+	outline-style:none;  
+	background-image: linear-gradient(rgba(33, 169, 236, 0), rgba(1, 9, 13, 0.1));
+	background-color: #21A9EC;
+	border-color: rgba(0, 0, 0, 0.05) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.15);
+	color: #FFF;
+	text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
+}
+
+/* Form Styles */
+
+.txtBox {
+  border:1px solid #CCCCCC;
+  color:#5A5655;
+  font:13px Verdana,Arial,Helvetica,sans-serif;
+  padding:5px;
+  width:430px;
+  margin: 5px;
+}
+.txtBox:focus {
+  border:1px solid #EA8511;
+}
+
+.swMain .loader {
+  position:relative;  
+  display:none;
+  float:left;  
+  margin: 2px 0 0 2px;
+  padding:8px 10px 8px 40px;
+  border: 1px solid #FFD700; 
+  font: bold 13px Verdana, Arial, Helvetica, sans-serif; 
+  color:#5A5655;       
+  background: #FFF url(../images/loader.gif) no-repeat 5px;  
+  -moz-border-radius  : 5px;
+  -webkit-border-radius: 5px;
+  z-index:998;
+}
+.swMain .msgBox {
+  position:relative;  
+  display:none;
+  float:left;
+  margin: 4px 0 0 5px;
+  padding:5px;
+  border: 1px solid #FFD700; 
+  background-color: #FFFFDD;  
+  font: normal 12px Verdana, Arial, Helvetica, sans-serif; 
+  color:#5A5655;         
+  -moz-border-radius  : 5px;
+  -webkit-border-radius: 5px;
+  z-index:999;
+  min-width:200px;  
+}
+.swMain .msgBox .content {
+  font: normal 12px Verdana,Arial,Helvetica,sans-serif;
+  padding: 0;
+  float:left;
+}
+.swMain .msgBox .close {
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  color: #CCC;
+  display: block;
+  float: right;
+  margin: 0 0 0 5px;
+  outline-style: none;
+  padding: 0 2px 0 2px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+}
+.swMain .msgBox .close:hover{
+  color: #EA8511;
+  border: 1px solid #EA8511;  
+}
+
+
+/*** custom checkboxes ***/
+label { font-size: 15px; }
+input[type=checkbox] { display:none; } /* to hide the checkbox itself */
+input[type=checkbox] + label:before {
+  font-family: FontAwesome;
+  display: inline-block;
+}
+
+input[type=checkbox] + label:before { content: "\f096"; } /* unchecked icon */
+input[type=checkbox] + label:before { letter-spacing: 10px; } /* space between checkbox and label */
+
+input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
+input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow space for check mark */

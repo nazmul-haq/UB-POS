@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title><?php echo isset($title) ? $title : '::=:: Dashboard - POS ::=::'; ?></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<?php echo HTML::style('css/bootstrap.min.css'); ?>
+
+<?php echo HTML::style('css/bootstrap-responsive.min.css'); ?>
+
+<?php echo HTML::style('css/font-google.css'); ?>
+
+<?php echo HTML::style('css/font-awesome.css'); ?>
+
+<?php echo HTML::style('css/style.css'); ?>
+
+<?php echo HTML::style('css/clock.css'); ?>
+
+<?php echo HTML::style('css/dashboard.css'); ?>
+
+<?php echo HTML::style('css/jquery-sticklr-1.4.css'); ?>
+
+<?php echo HTML::style('css/jquery.dataTables.css'); ?>
+
+<?php echo HTML::style('css/wizard/jquery.wizard.css'); ?>
+
+<?php echo HTML::style('css/custom.css'); ?>
+
+<?php echo HTML::style('css/jquery-ui.css'); ?>
+
+<?php echo HTML::style('css/datepicker.css'); ?>
+
+<?php echo HTML::style('css/print.css'); ?>
+
+
+
+
+<!-- javascript
+================================================== --> 
+<?php echo HTML::script('js/jquery-1.7.2.min.js'); ?>
+
+<?php echo HTML::script('js/bootstrap.js'); ?>
+
+<!-- Bootstrap DatePicker-->
+<?php echo HTML::script('js/bootstrap-datepicker.js'); ?>
+
+<!-- dataTable-->
+<?php echo HTML::script('js/jquery.dataTables.min.js'); ?>
+
+<!-- validation -->
+<?php echo HTML::script('js/jquery.validate.min.js'); ?>
+
+<!-- Shortcut lib js -->
+<?php echo HTML::script('js/shortcut.lib.js'); ?>
+
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<noscript>
+  <META HTTP-EQUIV="Refresh" CONTENT="0;URL=<?php echo URL::to('noscript'); ?>">
+  <body style='display:none'>
+</noscript>
+
+<body>
+
+<?php if(Auth::check()): ?> 
+
+<?php echo $__env->make('_layouts.navigation', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+	<div class="main">
+	  <div class="main-inner">
+		<div class="container">	
+			<div class="content-wrapper">
+				<?php echo $__env->yieldContent('content'); ?>
+			</div>
+		</div>
+		<!-- /container --> 
+	  </div>
+	  <!-- /main-inner --> 
+	</div>
+
+<?php echo $__env->make('_layouts.footer', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+<?php
+	Request::segment(1);
+?>
+<script type="text/javascript">
+	var segment = "<?php echo Request::segment(2); ?>";
+	if(segment == 'index'){
+		$('.Dashboard').addClass('active btn btn-fill');
+	}else if(segment == 'items'){
+		$('.Items').addClass('active btn btn-fill');
+	}else if(segment == 'sales'){
+		$('.Sales').addClass('active btn btn-fill');
+	}else if(segment == 'suppliers'){
+		$('.Suppliers').addClass('active btn btn-fill');
+	}else if(segment == 'customers'){
+		$('.Customers').addClass('active btn btn-fill');
+	}else if(segment == 'reports'){
+		$('.Reports').addClass('active btn btn-fill');
+	}else if(segment == 'setup'){
+		$('.Setup').addClass('active btn btn-fill');
+	}else if(segment == 'purchases'){
+		$('.Purchase').addClass('active btn btn-fill');
+	}else{
+		var segment = "<?php echo Request::segment(1); ?>";
+		if(segment == 'sending'){
+			$('.Sending').addClass('active btn btn-fill');
+		}else if(segment == 'receiving'){
+			$('.Receiving').addClass('active btn btn-fill');
+		}else if(segment == 'return'){
+			$('.Return').addClass('active btn btn-fill');
+		}
+	}
+</script>
+<?php else: ?> 
+	<?php echo URL::to('admin/login'); ?>
+
+<?php endif; ?>
+</body>
+</html>

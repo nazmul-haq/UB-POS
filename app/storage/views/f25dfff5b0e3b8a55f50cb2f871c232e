@@ -1,0 +1,78 @@
+
+
+<?php $__env->startSection('content'); ?>
+	<div class="row">
+	<div>
+	  <div class="span12">
+		<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+			<div class="invoice-reg print_disable">
+                <?php echo Form::open(array('route' => 'summary.viewPurchaseReports', 'class' => 'form-horizontal')); ?>
+
+					<div class="control-group" align="center">
+						<i class="icon-calendar"></i>&nbsp; Form : <?php echo Form::text('from', $from, array('class' => 'span2 datepicker', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')); ?>
+
+						&nbsp;&nbsp;&nbsp;
+						<i class="icon-calendar"></i>&nbsp; To 	 : <?php echo Form::text('to', $to, array('class' => 'span2 datepicker', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')); ?>
+
+						<input class="btn btn-primary" type="submit" value="Search">
+					</div> <!-- /control-group -->
+
+                <?php echo Form::close(); ?>
+
+            </div>
+
+		<table class="table table-striped">
+			<article style="background: #EEEEEE; padding : 5px 0 7px; border-top: 1px solid #003454;">
+				<strong style="font-size: 2em;"><i class="icon-credit-card"></i> Purchase Report : Summary</strong>
+				<strong style="float: right; margin: 6px 5px"><i class="icon-calendar"></i>&nbsp; From : <span style="font-weight: normal;"><?php echo Helper::onlyDMY($from); ?></span> &nbsp;&nbsp;&nbsp;<i class="icon-calendar"></i>&nbsp;&nbsp;To : <span style="font-weight: normal;"><?php echo Helper::onlyDMY($to); ?></span></strong>
+			</article>
+			<thead class="table-head">
+				<tr>
+					<th>SL</th>
+					<th>Sub Total Amount</th>
+					<th>Discount (Tk)</th>
+					<th>Total Amount</th>
+					<th>Paid</th>
+					<th>Due</th>
+                                        <th>Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<? $i=0;$total_sub_total=$total_discount=$total_amount=$total_pay=$total_due=0;?>
+				<?php if($purchases): ?>
+				   <?php foreach($purchases as $purchase): ?>
+					   <tr>
+							<td><?php echo ++$i; ?></td>
+							<td><?php echo $purchase->purchase_discount +$purchase->purchase_amount; ?><?php $total_sub_total=$total_sub_total+($purchase->purchase_discount +$purchase->purchase_amount); ?></td>
+							<td><?php echo $purchase->purchase_discount; ?><?php $total_discount=$total_discount+$purchase->purchase_discount; ?></td>
+							<td><?php echo $purchase->purchase_amount; ?><?php $total_amount=$total_amount+$purchase->purchase_amount?></td>
+							<td><?php echo $purchase->purchase_pay; ?><?php  $total_pay=$total_pay+$purchase->purchase_pay; ?></td>
+							<td><?php echo $purchase->purchase_due; ?><?php  $total_due=$total_due+$purchase->purchase_due; ?></td>
+							<td width="80px"><?php echo $purchase->date; ?></td>
+					</tr>
+				   <?php endforeach; ?>
+                                        <tr bgcolor="#DBEAF9">
+                                                       <td><strong style="font-size: 1.3em;">Total<strong></td>
+                                                       <td><strong><?php echo $total_sub_total; ?><strong></td>
+                                                       <td><?php echo $total_discount; ?></td>
+                                                       <td><strong><?php echo $total_amount; ?></td>
+                                                       <td><strong style="color: green;"><?php echo $total_pay; ?><strong></td>
+                                                       <td colspan="3"><strong style="color: red;"><?php echo $total_due; ?><strong></td>
+                                       </tr>
+
+				<?php else: ?>
+					<tr>
+						<td colspan="6" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
+					</tr>
+				<?php endif; ?>
+
+			</tbody>
+		</table>
+	  </div>
+	  </div>
+
+	</div>
+
+	
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

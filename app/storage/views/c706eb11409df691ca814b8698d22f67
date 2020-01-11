@@ -1,0 +1,366 @@
+
+<?php $__env->startSection('content'); ?>
+            <?php 
+            $amount=0;
+            if(Session::get('saleItems')){
+                foreach(Session::get('saleItems') as $item)
+                $amount=$amount+$item['total'];
+            }
+            $invoicesInQueue=count(Session::get('saleInvoiceQueue'));
+             ?>
+        <?php if(Session::get('saleInvoiceQueue')): ?>
+        <div id="sticky">
+        <ul id="example-1" class="sticklr stick-que" style="margin-left: 40px !important; border-left:1px;">
+            <li style="border-left: 1px solid #f7f7f7;">
+                <a href="javascript:;" title="Sales Queue"><?php echo HTML::image('img/nav_icon/purchase.png', 'title', array('class' => 'sticky_icon')); ?> <span class="notification-count"><?php echo $invoicesInQueue; ?></span></a>
+                <ul style="">
+                    <li class="sticklr-title">
+                        <a href="#">Queue List</a>
+                    </li>
+                    <?php foreach(Session::get('saleInvoiceQueue') as $customer => $invoice): ?>
+                    <li>
+                        <?php echo Form::open(array('route' => 'sale.reloadDeleteInvoiceQueueElement', 'id' => 'formReloadDeleteInvoiceQueueElement', 'class' => 'form-horizontal')); ?>
+
+                            <?php echo $customer; ?>
+
+                            <input type="hidden" name="customer" value="<?php echo $customer; ?>">
+                           <span id="btn-queue">
+                            <button type="submit" class="btn btn-info btn-small" name="reloadDelete"  onclick="isSureToReloadInvoiceFromQueue();"><i class="setup-icon icon-undo"></i></button>
+                            <!-- <a class="btn btn-success btn-small" ><i class="setup-icon icon-print"></i></a> -->
+                            <button type="submit"  class="btn btn-warning btn-small" name="reloadDelete" value="delete"  onclick="return isSureToDeleteInvoiceFromQueue();"><i class="icon-remove"></i></button>
+                           </span>
+                        <?php echo Form::close(); ?>
+
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>             
+        </ul>  
+        </div>
+        <?php endif; ?>
+    <div class="row">
+        <div class="span8">
+            <div style="height:24px;" class='label label-info'>
+            <h4><i class='icon-shopping-cart'></i> Sales Register 
+            <?php if(Session::get('saleItems')): ?>
+                <a style="float:right;"  id="addInvoiceToQueue" role="button" data-toggle="modal" onclick="addInvoiceToQueue();" class="btn btn-success btn-small">Hold this invoice</a>
+                <a style="float:right;"  class="btn btn-warning btn-small" href="<?php echo route('sale.emptyCart'); ?>">Clear Screen</a>
+            <?php endif; ?>
+            <span id='topTotalQuantity' class='label label-warning' style='font-size:22px; border-radius:90px;'></span>
+            <a href="<?php echo route('sale.salesOrder'); ?>" class="btn btn-small btn-success" style="margin-left: 50px;">
+                <i class='icon-forward'></i> Go to Sales Order
+            </a> 
+            </h4> 
+            </div>
+            <table class="table table-bordered" width="100%">
+                <thead class="table-head">
+                    <tr>
+                        <th>SL</th>
+                        <th>Item Name</th>
+                        <th colspan="2" style="width: 300px;">Sale Qty.</th>      
+                        <th>Available Qty.</th>
+                        <th>Sale Price</th>
+                        <th style="width: 50px;">Total</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="addTr">
+                    <?php 
+                        $i=0; $invoice_total=0; 
+                        if(Session::get('saleItems')){
+                            $reverse_items= Session::get('saleItems');
+                        }
+                        $totalQuantity = 0;
+                        $totalPoint = 0;
+                    ?>
+                    <?php if(Session::get('saleItems')): ?>
+                        <?php foreach($reverse_items as $key => $item): ?>
+                            <? $invoice_total=$invoice_total+$item['total'];
+                            $totalQuantity+=$item['sale_quantity'];
+                            //$totalPoint = $totalPoint + ($item['item_point'] * $item['sale_quantity']);
+                            ?>
+                            <?php echo Form::open(array('route' => 'sale.editDeleteItem', 'class' => 'form-horizontal')); ?>
+
+                                <tr>                            
+                                    <td id="sl_<?php echo $key+1; ?>"><?php echo ++$i; ?></td>
+                                    <td>
+                                        <span class="span3">
+                                            <?php echo $item['item_name']; ?>
+
+                                            <input type="hidden" name="key" value="<?php echo $item['key']; ?>">
+                                            <input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>">
+                                            <input type="hidden" name="price_id" value="<?php echo $item['price_id']; ?>">
+                                            <input type="hidden" name="item_name" value="<?php echo $item['item_name']; ?>">
+                                            <input type="hidden" id="pcsPerCarton_<?php echo $key; ?>" name="pcs_per_cartoon" value="<?php echo $item['pcs_per_carton']; ?>">
+                                            <input type="hidden" id="availableQuantity_<?php echo $key; ?>" name="available_quantity" value="<?php echo $item['available_quantity']; ?>">
+                                        </span>
+                                    </td>
+                                    <td colspan="2">
+                                        <div class="span3">
+                                            <div class="span1" style="float: left; margin-right: 20px;"><label>PCS</label>
+                                                <input style="width: 100%;" class="span1 saleQuanty" id="pcs_<?php echo $key; ?>" type="text" name="sale_quantity"  autocomplete="off" value="<?php echo $item['sale_quantity']; ?>"/></div>
+                                            <div <?php if($item['unit'] == 1 || $item['unit'] == 3): ?> style="float: left; margin-right: 20px; display: none;" <?php elseif($item['unit'] == 2): ?> style="float: left; margin-right: 20px;" <?php endif; ?> class="span1"><label>Dozz</label><input style="width: 100%;" class="span1 saleQuanty" id="saleQuantityDozz_<?php echo $key; ?>" type="text" name="sale_quantity_dozz"  autocomplete="off" value="<?php echo round($item['dozz'],4); ?>" /></div>
+                                            <div <?php if($item['unit'] == 1 || $item['unit'] == 2): ?> style="float: left; margin-right: 20px; display: none;" <?php elseif($item['unit'] == 3): ?> style="float: left; margin-right: 20px;" <?php endif; ?>  class="span1"><label>Set</label><input style="width: 100%;" class="span1 saleQuanty" type="text" id="saleQuantitySet_<?php echo $key; ?>" name="sale_quantity_set"  autocomplete="off" value="<?php echo round($item['set'],4); ?>" /></div>
+                                            <div style="float: left;" class="span1"><label>Carton</label><input style="width: 100%;" class="span1 saleQuanty" type="text" name="sale_quantity_carton" id="saleQuantityCarton_<?php echo $key; ?>" autocomplete="off" value="<?php echo round($item['carton'],4); ?>" /></div>
+                                        </div>
+                                            <input class="span1 floatingCheck" type="text" name="discount" id="discount_<?php echo $key; ?>" autocomplete="off" value="<?php echo $item['discount']; ?>" readonly="" style="display: none;" />
+                                    </td>
+                                    <td>
+                                    <?php if($item['sale_quantity']==0): ?>
+                                            <input class="span1 available_quantity" style="background-color:red; color:#fff;"  type="text" readonly name="available_quantity" value="<?php echo $item['available_quantity']; ?>" />
+                                        <?php else: ?>
+                                            <input class="span1 available_quantity"  type="text" readonly name="available_quantity" value="<?php echo $item['available_quantity']; ?>" />
+                                    <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <input class="span1 price_change saleQuanty" type="text" name="sale_price" id="price_<?php echo $key; ?>" value="<?php echo $item['sale_price']; ?>" />
+                                        <input type="hidden" name="purchase_price" id="purchasePrice_<?php echo $key; ?>" value="<?php echo $item['purchase_price']; ?>" />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="total" id="total_<?php echo $key; ?>"  class="span1 disabled" disabled="" value="<?php echo $item['total']; ?>" />
+                                    </td>
+                                    <td class="span2" style="width: 90px;">
+                                        <button style="display:none;" type="submit" class="edit btn btn-primary" name="edit_delete" value="edit"><i class="icon-edit"></i></button>
+                                        <button type="submit" class="btn btn-warning btn-delete" id="delete_<?php echo $key; ?>" name="edit_delete"><i class="icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                            <?php echo Form::close(); ?>
+
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" style="text-align:center; color:#E98203;">
+                        <strong>Total Item : <span id="cartAddedQty"><?php echo count(Session::get('saleItems')); ?></span></strong>
+                        <input type='hidden' id='toalQuantity' value='<?php echo $totalQuantity; ?>'>
+                        <td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="invoice-reg"><input type="hidden" id="max_dis_percent" value="<?php echo Session::get('max_inv_dis_percent');; ?>">
+                <!-- <?php echo Session::get('max_inv_dis_percent');; ?>!-->
+                <?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                <?php echo Form::open(array('route' => 'sale.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal itemAddCartForm')); ?>
+
+                    <div class="control-group">
+                        <?php echo Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight:bold;margin-top:7px;font-size:18px;']); ?>
+
+                        <div class="controls">
+                            <?php echo Form::text('item_id', null, array('class' => 'span6 item_id','autofocus'=>'yes','id'=>'auto_search_item', 'placeholder' => 'Start Typing item\'s name or scan barcode...','style' => 'height: 30px;border: 1px solid #125f0d;')); ?>
+
+                        </div> <!-- /controls -->
+                    </div> <!-- /control-group -->
+                <?php echo Form::close(); ?>
+
+            </div>
+        </div>
+        <div class="span4" style="position: fixed; left: 858px;">
+            <div class="invoice-right">
+                <?php echo Form::open(array('route' => 'sale.selectDeleteCustomer','autocomplete'=>'off', 'id' => 'customerForm', 'style' => 'margin : 0 0 9px !important;')); ?>
+
+                    <?php if(Session::get('sale_invoice_info.user_name')): ?>                                        
+                        <div class="control-group hr">
+                            <label class="control-label" for="supplier_name"><strong style="font-size: 1.1em;"><u>Customer</u></strong></label>
+                            <div class="controls">
+                                <table class="table table-striped" style="margin: 0; padding:0;">
+                                    <tbody> 
+                                        <tr>
+                                            <td>Customer Name</td>
+                                            <td>:</td>
+                                            <td><strong id="customer_name" style="color: green; font-size: 1.4em;">
+                                                <?php echo Session::get('sale_invoice_info.full_name'); ?>
+
+                                                <input type="hidden" id="customer" value="<?php echo Session::get('sale_invoice_info.user_name'); ?>">
+                                                <input type="hidden" id="cust_type_discount_percent" value="0">
+                                            </strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button type="submit" style="margin: 3px 0 3px" class="btn btn-warning" name="customer" value="delete"><i class="icon-trash"></i> &nbsp;Remove</button>
+                            </div> <!-- /controls -->
+                        </div>
+                    <?php else: ?>
+                        <div class="control-group hr">
+                            <label class="control-label" for="supplier"><b>Select Customer (Optional)</b></label>
+                            <div class="controls">
+                                <?php echo Form::text('national_id', null, array('class' => 'span3', 'id' => 'customerAutoSugg', 'placeholder' => 'Start Typing Customer\'s name...')); ?>
+
+                                <input type="hidden" id="customer" value="">
+                            </div> <!-- /controls -->
+                        </div>
+                    <?php endif; ?>
+                <?php echo Form::close(); ?>
+
+                <div>
+                    <?php echo Form::open(array('route' => 'sale.invoiceAndSale','autocomplete'=>'off', 'class' => 'form-horizontal', 'style' => 'margin : 0 0 1px !important;')); ?>
+
+                    <table class="table table-striped" style="margin: 0; padding:0;">
+                        <tbody>
+                        <tr>
+                            <td>Branch </td>
+                            <td>:</td>
+                            <td style="padding:0;">
+                                <span> <?php echo Helper::getBranchName(); ?></span>
+                            </td>
+                        </tr>
+                        <?php if(Session::get('backdate_sales')==0): ?>
+                        <input name="date" type="hidden" value="<?= date("Y-m-d") ?>">
+                        <?php else: ?>
+                            <tr>
+                                <td>Date </td>
+                                <td>:</td>
+                                <td style="padding:0;">
+                                    <input id="dp3" name="date" data-date="<?= date("Y-m-d") ?>" data-date-format="yyyy-mm-dd" class="datepicker span2" type="text" value="<?= date("Y-m-d") ?>">
+                                </td>
+                            </tr>
+                            <?php endif; ?>
+                            <tr>
+                                <td>Payment Type</td>
+                                <td>:</td>
+                                <td style="padding:0;">
+                                    <?php echo Form::select('payment_type_id', $payment_type, 1, ['class' => 'span3', 'style' => 'margin-top: 3px;']); ?>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sub Total Amount</td>
+                                <td>:</td>
+                                <td><strong id="total_amount" style="color: green; font-size: 1.4em;"><?php echo $invoice_total; ?></strong></td>
+                            </tr>
+                            <tr>
+                                <td>Discount</td>
+                                <td>:</td>
+                                <td style="padding:0;">
+                                    <input style="margin-top: 3px; width:95px;" type="text" maxlength="5" readonly id="dis_percent" name="discount_percent" data-toggle="tooltip" title="Discount (%)" value="%"  placeholder="Discount(%)">&nbsp;&nbsp;
+                                    <input style="margin-top: 3px; width:95px;"  type="text" maxlength="10" id="dis_taka" name="invoice_discount"  data-toggle="tooltip" title="Discount (Tk.)" placeholder="Discount(Taka)" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Total Amount (Tk)</td>
+                                <td>:</td>
+                                <td><strong id="pay_amount" style="color: red; font-size: 2.4em; font-family:Times;">
+                                <?php if(Session::get('sale_invoice_info.user_name')): ?>
+                                <?php
+                                    $amountTaka = $invoice_total-Session::get('invoice_info.invoice_discount');
+                                    echo $amountTaka;
+                                ?>
+                                <?php else: ?>
+                                <?php echo $invoice_total-Session::get('invoice_info.invoice_discount'); ?>
+
+                                <?php endif; ?>
+                                </strong></td>
+                            </tr>
+                            <tr>
+                                <td>Pay</td>
+                                <td>:</td>
+                                <td style="padding:0;">
+                                    <div class="input-prepend input-append">
+                                        <input class="span2" type="text" id="appendedPrependedInput" maxlength="10" class="span2" name="pay" value="<?php echo $amount; ?>">
+                                        <!--<input class="span2" type="text" id="appendedPrependedInput" maxlength="10" class="span2" name="pay" value="">-->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="display: none;">
+                                <td>Pay Note</td>
+                                <td>:</td>
+                                <td style="padding:0;">
+                                    <input type="text" class="span2" id="paynote" autocomplete="off" maxlength="10" name="paynote" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Due</td>
+                                <td>:</td>
+                                <td><strong id="due" style="color: green; font-size: 1.4em;">0.00</strong></td>
+                            </tr>
+                            <?php if(Session::has('sale_invoice_info.customer_due')): ?>
+                            <?php if(Session::get('sale_invoice_info.customer_due') > 0): ?>
+                            <tr>
+                                <td>Previous Due</td>
+                                <td>:</td>
+                                <td><strong id="due" style="color: green; font-size: 1.4em;"><?php echo Session::get('sale_invoice_info.customer_due'); ?></strong></td>
+                            </tr>
+                            <?php endif; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                    <div style="text-align: left; margin-left: 10px;">
+                        <button name="sale" type="submit" class="btn btn-danger" onclick="return isUnRegisteredCustomer();">
+                            Complete Sale
+                        </button>
+                        <button name="saleOrder" type="submit" class="btn btn-success" onclick="return isUnRegisteredCustomer();">
+                            Send To Sale Order
+                        </button>
+                    </div>
+                    <?php echo Form::close(); ?>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php echo HTML::script('js/jquery-ui.min.js'); ?>
+
+    <?php echo $__env->make('sale.saleFormAjaxRequest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+    <div id="addInvoiceToQueueModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addInvoiceToQueueModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#735;</button>
+            <h3 id="itemEditModalLabel"><i class="icon-edit-sign"></i>&nbsp; Add Invoice To Queue</h3>
+        </div>
+        <div class="modal-body" id="addInvoiceToQueueModalBody">
+                <?php echo Form::open(array('route' => 'sale.addInvoiceToQueue.post', 'id' => 'formAddInvoiceToQueue', 'class' => 'form-horizontal')); ?>
+
+                <div class="control-group">     
+                    <?php echo Form::label('Customer', 'Customer', ['class' => 'control-label']); ?>
+
+                    <div class="controls">
+                        <?php echo Form::text('customer', null, array('class' => 'span3', 'placeholder' => 'Enter Customer Name or Mobile','autofocus'=>'yes')); ?>
+
+                    </div> <!-- /controls -->                   
+                </div> <!-- /control-group -->  
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <?php echo Form::submit('Save', array('class' => 'btn btn-primary')); ?>
+
+                </div>
+                <?php echo Form::close(); ?>
+
+        </div>
+    </div>
+    <script>
+    $(function(){
+        var formAddInvoiceToQueue = $('#formAddInvoiceToQueue');
+
+        formAddInvoiceToQueue.validate({
+          rules: {
+           customer: {
+               required: true
+            }
+          }, messages: {
+            },
+            ignore: ':hidden'   
+        });
+    });
+$(window).load(function(){
+        salesInit();
+        $('#topTotalQuantity').html($('#toalQuantity').val());
+    });
+    function salesInit() {
+        shortcut.add("Alt+c", function() {
+            window.location = "<?php echo route('sale.emptyCart'); ?>";
+        });
+        shortcut.add("Alt+f", function() {
+            $("#paynote").focus();
+            //window.location = "<?php echo route('sale.emptyCart'); ?>";
+        });
+    }
+</script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+		<li>S</li><li>a</li><li>l</li><li>e</li><li>s</li>
+	</ul>       
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

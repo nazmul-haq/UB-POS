@@ -1,0 +1,8 @@
+411 => array('no' => '412', 'barcode' => '8850175066026', 'product_name' => 'Disaar Rapid Relief Spray 150ml', 'category' => 'Inhelar', 'carton_qty' => '24 1', 'purchase_price' => '120', 'sale_price' => '150'),
+22 => array('no' => '23', 'barcode' => '88530215', 'product_name' => 'Johnson Baby Cream Tube 100ml', 'category' => 'Baby Cream', 'carton_qty' => '12 1', 'purchase_price' => '160', 'sale_price' => '180'),
+436 => array('no' => '437', 'barcode' => '8858883509699', 'product_name' => 'Obuse Vivid Matte Lipstick', 'category' => 'Lipstick', 'carton_qty' => '12 1', 'purchase_price' => '80', 'sale_price' => '120'),
+469 => array('no' => '470', 'barcode' => '8858953200501', 'product_name' => 'Thai Donla Olive Oil 250ml', 'category' => 'Olive Oil', 'carton_qty' => '12 1', 'purchase_price' => '150', 'sale_price' => '220'),
+470 => array('no' => '471', 'barcode' => '8858953200419', 'product_name' => 'Thai Donla Olive Oil 100ml', 'category' => 'Olive Oil', 'carton_qty' => '144 1', 'purchase_price' => '100', 'sale_price' => '120'),
+//Same product duplicate entry excel
+579 => array('no' => '580', 'barcode' => '8851938902223', 'product_name' => 'Victory Slima Toothbrush', 'category' => 'Toothbrush', 'carton_qty' => '48 1', 'purchase_price' => '90', 'sale_price' => '100'),
+217 => array('no' => '218', 'barcode' => '8852525368002', 'product_name' => 'Isme Acne Spot Cream 10g', 'category' => 'Cream', 'carton_qty' => '24 1', 'purchase_price' => '180', 'sale_price' => '250'),

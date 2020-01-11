@@ -1,0 +1,244 @@
+<?php $__env->startSection('content'); ?>
+
+            <?php $amount=0;if(Session::get('items')){ foreach(Session::get('items') as $item)
+                                $amount=$amount+$item['total'];
+                                 }
+             ?>
+	<div class="row">
+		<div class="span8">
+	            <?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+				<div class='label label-info' style='height:24px'><h4 style='display:inline;'><i class='icon-shopping-cart'></i> Purchase Register</h4>
+				<span style="color: orange; padding-left: 20px;"> Total items </span> 
+				<span id='topTotalQuantity' class='label label-warning' style='font-size:22px; border-radius:90px;'>  </span>
+				<a style="float:right; <?php if(!Session::get('items')): ?> display: none; <?php endif; ?>"  class="btn btn-warning btn-small clearScreen" href="<?php echo route('purchase.emptyCart'); ?>">Clear Screen</a>
+				</div>
+			<table class="table table-striped" width="100%">
+				<thead class="table-head">
+					<tr>
+						<th>SL</th>
+						<th>Item Name</th>
+						<th>Purchase Price</th>
+						<th>Sale Price</th>
+						<th>Qty.</th>
+						<!-- <th>Disc (Tk)</th> -->
+						<th>Total</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody class="addTr">
+				<?php $i=0; $invoice_total=0; 
+                    if(Session::get('items')){
+                    	$reverse_items = Session::get('items');
+                    }
+                    $totalQuantity = 0;
+                ?>
+					<?php if(Session::get('items')): ?>						
+						<?php foreach($reverse_items as $item): ?>
+							<? $invoice_total=$invoice_total+$item['total'];
+								$totalQuantity += $item['quantity'];
+							?>
+							<?php echo Form::open(array('route' => 'purchase.editDeleteItem', 'class' => 'form-horizontal itemAddCartForm')); ?>
+
+							<tr>
+								<td><?php echo ++$i; ?></td>
+								<td>
+									<span class="span3" id="itemName_<?php echo $item['item_id']; ?>">
+										<?php echo $item['item_name']; ?>
+
+									</span>
+									<input type="hidden" name="item_id" value="<?php echo $item['item_id']; ?>">
+									<input type="hidden" name="price_id" id="priceId_<?php echo $item['item_id']; ?>" value="<?php echo $item['price_id']; ?>">
+									<input type="hidden" name="item_name" value="<?php echo $item['item_name']; ?>">
+								</td>
+								<td>
+									<input class="span1 floatingCheck purchaseQuanty" type="text" name="purchase_price" id="purchasePrice_<?php echo $item['item_id']; ?>" value="<?php echo $item['purchase_price']; ?>" />
+								</td>
+								<td>
+									<input class="span1 floatingCheck purchaseQuanty" type="text" id="salePrice_<?php echo $item['item_id']; ?>" name="sale_price" value="<?php echo $item['sale_price']; ?>" />
+								</td>
+								<td>
+									<input class="span1 Quanty purchaseQuanty" type="text" maxlength="5" name="quantity" id="pcs_<?php echo $item['item_id']; ?>" value="<?php echo $item['quantity']; ?>" />
+								</td>
+								<!-- <td>
+									<input class="span1 floatingCheck purchaseQuanty" type="text" maxlength="5" name="discount" value="<?php echo $item['discount']; ?>" />
+								</td> -->
+								<td>
+									<input type="text" name="total" id="total_<?php echo $item['item_id']; ?>"  class="span1 disabled" disabled="" value="<?php echo $item['total']; ?>" />
+								</td>
+								<td class="span1">
+									<button type="submit" id="deleteItem_<?php echo $item['item_id']; ?>" class="btn btn-warning btn-delete" name="edit_delete"><i class="icon-trash"></i></button>
+								</td>
+							</tr>
+							<?php echo Form::close(); ?>
+
+						<?php endforeach; ?>
+					<?php endif; ?>
+						<tfoot>
+			                <tr>
+			                    <td colspan="8" style="text-align:center; color:#E98203;">
+			                    <strong>Total Item : <span id="cartAddedQty"><?php echo count(Session::get('items')); ?></span></strong>
+			                    <input type='hidden' id='toalQuantity' value='<?php echo $totalQuantity; ?>'>
+			                    <td>
+			                </tr>
+			            </tfoot>
+				</tbody>
+			</table>
+			<div class="invoice-reg">
+				<?php echo Form::open(array('route' => 'purchase.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal itemAddCartForm')); ?>
+
+					<div class="control-group">		
+						<?php echo Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight: bold;font-weight:bold;margin-top:7px;font-size:18px; color : #022a65;']); ?>
+
+						<div class="controls">
+							
+							<input type="text" name="item_id" class='span6 item_id' autofocus='yes' id='auto_search_item' placeholder='Start Typing item name or scan barcode...' <?php if(Session::has('is_purchase_order')): ?> disabled="" <?php endif; ?> style='height: 30px;border: 1px solid #022a65;'>
+						</div> <!-- /controls -->					
+					</div> <!-- /control-group -->	
+				<?php echo Form::close(); ?>
+
+			</div>
+		</div>
+		<!--Supplier--->
+		<div class="span4">
+			<div class="invoice-right">
+				<?php echo Form::open(array('route' => 'purchase.selectDeleteSupplier', 'id' => 'supplierForm')); ?>
+
+					<?php if(Session::get('invoice_info.supp_or_comp_name')): ?>
+						<div class="control-group hr">											
+							<label class="control-label" for="supplier_name"><strong style="font-size: 1.1em;"><u>Supplier Name</u></strong></label>
+							<div class="controls">
+								<strong style="color:#348100; font-size: 1.1em;">
+									<?php echo Session::get('invoice_info.supp_or_comp_name'); ?>
+
+								</strong>
+                                <input type="hidden" id="supplier" value="<?php echo Session::get('invoice_info.supp_or_comp_name'); ?>">
+								<p>
+								<button type="submit" class="btn btn-warning" name="supplier" value="delete"><i class="icon-trash"></i> &nbsp;Remove</button>
+							</div> <!-- /controls -->				
+						</div>
+					<?php else: ?>
+						<div class="control-group hr">											
+							<label class="control-label" for="supplier">Select Supplier (Optional)</label>
+							<div class="controls">
+								<?php echo Form::text('supp_id', null, array('class' => 'span3', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...')); ?>
+
+                                                                <input type="hidden" id="supplier" value="">
+                                                        </div> <!-- /controls -->
+						</div>
+						<div class="control-group hr">											
+							<label class="control-label" for="supplier">Purchase Saved For</label>
+							<div class="controls">
+								<?php if(Session::get('branch_id')): ?>
+									<?php if(Session::get('branch_id') == 1): ?>
+									<?php echo Form::text('branch_id','MB Trade', array('class' => 'span3', 'readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...')); ?>
+
+									<?php elseif(Session::get('branch_id') == 2): ?>
+									<?php echo Session::get('branch_id'); ?>
+
+									<?php echo Form::text('branch_id','MB Collection', array('class' => 'span3','readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...')); ?>
+
+									<?php elseif(Session::get('branch_id') == 3): ?>
+									<?php echo Form::text('branch_id','MB Gulshan', array('class' => 'span3','readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...')); ?>
+
+									<?php else: ?>
+									<?php endif; ?>
+								<?php endif; ?>
+                                                        </div> <!-- /controls -->
+						</div>
+					<?php endif; ?>  
+				<?php echo Form::close(); ?>
+
+				<div>
+					<?php echo Form::open(array('route' => 'purchase.invoiceAndPurchase', 'autocomplete'=>'off', 'class' => 'form-horizontal')); ?>
+
+					<table class="table table-striped" style="margin: 0; padding:0;">
+						<tbody>
+							<?php if(Session::get('backdate_purchase')==0): ?>
+						<input name="date" type="hidden" value="<?= date("Y-m-d") ?>">
+						<?php else: ?>
+							<tr>
+								<td>Date </td>
+								<td>:</td>
+								<td style="padding:0;">
+                                    <input id="dp3" name="date" data-date="<?= date("Y-m-d") ?>" data-date-format="yyyy-mm-dd" class="datepicker span2" type="text" value="<?= date("Y-m-d") ?>">
+								</td>
+							</tr>
+							<?php endif; ?>
+                                <tr>
+								<td>Memo No </td>
+								<td>:</td>
+								<td style="padding:0;">
+                                    <input id="sup_momo_no" name="sup_momo_no" maxlength="14" class="span2" type="text" value="">
+								</td>
+							</tr>
+							<tr>
+								<td>Payment Type</td>
+								<td>:</td>
+								<td style="padding:0;">
+									<?php echo Form::select('payment_type_id', $payment_type, 1, ['class' => 'span3', 'style' => 'margin-top: 3px;']); ?>
+
+								</td>
+							</tr>
+							<tr>
+								<td>Sub Total</td>
+								<td>:</td>
+								<td><strong id="total_amount" style="color: green; font-size: 1.4em;"><?php echo $invoice_total; ?></strong></td>
+							</tr>
+							<tr>
+								<td>Discount</td>
+								<td>:</td>
+								<td style="padding:0;">
+									<input style="margin-top: 3px; width:95px;" maxlength="5" type="text" id="dis_percent" name="discount_percent" data-toggle="tooltip" title="Discount (%)"  placeholder="Discount(%)">&nbsp;&nbsp;
+									<input style="margin-top: 3px; width:95px;" maxlength="10"  type="text" id="dis_taka" name="invoice_discount"  data-toggle="tooltip" title="Discount (Tk.)" placeholder="Discount(Taka)">
+								</td>
+							</tr>
+							<tr>
+								<td>Total Amount(Tk)</td>
+								<td>:</td>
+								<td><strong id="pay_amount" style="color: green; font-size: 1.5em;"><?php echo $invoice_total-Session::get('invoice_info.invoice_discount'); ?></strong></td>
+							</tr>
+							<tr>
+								<td>Pay</td>
+								<td>:</td>
+								<td style="padding:0;">
+									<div class="input-prepend input-append">
+									  <span class="add-on">৳</span>
+                                        <input type="text" maxlength="10" id="appendedPrependedInput" class="span2" name="pay" value="<?php echo $amount; ?>">
+									  <span class="add-on">.00</span>
+									</div>
+								</td>
+							</tr>
+							 <tr>
+								<td>Due</td>
+								<td>:</td>
+								<td><strong id="due" style="color: green; font-size: 1.4em;">0.00</strong></td>
+							</tr>
+						</tbody>
+					</table>
+					<div style="text-align: left; margin-left: 10px;">	
+					<?php if(Session::has('is_purchase_order')): ?>				
+						<button type="submit" class="btn btn-success" name="purchase_order"  onclick="return isSupplierAvailable();">Purchase Order</button>
+					<?php else: ?>
+						<button type="submit" class="btn btn-danger" name="purchase"  onclick="return isSupplierAvailable();">Complete Purchase</button>
+					<?php endif; ?>
+					</div>
+					<?php echo Form::close(); ?>
+
+				</div>				
+				
+			</div>
+		</div>
+	</div>
+	<?php echo HTML::script('js/jquery-ui.min.js'); ?>
+
+	<?php echo $__env->make('purchase.pruchaseFormAjaxRequest', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+		<li>P</li><li>u</li><li>r</li><li>c</li><li>h</li><li>a</li><li>s</li><li>e</li>
+	</ul>       
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

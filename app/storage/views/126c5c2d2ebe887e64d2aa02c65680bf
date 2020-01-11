@@ -1,0 +1,137 @@
+
+<?php $__env->startSection('content'); ?>
+	<!--Receipt-->	
+	<div class="row" >
+		<div class="span12" style="text-align: center; margin-top: 20px;">    	
+			<article class="head-receipt">
+			 
+				<ul style="list-style-type:none; margin: 0;">
+             <?php if(count($company_info)>0): ?>
+				  <li>
+				  	<img src="<?php echo asset('img/company_logo.png'); ?>" class="" style="padding-left: 10px;height: 80px;width:80px;" alt="title">
+				  </li>
+				  <li><?php echo $company_info->address; ?></li>
+				  <li><?php echo $company_info->mobile; ?></li>
+			 <?php endif; ?>
+				</ul>
+			 <?php if(count($receipt_info)>0): ?>	
+			 <center>
+			 <table style="padding-left: 55px;">
+				<tbody style='line-height:12px; font-size:10px'>
+					<tr style="border-bottom: 1px solid #ccc; width:50%; margin: 3px auto;">
+						<td colspan="3" style="text-align:center;"><b>Salary Receipt</b></td>
+					</tr>
+					<tr>
+						<td align="right">Employee Name</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left"><?php echo $receipt_info->employee_name; ?></td>
+					</tr>
+					<tr style='' width='100%'>
+						<td align="right">Transaction Date</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left">
+							<?php echo $receipt_info->transaction_date; ?>
+
+						</td>
+					</tr>
+					<tr>
+						<td align="right">Invoice No</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left"><?php echo $receipt_info->invoice_id; ?></td>
+					</tr>
+					<tr>
+						<td align="right">Given By</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left"><b><?php echo $receipt_info->given_by; ?></b></td>
+					</tr>
+				</tbody>
+			 </table> 
+			 </center>
+			</article>	
+			 
+			<table class="item-sales" style='width:100%'>
+				<thead class="table-receipt-head">
+					<tr>
+						<th></th>
+						<th width='20%'>Salary Month</th>
+						<th width='20%'>Fixed Salary</th>
+						<th width='20%'>Salary Given</th>
+						<th width='20%'>Salary Due</th>
+						<th width="20%">Total</th>
+					</tr>
+				</thead>
+				<tbody style='font-size:13px'>
+					<tr>
+						<td></td>
+						<td><?php echo $receipt_info->salary_month; ?></td>
+						<td>BDT <?php echo $receipt_info->fixed_salary; ?></td>
+						<td>BDT <?php echo $receipt_info->amount; ?></td>
+						<td>BDT <?php echo $receipt_info->due; ?></td>
+						<td>BDT <?php echo $receipt_info->amount; ?></td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th></th>
+						<th width='20%'> </th>
+						<th width='20%'> </th>
+						<th width='20%'> </th>
+						<th width='20%'> </th>
+						<th width="20%"> &nbsp;</th>
+					</tr>
+					<tr>
+						<th></th>
+						<th width='20%'></th>
+						<th width='20%'></th>
+						<th width='20%'></th>
+						<th width='20%'></th>
+						<th width="20%" style="border-top: 1px solid black;">Total : BDT <?php echo $receipt_info->amount; ?> </th>
+					</tr>
+					<tr>
+						<th colspan="6"></th>
+					</tr>
+					<tr>
+						<th colspan="6"></th>
+					</tr>
+					<tr>
+						<th colspan="6"></th>
+					</tr>
+					<tr>
+						<th colspan="6"></th>
+					</tr>
+					<tr>
+						<th colspan="6"></th>
+					</tr>
+					<tr>
+						<th></th>
+						<th width='20%'></th>
+						<th width='20%'></th>
+						<th width="20%" style="border-top: 1px solid black;">Authorize Sign</th>
+						<th width='20%'></th>
+						<th width="20%" style="border-top: 1px solid black;">Employee Sign</th>
+					</tr>
+				</tfoot>
+			</table>
+			<article style="clear:both; padding-top: 20px; text-align: center;">
+				<div align="center">
+					<?php echo DNS1D::getBarcodeHTML($receipt_info->invoice_id, "C128", 1, 25); ?>		
+					<strong><?php echo $receipt_info->invoice_id; ?></strong>				
+				</div>
+				<p style="float:right;">Developed By : <strong>Unitech IT</strong></p>
+			</article>
+			<?php endif; ?>
+		</div>		
+	</div>
+	<script type="text/javascript">
+	  window.onload = function () {
+		// window.print();
+	  // if(<?php echo Session::get('isAutoPrintAllow'); ?>==1){
+		 //  window.print();
+		 //  setTimeout(function(){window.location = "<?php echo URL::to('sale/sales'); ?>"}, 200000);
+	  // }
+	}
+</script>
+<?php $__env->stopSection(); ?>
+
+
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
