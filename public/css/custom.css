@@ -225,15 +225,13 @@
 	text-align: center;	
 	border-radius: 5px;
 }
-
 .setup-items .setup-item .setup-icon {
 	margin-top: .25em;
 	margin-bottom: .25em;
 	
 	font-size: 32px;
-	color: #222;
+	color: #126559;
 }
-
 .setup-items .setup-item:hover {
 	text-decoration: none;
 	background-color: #e6e6e6;

@@ -355,7 +355,7 @@ class SupplierInfoController extends \BaseController {
 		//echo $date_exp[1];
 		
 		$get_transaction_infos = DB::table('supduepayments AS suppDuePay')
-							->select('suppDuePay.date as pay_date','suppDuePay.amount','suppDuePay.comment','empInfo.user_name','payType.payment_type_name')
+							->select('suppDuePay.date as pay_date','suppDuePay.amount','empInfo.user_name','payType.payment_type_name')
 							->join('paymenttypes AS payType', 'suppDuePay.payment_type_id', '=', 'payType.payment_type_id')
 							->join('empinfos AS empInfo', 'suppDuePay.created_by', '=', 'empInfo.emp_id')
 							->where('suppDuePay.supp_id', $supp_id)
@@ -382,7 +382,7 @@ class SupplierInfoController extends \BaseController {
 							->where('supp_id', $supp_id)
 							->first();
 			$due = $get_supp_due->due;
-			$cal_due = $due - (Input::get('amount') + Input::get('due_discount'));			
+			$cal_due = $due - Input::get('amount');			
 			$supp_due_update = array(
 					'due' 			=>  $cal_due,
 					'updated_by' 	=>  Session::get('emp_id'),
@@ -391,43 +391,16 @@ class SupplierInfoController extends \BaseController {
 			DB::table('supplierinfos')			
 					->where('supp_id', $supp_id)
 					->update($supp_due_update);
-			$insert = 0;
-            if(Input::get('amount') > 0){
-
-            	$payment_supplier = array(
+			
+			$payment_supplier = array(
 					'supp_id' 			=>  $supp_id,
 					'payment_type_id' 	=>  Input::get('payment_type_id'),
 					'amount'			=>  Input::get('amount'),
-					'date'              =>  (Input::get('payment_date')) ? Input::get('payment_date') : date('Y-m-d'),
-					'comment'              =>  (Input::get('comment')) ? Input::get('comment') : '',
+					'date'				=>  date('Y-m-d'),
 					'created_by' 		=>  Session::get('emp_id'),
 					'created_at' 		=>  $this->timestamp
-				);
-				$insert = DB::table('supduepayments')->insertGetId($payment_supplier);
-            }
-            if(Input::get('due_discount') > 0){
-                if($insert <= 0){
-            		$payment_supplier = array(
-						'supp_id' 			=>  $supp_id,
-						'payment_type_id' 	=>  Input::get('payment_type_id'),
-						'amount'			=>  0,
-						'date'              =>  (Input::get('payment_date')) ? Input::get('payment_date') : date('Y-m-d'),
-						'created_by' 		=>  Session::get('emp_id'),
-						'created_at' 		=>  $this->timestamp
-					);
-					$insert = DB::table('supduepayments')->insertGetId($payment_supplier);
-                }
-                $due_discount_customer = array(
-                    'supp_id'            =>  $supp_id,
-                    's_due_payment_id'  =>  $insert,
-                    'amount'            =>  Input::get('due_discount'),
-                    'date'              =>  (Input::get('payment_date')) ? Input::get('payment_date') : date('Y-m-d'),
-                    'created_by'        =>  Session::get('emp_id'),
-                    'created_at'        =>  $this->timestamp
-                );
-                $insert = DB::table('supplierduediscounts')->insert($due_discount_customer);
-            }
-
+			);
+			$insert = DB::table('supduepayments')->insert($payment_supplier);
 			DB::commit();
 			return Redirect::to('admin/supplier/payment/'.$supp_id.'')->with('message', 'Added Successfully');
 			

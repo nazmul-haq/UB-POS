@@ -3,20 +3,53 @@
 <head>
 <meta charset="utf-8">
 <title>{{ $title or '::=:: Dashboard - POS ::=::' }}</title>
+<link rel="icon" href="{{URL::to('/')}}/../img/unitech.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-{{ HTML::style('css/bootstrap.min.css') }}
+@if(Session::has('redTheme'))
+	{{ HTML::style('css/bootstrapRed.min.css') }}
+@elseif(Session::has('blueTheme'))
+	{{ HTML::style('css/bootstrap.min.css') }}
+@else
+	{{ HTML::style('css/bootstrap.min.css') }}
+@endif
+
 {{ HTML::style('css/bootstrap-responsive.min.css') }}
 {{ HTML::style('css/font-google.css') }}
 {{ HTML::style('css/font-awesome.css') }}
-{{ HTML::style('css/style.css') }}
+
+@if(Session::has('redTheme'))
+	{{ HTML::style('css/styleRed.css') }}
+@elseif(Session::has('blueTheme'))
+	{{ HTML::style('css/style.css') }}
+@else
+	{{ HTML::style('css/style.css') }}
+@endif
+
 {{ HTML::style('css/clock.css') }}
 {{ HTML::style('css/dashboard.css') }}
 {{ HTML::style('css/jquery-sticklr-1.4.css') }}
-{{ HTML::style('css/jquery.dataTables.css') }}
+
+@if(Session::has('redTheme'))
+	{{ HTML::style('css/jquery.dataTablesRed.css') }}
+@elseif(Session::has('blueTheme'))
+	{{ HTML::style('css/jquery.dataTables.css') }}
+@else
+	{{ HTML::style('css/jquery.dataTables.css') }}
+@endif
+
+
 {{ HTML::style('css/wizard/jquery.wizard.css') }}
-{{ HTML::style('css/custom.css') }}
+
+@if(Session::has('redTheme'))
+	{{ HTML::style('css/customRed.css') }}
+@elseif(Session::has('blueTheme'))
+	{{ HTML::style('css/custom.css') }}
+@else
+	{{ HTML::style('css/custom.css') }}
+@endif
+
 {{ HTML::style('css/jquery-ui.css') }}
 {{ HTML::style('css/datepicker.css') }}
 {{ HTML::style('css/print.css') }}

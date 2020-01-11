@@ -11,7 +11,6 @@
     return true;
 }
 $('.Items').addClass('active btn btn-fill');
-
 </script>
 @include('_sessionMessage')
 <div class="widget-header setup-title"> <i class="icon-list"></i><h3>Barcode Generate</h3></span>
@@ -63,9 +62,17 @@ $('.Items').addClass('active btn btn-fill');
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
 @stop

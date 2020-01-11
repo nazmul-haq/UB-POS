@@ -6,13 +6,19 @@
 	<div class="control-group">
 		{{ Form::label('company', 'Company Name', ['class' => 'control-label']) }}
 		<div class="controls">
-			{{ Form::select('company_id', $company, 1,  array('class' => 'span3')) }}
+			{{ Form::select('company_id', $company, null,  array('class' => 'span3')) }}
 		</div> <!-- /controls -->
 	</div> <!-- /control-group -->
 	<div class="control-group">
 		{{ Form::label('item_name', 'Item Name', ['class' => 'control-label']) }}
 		<div class="controls">
 			{{ Form::text('item_name', null, array('class' => 'span3', 'placeholder' => 'Enter Item Name')) }}
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->
+	<div class="control-group">
+		{{ Form::label('item_point', 'Item Point', ['class' => 'control-label']) }}
+		<div class="controls">
+			{{ Form::text('item_point', 0, array('class' => 'span3', 'placeholder' => 'Enter Item Point')) }}
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->
 	<div class="control-group">		
@@ -52,21 +58,11 @@
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->	
 	<div class="control-group">		
-		{{ Form::label('unit', 'Unit(PCS or Dozz)', ['class' => 'control-label']) }}
+		{{ Form::label('tax_amount', 'Tax (%)', ['class' => 'control-label']) }}
 		<div class="controls">
-			<select class="span3" name="unit">
-				<option value="1">PCS</option>
-				<option value="2">Dozzen</option>
-				<option value="3">SET</option>
-			</select>
+			{{ Form::text('tax_amount', 0, array('class' => 'span3', 'placeholder' => 'Enter Tax Amount')) }}
 		</div> <!-- /controls -->					
-	</div> <!-- /control-group -->	
-	<div class="control-group">
-		{{ Form::label('carton', 'PCS/Dozz for Carton', ['class' => 'control-label']) }}
-		<div class="controls">
-			{{ Form::text('carton', null, array('class' => 'span3', 'placeholder' => 'Enter PCS or Dozzen for 1 carton')) }}
-		</div> <!-- /controls -->					
-	</div> <!-- /control-group -->	
+	</div> <!-- /control-group -->		
 	<div class="control-group">		
 		{{ Form::label('description', 'Description', ['class' => 'control-label']) }}
 		<div class="controls">

@@ -17,7 +17,7 @@
 		{{ Form::open(array('route' => 'admin.addOffer', 'class' => 'form-horizontal', 'method' => 'GET')) }}
 			<div class="control-group">
 				<label for="offer_type" style="font-weight: bolder;" class="control-label"><i class="icon-hand-right"></i>&nbsp;&nbsp;Offer Type &nbsp; : &nbsp;</label>
-				{{ Form::select('OfferType', ['' => 'Please Select Offer Type', '1' => 'Item Wise', '2' => 'Category Wise', '3' => 'Brand Wise'], null, array('class' => 'span3', 'required' => 'required')) }}
+				{{ Form::select('OfferType', ['' => 'Please Select Offer Type', '1' => 'Item Wise', '2' => 'Category Wise', '3' => 'Brand Wise','4' => 'Supplier Wise'], null, array('class' => 'span3', 'required' => 'required')) }}
 				<button type="submit" class="btn btn-info"><i class="icon-arrow-right"></i>&nbsp;Next</button>
 			</div> <!-- /control-group -->
 		{{ Form::close()}}
@@ -29,7 +29,7 @@
 		<input type="hidden" id="offer_type" name="offer_type" value="<?= isset($data['OfferType']) ? $data['OfferType'] : null ?>" />
 	 
 		<div class="widget-header setup-title"> <i class="icon-th-list "></i>
-		  <h3>Offer Type : @if($data['OfferType'] == 1) {{ 'Item Wise' }} @elseif($data['OfferType'] == 2) {{ 'Category Wise' }} @else {{ 'Brand Wise' }} @endif</h3>
+		  <h3>Offer Type : @if($data['OfferType'] == 1) {{ 'Item Wise' }} @elseif($data['OfferType'] == 2) {{ 'Category Wise' }} @elseif($data['OfferType'] == 4) {{ 'Supplier Wise' }} @else {{ 'Brand Wise' }} @endif</h3>
 		</div>
 		<div id="message" style="display: none;"></div>
 	 @if($data['OfferType']== 1)	
@@ -52,11 +52,17 @@
 				->setUrl(route('admin.getCategoryWiseData'))
 				->render() }}
 	  @endif
+	  <!--Category Datatable-->
+	  @if($data['OfferType']== 4)	
+		{{ Datatable::table()
+				->addColumn('id','Supplier Name', 'Offer', 'Action')
+				->setUrl(route('admin.getSupplierWiseItemData'))
+				->render() }}
+	  @endif
 	</div>
 	<? endif; ?>
 </div>
 <script>	
-$('.Setup').addClass('active btn btn-fill');
 	 function itemOffer(itemId){
 		$(function(){
 			var offer = $('#offer'+itemId).val();
@@ -201,19 +207,55 @@ $('.Setup').addClass('active btn btn-fill');
 			});		
 		});		
 	}
+
+	function supplierOffer(suppId){
+		$(function(){
+			var offer = $('#offerSupplier'+suppId).val();
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "supplierItemOfferCreate/"+suppId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> ID '+suppId+' Offer Created Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	function resetSupplierOffer(suppId){
+		// return false;
+		$(function(){
+			var resetOffer = $('#offerSupplier'+suppId).val(0);
+			var offer = 0;
+			var offer_type = $('#offer_type').val();
+			//alert(resetOffer);
+			$.ajax({
+				url: "supplierItemOfferReset/"+suppId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> Reset Offer Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});		
+		});		
+	}
 </script>
-@stop
-@section('stickyInfo')
-<?php
-    $string = 'Setup';
-    $li = '';
-    for($j=0;$j<strlen($string);$j++){
-        $li .= '<li>'.substr($string,$j,1).'</li>';
-    }
-?>
-<div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-	    {{$li}}
-	</ul>       
-</div>
 @stop

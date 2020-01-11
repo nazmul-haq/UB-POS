@@ -32,19 +32,7 @@
 						<tr>
 							<td><strong style="float:right; margin-right:50px;">Now Payment </strong></td>
 							<td style="padding:0;">
-								<input type="number" id="amount" class="span3" name="amount">
-							</td>
-						</tr>
-						<tr>
-							<td><strong style="float:right; margin-right:50px;"> Due Discount </strong></td>
-							<td style="padding:0;">
-								<input type="number" id="due_discount" class="span3" name="due_discount">
-							</td>
-						</tr>
-						<tr>
-							<td><strong style="float:right; margin-right:50px;">Payment Date </strong></td>
-							<td style="padding:0;">
-								<input type="text" class="span3 input-small datepicker" name="payment_date" data-date-format='yyyy-mm-dd' placeholder='Payment Date' value="{{date('Y-m-d')}}">
+								<input type="text" id="amount" class="span3" name="amount">
 							</td>
 						</tr>
 						<tr>
@@ -64,15 +52,11 @@
 				<div class="widget-header setup-title"> <i class="icon-search"></i>
 				  <h3>Search Transaction Payment </h3>
 				</div>	
-				<?php
-				    $fromDate = '2018-02-01';
-				    $toDate = date("Y-m-d");
-				?>
 				{{ Form::open(array('url' => "admin/customer/searchPaymentTransaction/$get_customer->cus_id", 'class' => 'form-horizontal')) }}
 					<div class="control-group" align="center">		
-						<i class="icon-calendar"></i> Form : {{ Form::text('from', $fromDate, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')) }}
+						<i class="icon-calendar"></i> Form : {{ Form::text('from', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')) }}
 						&nbsp;&nbsp;&nbsp;
-						<i class="icon-calendar"></i> To 	 : {{ Form::text('to', $toDate, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')) }}
+						<i class="icon-calendar"></i> To 	 : {{ Form::text('to', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')) }}
 					</div> <!-- /control-group -->	
 					<center><input class="btn btn-info" type="submit" value="Search"></center>
 				{{ Form::close() }}
@@ -117,6 +101,7 @@
 								<td>{{$transaction_info->payment_type_name}}</td>
 							</tr>
 							@endforeach	
+							
 						@else
 							<tr>
 								<td colspan="3" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
@@ -128,43 +113,27 @@
 			</div>	
 		</div>
 	</div>
+							
 
 	<script>
-	$('.Customers').addClass('active btn btn-fill');
+		$('.Customers').addClass('active btn btn-fill');
 		$(function(){  
+			
 			$('#amount').keyup(function(){
 				this.value  = Math.abs(this.value);
 				var this_value = parseFloat(this.value); 
 				if($('#amount').val() == 0){
-					this.value = 0;
+					this.value = '';
 					return false;
 				}
 				if(isNaN(this_value)){
 					this.value = '';
 				}else{
-					var total_due = parseFloat($("#due_amount").html());
-					var now_pay = $("#amount").val();
+					var total_due=parseFloat($("#due_amount").html());
+					var now_pay=$("#amount").val();
 					if(now_pay > total_due){
 						alert("You can't pay more than Due");
 						this.value = total_due;
-					}
-				}
-			});
-			$('#due_discount').keyup(function(){
-				this.value  = Math.abs(this.value);
-				var this_value = parseFloat(this.value); 
-				if($('#due_discount').val() == 0){
-					this.value = 0;
-					return false;
-				}
-				if(isNaN(this_value)){
-					this.value = '';
-				}else{
-					var total_due = parseFloat($("#due_amount").html());
-					var now_pay = $("#amount").val();
-					if(this_value > (total_due-now_pay)){
-						alert("You can't give discount more than Due and payment");
-						this.value = (total_due-now_pay).toFixed(2);
 					}
 				}
 			});
@@ -175,14 +144,9 @@
 			  rules: {
 			   amount: {
 				   number: true,
-				   min : 0,
+				   min : 1,
 				   required: true
-				},
-				due_discount: {
-				   number: true,
-				   min : 0,
-				   required: true
-				},
+				}
 			  }, messages: {
 					//'brand_name'	: { required:  '<span class="error">Brand Name required.</span>' },					
 				},
@@ -199,9 +163,20 @@
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
+
 @stop
+
+71253a

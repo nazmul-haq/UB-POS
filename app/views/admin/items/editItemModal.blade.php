@@ -15,6 +15,12 @@
 			{{ Form::text('item_name', null, array('class' => 'span3', 'placeholder' => 'Enter Item Name')) }}
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->	
+	<div class="control-group">
+		{{ Form::label('item_point', 'Item Point', ['class' => 'control-label']) }}
+		<div class="controls">
+			{{ Form::text('item_point', $iteminfos->item_point, array('class' => 'span3', 'placeholder' => 'Enter Item Point')) }}
+		</div> <!-- /controls -->					
+	</div> <!-- /control-group -->	
 	<div class="control-group">		
 		{{ Form::label('upc_code', 'UPC Code', ['class' => 'control-label']) }}
 		<div class="controls">
@@ -24,7 +30,7 @@
 	<div class="control-group">
 		{{ Form::label('supplier_id', 'Supplier Name', ['class' => 'control-label']) }}
 		<div class="controls">
-			{{ Form::select('supplier_id', $suppliers, null, array('class' => 'span3')) }}
+			{{ Form::select('supplier_id', $suppliers, null, array('class' => 'span3', 'required' => 'required')) }}
 		</div> <!-- /controls -->
 	</div> <!-- /control-group -->
 	<div class="control-group">		
@@ -52,19 +58,9 @@
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->
 	<div class="control-group">		
-		{{ Form::label('unit', 'Unit(PCS or Dozz)', ['class' => 'control-label']) }}
+		{{ Form::label('tax_amount', 'Tax (%)', ['class' => 'control-label']) }}
 		<div class="controls">
-			<select class="span3" name="unit">
-				<option value="1" @if($iteminfos->unit == 1) selected @endif>PCS</option>
-				<option value="2" @if($iteminfos->unit == 2) selected @endif>Dozzen</option>
-				<option value="2" @if($iteminfos->unit == 3) selected @endif>Set</option>
-			</select>
-		</div> <!-- /controls -->					
-	</div> <!-- /control-group -->	
-	<div class="control-group">
-		{{ Form::label('carton', 'PCS/Dozz for Carton', ['class' => 'control-label']) }}
-		<div class="controls">
-			{{ Form::text('carton', $iteminfos->carton, array('class' => 'span3', 'placeholder' => 'Enter PCS or Dozzen for 1 carton')) }}
+			{{ Form::text('tax_amount', $iteminfos->tax_amount, array('class' => 'span3', 'placeholder' => 'Enter Tax Amount')) }}
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->		
 	<div class="control-group">		
@@ -73,6 +69,7 @@
 			{{ Form::textarea('description', null, array('rows'=>'1', 'class' => 'span3', 'placeholder' => 'Enter Description')) }}
 		</div> <!-- /controls -->					
 	</div> <!-- /control-group -->	
+
 	<div class="modal-footer">
 		{{ Form::submit('Save Changes', array('class' => 'btn btn-primary')) }}
 		<button type="button" class="btn" data-dismiss="modal">Close</button>

@@ -1,0 +1,322 @@
+<?php $__env->startSection('content'); ?>
+	<div class="row print_disable">
+		<div class="span12"><?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?></div>
+		<div class="span4">				
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+              <h3>Basic Details</h3>
+            </div>
+			<?php echo Form::open(array('route' => 'customer.saveSupplierPayment.post', 'id' => 'formCustomerPayment', 'class' => 'form-horizontal')); ?>
+
+				<?php echo Form::hidden('cus_id', $get_customer->cus_id); ?>
+
+				<table class="table table-bordered" style="margin: 0; padding:0;">
+					<tbody>
+						<tr>
+							<td><strong style="float:right;">Customer Type </strong></td>
+							<td style="padding-left:10px;"><strong style="color: red; font-size: 1.0em;"> <?php echo $get_customer->cus_type_name; ?></strong></td>
+						</tr>
+						 <tr>
+							<td><strong style="float:right;">Customer ID </strong></td>
+							<td style="padding-left:10px;;"><strong style="color: green; font-size: 1.0em;"> <?php echo $get_customer->cus_card_id; ?></strong></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">Full Name </strong></td>
+							<td style="padding-left:10px;;"><?php echo $get_customer->full_name; ?></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">Mobile No </strong></td>
+							<td style="padding-left:10px;;"><?php echo $get_customer->mobile; ?></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">Present Address </strong></td>
+							<td style="padding-left:10px;;"><?php echo $get_customer->present_address; ?></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right; ">Registration Date </strong></td>
+							<td style="padding-left:10px;;"><?php echo Helper::dateFormat($get_customer->created_at); ?></td>
+						</tr>
+					</tbody>
+				</table>
+				<?php echo Form::close(); ?>
+
+			
+		</div>
+		<div class="span4">				
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+              <h3>Total Balance( Till now )</h3>
+            </div>
+			<table class="table table-bordered" style="margin: 0; padding:0;">
+					<tbody>
+						<tr>
+							<td><strong style="float:right;">Current Point</strong></td>
+							<td style="padding-left:10px;"><strong style="color: #FF5400; font-size: 1.2em;"><?php echo $get_customer->point; ?></strong></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">Net Purchase</strong></td>
+							<td style="padding-left:10px;"><?php echo $calculate->total_purchase-$calculate->return_amount; ?></strong></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">Total Return </strong></td>
+							<td style="padding-left:10px;"><?php echo e(isset($calculate->return_amount) ? $calculate->return_amount :0); ?> </td>
+						</tr>
+						 <tr>
+							<td><strong style="float:right;">(+)Total Purchase </strong></td>
+							<td style="padding-left:10px;"><strong style="color: green; font-size: 1.0em;"><?php echo $calculate->total_purchase; ?> Tk</strong></td>
+						</tr>
+
+
+						 <tr>
+							<td><strong style="float:right; ">Net Paid</strong></td>
+							<td style="padding-left:10px;"><?php echo $calculate->total_paid; ?></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right; ">Total Discount</strong></td>
+							<td style="padding-left:10px;"><?php echo $calculate->discount; ?></td>
+						</tr>
+						<tr>
+							<td><strong style="float:right;">(+)Total Paid</strong></td>
+							<td style="padding-left:10px;"><strong style="color: green; font-size: 1.0em;"><?php echo $calculate->total_paid+$calculate->discount; ?> Tk</strong></td>
+						</tr>
+						<tr>
+							<td>
+								<strong style="float:right; margin-right:50px;">
+									Balance <?php if($calculate->total_due >= 0): ?> <?php echo ' Due'; ?> <?php else: ?> <?php echo 'Advanced'; ?> <?php endif; ?> 
+								</strong>
+							</td>
+							<td style="padding-left:10px;"><strong style="color: red; font-size: 1.0em;" id='due_amount'><?php echo abs($calculate->total_due); ?></strong></td>
+						</tr>
+						 
+						 
+					</tbody>
+				</table>
+			</div>
+		
+		<div class="span4">
+			<div class="search-box">
+			<?php echo Form::open(array('url' => "admin/customer/transactionDetails/$get_customer->cus_id", 'class' => 'form-horizontal')); ?>
+
+				<div class="widget-header setup-title"> <i class="icon-search"></i>
+				  <h3>Search Transaction Payment </h3>
+				</div>	
+				<div class="control-group">
+					<label for="username" class="control-label"><i class="icon-user"></i>&nbsp; Report Type &nbsp;&nbsp;&nbsp;: &nbsp;</label>
+					<div class="controls">
+						<?php echo Form::select('report_type',array('3'=>'Purchase','1'=>'Point Withdraw','2'=>'Point Increasing'), null, ['class' => 'span2']); ?>
+
+					</div> <!-- /controls -->	
+				</div> <!-- /control-group -->
+				
+				<div class="control-group" align="center">		
+					<i class="icon-calendar"></i> Form : <?php echo Form::text('from', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')); ?>
+
+					&nbsp;&nbsp;&nbsp;
+					<i class="icon-calendar"></i> To   : <?php echo Form::text('to', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')); ?>
+
+				</div> <!-- /control-group -->	
+				<center><input class="btn btn-info" type="submit" value="Search"></center>
+				<?php echo Form::close(); ?>
+
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="span12" id="print_preview">
+			<div class="widget-header setup-title"> <i class="icon-list"></i>
+              <h3>View Transaction History: 
+				  <?php if($report_type==1): ?> <?php echo 'Point Withdraw'; ?>
+
+					<?php elseif($report_type==2): ?> <?php echo 'Point Increasing'; ?> 
+					<?php else: ?> <?php echo 'Purchase'; ?> 
+				  <?php endif; ?>
+			  </h3>
+
+			  <span style="float:right; margin:0 15px;"><button class='btn btn-info btn-small print-btn' onclick="window.print();">Print</button></span>
+			</div>
+			<div class="print">	
+				<div class="payment-header">
+					<strong>
+						Customer Name : <span style="font-weight:normal; color: green;"><?php echo $get_customer->full_name; ?></span>
+					</strong>
+					<strong style="float:right;">
+						Report : <span style="font-weight:normal;"><?php echo Helper::onlyDMY($date_exp[0]); ?>  <b>To: </b> <?php echo Helper::onlyDMY($date_exp[1]); ?></span>
+					</strong>
+				</div>
+				
+
+				<?php if($report_type==2): ?>
+			<table class="table table-striped" width="100%">
+					<thead class="table-head">
+						<tr>
+								<th># SL No</th>
+								<th>Invoice Id</th>
+								<th>Invoice Amount</th>
+								<th>Increased Point</th>
+								<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php $i=0; ?>
+					<?php if($reports): ?>
+						<?php foreach($reports as $report): ?>
+							<tr>
+								<td><?php echo ++$i; ?></td>
+								<td><span class="span3"><?php echo $report->sale_invoice_id; ?></span></td>
+								<td><span class="span3"><?php echo $report->amount; ?></span></td>
+								<td><span class="span3"><?php echo $report->no_of_point; ?></span></td>
+								<td><span class="span3"><?php echo $report->date; ?></span></td>
+							</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</tbody>
+			</table>
+				<?php elseif($report_type==1): ?>
+				<table class="table table-striped" width="100%">
+				<thead class="table-head">
+					<tr>
+						<th># SL No</th>
+						<th>Invoice Id</th>
+						<th>Invoice Amount</th>
+						<th>Used Point</th>
+                        <th>Point Use Taka</th>
+                         <th>Date</th>
+
+                    </tr>
+				</thead>
+				<tbody>
+					<?php $i=0; ?>
+					<?php if($reports): ?>
+						<?php foreach($reports as $report): ?>
+							<tr>
+								<td><?php echo ++$i; ?></td>
+								<td><span class="span3"><?php echo $report->sale_invoice_id; ?></span></td>
+								<td><span class="span3"><?php echo $report->amount; ?></span></td>
+								<td><span class="span3"><?php echo $report->use_point; ?></span></td>
+								<td><span class="span3"><?php echo $report->point_taka; ?></span></td>
+								<td><span class="span3"><?php echo $report->date; ?></span></td>
+							</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+
+				</tbody>
+			</table>
+				
+				<?php else: ?>
+				<table class="table table-striped table-bordered" width="100%">
+					<thead class="table-head" >
+				<tr>
+					<th>SL</th>
+					<th>Invoice ID</th>
+					<th>Payment Type</th>
+					<th>Sub Total Amount</th>
+					<th>Discount (Tk)</th>
+					<th>Point Use Taka</th>
+					<th>Payable</th>
+					<th>Paid</th>
+					<th>Due</th>
+					<th>Sold By</th>
+					<th>Sold At</th>
+				</tr>
+			</thead>
+					<tbody>
+				<? $i=0;$total_amount_taka=0;$total_discount=0;$total_point_use_taka=0;$total_payable=0;$total_pay=0;$total_due=0; //echo'<pre>';print_r($items);exit;?>
+				<?php if($reports): ?>
+				   <?php foreach($reports as $invoice): ?>
+					   <tr>
+							<td><?php echo ++$i; ?></td>
+							<td><?php echo $invoice->sale_invoice_id; ?></td>
+							<td><?php echo $invoice->payment_type_name; ?></td>
+							<td><?php echo $invoice->amount + $invoice->discount + $invoice->point_use_taka; ?><? $total_amount_taka=$total_amount_taka+$invoice->amount; ?></td>
+							<td><?php echo $invoice->discount; ?><? $total_discount=$total_discount+$invoice->discount; ?></td>
+							<td><?php echo $invoice->point_use_taka; ?><? $total_point_use_taka=$total_point_use_taka+$invoice->point_use_taka;?></td>
+							<td><?php echo $invoice->pay+$invoice->due; ?><? $total_payable=$total_payable+$invoice->pay+$invoice->due ?></td>
+							<td><?php echo $invoice->pay; ?><? $total_pay=$total_pay+$invoice->pay; ?></td>
+							<td><?php echo $invoice->due; ?><? $total_due=$total_due+$invoice->due; ?></td>
+							<td><?php echo $invoice->invoiced_employee; ?></td>
+							<td><?php echo Helper::dateFormat($invoice->invoiced_datetime); ?></td>
+							
+						</tr>				   
+				   <?php endforeach; ?>              
+                        <tr bgcolor="#DBEAF9">
+						   <td colspan="4"><strong style="font-size: 1.3em;">Total<strong></td>
+						   <td><?php echo $total_discount; ?></td>
+						   <td><?php echo $total_point_use_taka; ?></td>
+						   <td><strong><?php echo $total_payable; ?></td>
+                           <td><strong style="color: green;"><?php echo $total_pay; ?><strong></td>
+						   <td colspan="4"><strong style="color: red;"><?php echo $total_due; ?><strong></td>   
+					   </tr>
+				<?php else: ?>
+					<tr>
+						<td colspan="10" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
+					</tr>
+				<?php endif; ?>
+                               
+			</tbody>
+				</table>
+				<?php endif; ?>
+			</div>	
+		</div>
+	</div>
+							
+
+	<script>
+		$('.Customers').addClass('active btn btn-fill');
+		$(function(){  
+			
+			$('#amount').keyup(function(){
+				this.value  = Math.abs(this.value);
+				var this_value = parseFloat(this.value); 
+				if(isNaN(this_value)){
+					this.value = 0;
+				}else{
+					var total_due=parseFloat($("#due_amount").html());
+					var now_pay=$("#amount").val();
+					if(now_pay>total_due){
+					alert("You can't pay more than Due");
+					this.value=0;
+				}
+				}
+			});
+			
+			var formCustomerPayment	 = $('#formCustomerPayment');
+			// validate form for Item Brand
+			formCustomerPayment.validate({
+			  rules: {
+			   amount: {
+				   number: true,
+				   required: true
+				}
+			  }, messages: {
+					//'brand_name'	: { required:  '<span class="error">Brand Name required.</span>' },					
+				},
+				ignore				: ':hidden'	
+			});
+		});
+	</script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<?php
+    $string = 'Customers';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+<?php if(Session::has('redTheme')): ?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    <?php echo $li; ?>
+
+	</ul>       
+</div>
+<?php else: ?>
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+	    <?php echo $li; ?>
+
+	</ul>       
+</div>
+<?php endif; ?>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

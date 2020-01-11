@@ -94,6 +94,7 @@ return array(
 	*/
 
 	'providers' => array(
+
 		'Illuminate\Foundation\Providers\ArtisanServiceProvider',
 		'Illuminate\Auth\AuthServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
@@ -123,6 +124,7 @@ return array(
 		'Way\Generators\GeneratorsServiceProvider',
 		'Chumper\Datatable\DatatableServiceProvider',
 		'Dinesh\Barcode\BarcodeServiceProvider',
+
 	),
 
 	/*
@@ -150,6 +152,7 @@ return array(
 	*/
 
 	'aliases' => array(
+
 		'App'               => 'Illuminate\Support\Facades\App',
 		'Artisan'           => 'Illuminate\Support\Facades\Artisan',
 		'Auth'              => 'Illuminate\Support\Facades\Auth',
@@ -191,6 +194,8 @@ return array(
 		'Datatable'		 	=> 'Chumper\Datatable\Facades\DatatableFacade',
 		'DNS1D' 			=> 'Dinesh\Barcode\Facades\DNS1DFacade',
         'DNS2D' 			=> 'Dinesh\Barcode\Facades\DNS2DFacade',
+		
+
 	),
 
 );

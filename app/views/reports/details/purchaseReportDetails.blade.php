@@ -1,10 +1,13 @@
 
+	
+		<div class="modal-footer print-btn" style="clear:both;">
+		<button class="btn btn-info" id="print" >Print</button>
+	</div>
 <?	$created = substr($receipt_info->created_at , 0, 10); ?>
 	<!--Receipt-->
+
 		<article class="head-receipt">
-	  	<div class="modal-footer print-btn" style="clear:both;">
-			<button class="btn btn-info" id="print" >Print</button>
-		</div>
+	  	
 			<ul style="list-style-type:none; margin: 0;">
 		 @if ($company_info)	
 			  <li><strong class="company-name">{{ $company_info->company_name }}</strong></li>
@@ -14,6 +17,7 @@
 		 	</ul> 
 		 @if ($receipt_info)
 			<center>
+
 			<table>
 				<tbody>
 					<tr style="border-bottom: 1px solid #ccc; width:50%; margin: 3px auto;">
@@ -79,9 +83,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				<? $i = 0; $height = 0; ?>
+				<? $i = 0; ?>
 				@foreach($receipt_item_infos as $receipt_item_info)
-				<? $i++; $height += 15; ?>
+				<? $i++; ?>
 				<tr>
 					<td>{{ $i }}</td>
 					<td>{{ $receipt_item_info->item_name }}</td>
@@ -139,9 +143,7 @@
 				<strong>{{ $receipt_info->sup_invoice_id }}</strong>				
 			</div>
 			<p style="float:right;"><strong>Developed By : Unitech IT</strong></p>
-			
 		</article>	
-		<div style="height: {{$height}}px;"></div>
 		@endif	
 		
 		<script>

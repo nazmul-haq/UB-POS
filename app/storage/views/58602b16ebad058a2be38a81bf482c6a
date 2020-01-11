@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>:::POS Login System:::</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+		<?php echo HTML::style('css/bootstrap.min.css'); ?>
+
+		<?php echo HTML::style('css/bootstrap-responsive.min.css'); ?>
+
+		<?php echo HTML::style('css/font-google.css'); ?>
+
+		<?php echo HTML::style('css/signin.css'); ?>
+
+
+		<?php echo HTML::script('js/jquery-1.7.2.min.js'); ?>
+
+		<?php echo HTML::script('js/bootstrap.js'); ?>
+
+    </head>
+
+    <body>
+		<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php if(count($data) > 0): ?>
+        <div class="account-container">
+            <div class="content clearfix">
+                <div class="login-wrapper">
+                    <div class="logo">
+                    <?php echo HTML::image('img/unitech.png', 'Unitech IT', array('class' => 'login-img')); ?>
+
+                    
+                    </div>
+                    <div class="login-heading">
+                        <p>
+                        <?php echo HTML::image('img/unitech.png', 'Unitech IT', array('class' => 'login-img', 'style' => 'margin: 13px 0px 0 0px !important;float: left;height: 35px;')); ?> 
+                        <?php echo HTML::image('img/posNewLogo.png', 'Unitech IT', array('class' => 'login-img', 'style' => 'margin: 0px !important;height: 60px; width: 190px;')); ?>
+
+                        </p>
+                    </div>
+                </div>
+
+                <div class="login-fields">
+                    <br>
+                    <p><span style="font-size: 14px;">You Have an active session in : </span> 
+                    	<span style="color: red; font-weight: bold; font-size: 20px;"><?php echo $data->last_logged_ip; ?></span> 
+                    </p>
+                    <br><br><br>
+                </div>
+                <div class="login-actions">
+                	<div class="" style="text-align: center;">
+						<a class="btn btn main-btn btn-large btn-primary" href="<?php echo URL::to('sessionLogout'); ?>/<?php echo base64_encode($data->emp_id); ?>">Log Out</a>	
+                	</div>
+                </div> <!-- .actions -->
+            </div> <!-- /content -->
+
+        </div> <!-- /account-container -->
+        <?php endif; ?>
+        <script>
+            //alert message
+            $(window).load(function(){
+                setTimeout(function(){ $('.alert').fadeOut() }, 6000);
+            });
+        </script>
+    </body>
+</html>

@@ -30,13 +30,6 @@ $created = substr(Session::get('receipt_info.created_at'),0,10);
 						<td align="left">{{ Session::get('receipt_info.supplier_name') }}</td>
 					</tr>
 					@endif
-					@if(!empty(Session::get('receipt_info.branch_name')))
-					<tr>
-						<td align="right">Branch Name</td>
-						<td>&nbsp;&nbsp; : &nbsp;</td>
-						<td align="left">{{ Session::get('receipt_info.branch_name') }}</td>
-					</tr>
-					@endif
 					<tr>
 						<td align="right">Transaction Date</td>
 						<td>&nbsp;&nbsp; : &nbsp;</td>

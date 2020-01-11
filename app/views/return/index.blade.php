@@ -21,11 +21,11 @@
 					</a>
                 @endif
 
-				<!--@if (in_array('saleReturn.index', Session::get('project_url')))-->
-    <!--                <a href="{{ route('admin.returnQtyFromCustomer') }}" class="setup-item">-->
-				<!--		<i class="setup-icon icon-zoom-out"></i><span class="setup-label overlay-bg">Sales Return from Customer<br>(Item Wise)</span>-->
-    <!--                </a>-->
-				<!--@endif-->
+				@if (in_array('saleReturn.index', Session::get('project_url')))
+                    <a href="{{ route('admin.returnQtyFromCustomer') }}" class="setup-item">
+						<i class="setup-icon icon-zoom-out"></i><span class="setup-label overlay-bg">Sales Return from Customer<br>(Item Wise)</span>
+                    </a>
+				@endif
 
                             
                 @if (in_array('returnReceive', Session::get('project_url')))
@@ -38,6 +38,9 @@
 						<i class="setup-icon icon-zoom-out"></i><span class="setup-label overlay-bg">Return to Supplier <br>(Item Wise)</span>
                     </a>
 				@endif
+				<a href="{{ route('admin.returnReplace') }}" class="setup-item">
+					<span class="setup-label overlay-bg">Return <br> <i class="setup-icon icon-exchange"></i> <br> Replace <br>(Invoice Wise)</span>
+                </a>
 							
 			</div>
         </div>	

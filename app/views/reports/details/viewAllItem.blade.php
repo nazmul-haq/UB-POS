@@ -33,9 +33,9 @@
                 
 		
 
-{{ Form::open(array('route' => 'barcode.queue.all','id'=>'itemForm')) }}
+		{{ Form::open(array('route' => 'barcode.queue.all','id'=>'itemForm')) }}
 		{{ Datatable::table()
-				->addColumn('#','Upc Code','Item Name','Company Name','Category','Purchase Price','Sale Price','Action')
+				->addColumn('#','Upc Code','Item Name','Company Name','Category','Purchase Price','Sale Price','Available Qty','Action')
 				->setUrl(route('admin.viewAllItem'))
 				->render() }}
 		{{ Form::close()}}

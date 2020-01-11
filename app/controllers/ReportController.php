@@ -8,7 +8,7 @@ class ReportController extends \BaseController {
 	/*
 	*	Sending Reports
 	*/
-	public function sendReport()
+	 public function sendReport()
 	{
 		return View::make('reports.details.sendingReport');
 	} 
@@ -50,36 +50,60 @@ class ReportController extends \BaseController {
 				->whereBetween('receivingitems.receive_cancel_date', array($input['from'], $input['to']))
 				->orderBy('receivingitems.receive_cancel_date', 'desc')
 				->get();
+
 		return View::make('reports.details.receivingReport',compact('reports','from','to'));
 	}
+
+
     public function saleReport()
 	{
-		$from=date('Y-m-d');
-        $to=date('Y-m-d');
-        return View::make('reports.details.saleReport',compact('from','to'));
+				 $from=date('Y-m-d');
+                 $to=date('Y-m-d');
+                return View::make('reports.details.saleReport',compact('from','to'));
 	}
+
     public function viewSaleReport()
 	{
-	    $input=Input::all();
-	    //echo '<pre>';print_r($input);exit;
-	    $from=$input['from'];
-	    $to=$input['to'];
-	    $reports= DB::select("select customerinfos.user_name as customer_name,customerinfos.full_name as customer_full_name,empinfos.user_name as invoiced_employee, each_item.*,(sum(each_item.item_profit) - (each_item.discount)) as profit  
-				from
-				 (select saleinvoices.sale_invoice_id,saleinvoices.cus_id,saleinvoices.created_by,saleinvoices.discount,saleinvoices.point_use_taka,saleinvoices.amount,saleinvoices.pay,saleinvoices.due,saleinvoices.date,saleinvoices.status,saleinvoices.created_at as invoiced_datetime,
-				 			(sum((itemsales.amount/itemsales.quantity) - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
-						priceinfos.sale_price,priceinfos.purchase_price,itemsales.quantity
-					from itemsales
-				   left join saleinvoices on saleinvoices.sale_invoice_id=itemsales.sale_invoice_id
-				   left join priceinfos on priceinfos.price_id=itemsales.price_id
-				   WHERE  date
-				   BETWEEN('$from')AND('$to')
-				   group by itemsales.i_sale_id) as each_item
-				left join customerinfos on customerinfos.cus_id=each_item.cus_id
-				left join empinfos on empinfos.emp_id=each_item.created_by
-				group by each_item.sale_invoice_id");
-        return View::make('reports.details.saleReport',compact('reports','from','to'));
+        
+            $input=Input::all();
+            //echo '<pre>';print_r($input);exit;
+            $from=$input['from'];
+            $to=$input['to'];
+            $reports= DB::select("select customerinfos.user_name as customer_name,empinfos.user_name as invoiced_employee, each_item.*,(sum(each_item.item_profit) - (each_item.discount+each_item.point_use_taka)) as profit  
+									from
+									 (select saleinvoices.sale_invoice_id,saleinvoices.cus_id,saleinvoices.created_by,saleinvoices.discount,saleinvoices.point_use_taka,saleinvoices.amount,saleinvoices.pay,saleinvoices.due,saleinvoices.date,saleinvoices.status,saleinvoices.created_at as invoiced_datetime,
+									 			(sum(priceinfos.sale_price - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
+											priceinfos.sale_price,priceinfos.purchase_price,itemsales.quantity
+										from itemsales
+									   left join saleinvoices on saleinvoices.sale_invoice_id=itemsales.sale_invoice_id
+									   left join priceinfos on priceinfos.price_id=itemsales.price_id
+									   WHERE  date
+									   BETWEEN('$from')AND('$to')
+									   group by itemsales.i_sale_id) as each_item
+									left join customerinfos on customerinfos.cus_id=each_item.cus_id
+									left join empinfos on empinfos.emp_id=each_item.created_by
+									group by each_item.sale_invoice_id");
+                        
+
+
+                // $reports= DB::table('saleinvoices')
+                //         ->leftjoin('empinfos', 'empinfos.emp_id', '=', 'saleinvoices.created_by')
+                //         ->leftjoin('customerinfos', 'customerinfos.cus_id', '=', 'saleinvoices.cus_id')
+                //         ->leftjoin('itemsales', 'itemsales.sale_invoice_id', '=', 'saleinvoices.sale_invoice_id')
+                //         ->leftjoin('priceinfos', 'priceinfos.price_id', '=', 'itemsales.price_id')
+                //         ->select('saleinvoices.sale_invoice_id','saleinvoices.cus_id','customerinfos.user_name as customer_name','saleinvoices.discount',
+                //                 'saleinvoices.point_use_taka','saleinvoices.amount','saleinvoices.pay','saleinvoices.due',
+                //                 'saleinvoices.date','saleinvoices.status','empinfos.user_name as invoiced_employee',
+                //                 'saleinvoices.created_at as invoiced_datetime',
+                //                 DB::raw('(sum((priceinfos.sale_price - priceinfos.purchase_price)*itemsales.quantity) - (saleinvoices.discount + saleinvoices.point_use_taka)) as profit'))
+                //         ->where('saleinvoices.status', '=', 1)
+                //         ->whereBetween('saleinvoices.date', array($from, $to))
+                //         ->groupBy('itemsales.sale_invoice_id')
+                //         ->orderBy('saleinvoices.sale_invoice_id', 'desc')
+                //         ->get();
+                return View::make('reports.details.saleReport',compact('reports','from','to'));
 	}
+
 	public function saleDetailsReport($saleInvoiceId){
 		$company_info = DB::table('companyprofiles')
 						->select('company_name', 'address', 'mobile')
@@ -131,7 +155,7 @@ class ReportController extends \BaseController {
 						->leftJoin('customerinfos as ci', 'ci.cus_id', '=', 'si.cus_id')
 						->leftJoin('customertypes as ct', 'ct.cus_type_id', '=', 'ci.cus_type_id')
 						->leftJoin('paymenttypes as pt', 'pt.payment_type_id', '=', 'si.payment_type_id')
-						->select('si.sale_invoice_id', 'si.discount', 'si.point_use_taka', 'si.amount', 'si.pay', 'si.due', 'si.pay_note', 'si.date', 'si.created_at', 'ci.present_address','ci.full_name as customer_name', 'ct.point_unit', 'pt.payment_type_name', 'ei.user_name as invoiced_employee')
+						->select('si.sale_invoice_id', 'si.discount', 'si.point_use_taka', 'si.amount', 'si.pay', 'si.due', 'si.pay_note', 'si.date', 'si.created_at', 'ci.user_name as customer_name', 'ct.point_unit', 'pt.payment_type_name', 'ei.user_name as invoiced_employee')
 						->where('si.status', 1)
 						->where('si.sale_invoice_id', $saleInvoiceId)
 						->first();
@@ -146,9 +170,12 @@ class ReportController extends \BaseController {
 							->get();
 		return View::make('reports.details.saleReportReceipt', compact('company_info', 'receipt_info', 'receipt_item_infos'));
 	}
+
     public function purchaseReport(){
         return View::make('reports.details.purchaseReport');
 	}
+
+
 	public function viewPurchaseReport()
 	{
 		$input=Input::all();
@@ -166,6 +193,8 @@ class ReportController extends \BaseController {
 	//echo '<pre>';print_r($reports);exit;
 			return View::make('reports.details.purchaseReport',compact('reports','from','to'));
 	}
+
+	
 	public function purchaseDetailsReport($purchaseInvoiceId){
 		$company_info = DB::table('companyprofiles')
 			->select('company_name', 'address', 'mobile')
@@ -324,7 +353,7 @@ class ReportController extends \BaseController {
 		$reports= DB::table('otherexpenses')
 				->leftjoin('empinfos', 'empinfos.emp_id', '=', 'otherexpenses.created_by')
 				->leftJoin('incomeexpensetype', 'incomeexpensetype.type_id', '=', 'otherexpenses.expense_type_id')
-				->select('incomeexpensetype.type_name', 'otherexpenses.amount','otherexpenses.other_expense_id', 'otherexpenses.comment', 'otherexpenses.date', 'empinfos.user_name as employee_name')
+				->select('incomeexpensetype.type_name', 'otherexpenses.amount', 'otherexpenses.comment', 'otherexpenses.date', 'empinfos.user_name as employee_name')
 				->where('otherexpenses.status', 1)
 				->where('incomeexpensetype.used_for', 2)
 				->whereBetween('otherexpenses.date', array($from, $to))
@@ -580,7 +609,7 @@ from(
 												each_item.*,(sum(each_item.item_profit) - (each_item.discount+each_item.point_use_taka)) as invoice_profit  
 										from
 										 (select saleinvoices.sale_invoice_id,saleinvoices.cus_id,saleinvoices.created_by,saleinvoices.discount,saleinvoices.point_use_taka,saleinvoices.amount,saleinvoices.pay,saleinvoices.due,saleinvoices.date,saleinvoices.status,saleinvoices.created_at as invoiced_datetime,
-										 			(sum((itemsales.amount/itemsales.quantity) - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
+										 			(sum(priceinfos.sale_price - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
 												priceinfos.sale_price,priceinfos.purchase_price,itemsales.quantity
 											from itemsales
 										   left join saleinvoices on saleinvoices.sale_invoice_id=itemsales.sale_invoice_id
@@ -592,6 +621,27 @@ from(
 										left join empinfos on empinfos.emp_id=each_item.created_by
 										group by each_item.sale_invoice_id
 										) as total_item;")[0];
+                $saleAmountCash = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',1)
+                	->select(DB::raw('sum(saleinvoices.pay) as cash_pay'))
+                	->first();
+            	$saleAmountCard = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->whereIn('payment_type_id',[2,3])
+                	->select(DB::raw('sum(saleinvoices.pay) as card_pay'))
+                	->first();
+        		$saleAmountBkash = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',4)
+                	->select(DB::raw('sum(saleinvoices.pay) as bkash_pay'))
+                	->first();
+
+            	$saleAmountRocket = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',6)
+                	->select(DB::raw('sum(saleinvoices.pay) as rocket_pay'))
+                	->first();
                         //  $reports= DB::table('saleinvoices')
                         // ->leftjoin('empinfos', 'empinfos.emp_id', '=', 'saleinvoices.created_by')
                         // ->leftjoin('customerinfos', 'customerinfos.cus_id', '=', 'saleinvoices.cus_id')
@@ -676,10 +726,6 @@ from(
                                 ->where('otherexpenses.status', 1)
 				->whereBetween('otherexpenses.date', array($from, $to))
                                 ->sum('amount');
-                $salary_given=  DB::table('empwisesalary')
-                    ->where('empwisesalary.status', 1)
-				    ->whereBetween('empwisesalary.date', array($from, $to))
-                    ->sum('amount');
 								
 //                $damage_raw = DB::select("select sum(damageinvoices.amount) as damage_amount
 //					 from damageinvoices
@@ -704,59 +750,75 @@ from(
 									->first();
 				/*  echo'<pre>';
 				print_r($totalStockTk);exit; */  
-                       $cusDuePayment	= DB::table('cusduepayments')
+                               $cusDuePayment	= DB::table('cusduepayments')
 							->select(DB::raw('SUM(amount) as total_amount'))
 							->whereBetween('date', array($from, $to))
 							->where('status', 1)
 							->first();
-					$cusDueAmount = DB::table('customerinfos')
-						->select(DB::raw('SUM(due) as total_cus_due'))
-						->first();
-					$supDueAmount = DB::table('supplierinfos')
-						->select(DB::raw('SUM(due) as total_supp_due'))
-						->first();
 							
-                    $supDuePayment	= DB::table('supduepayments')
-                        ->select(DB::raw('SUM(amount) as total_amount'))
-                        ->whereBetween('date', array($from, $to))
-                        ->where('status', 1)
-                        ->first();
+                                $supDuePayment	= DB::table('supduepayments')
+                                                                        ->select(DB::raw('SUM(amount) as total_amount'))
+                                                                        ->whereBetween('date', array($from, $to))
+                                                                        ->where('status', 1)
+                                                                        ->first();
 
 
 
-		return View::make('reports.summary.fullReport', compact('title','from','to','other_expense','other_income','damage','purchasereturn','purchase','salereturn','sale', 'totalGodwonTk', 'totalStockTk', 'cusDueAmount', 'supDueAmount', 'salary_given', 'cusDuePayment', 'supDuePayment'));
+		return View::make('reports.summary.fullReport', compact('title','from','to','other_expense','other_income','damage','purchasereturn','purchase','salereturn','sale', 'totalGodwonTk', 'totalStockTk', 'cusDuePayment', 'supDuePayment','saleAmountCash','saleAmountCard','saleAmountBkash','saleAmountRocket'));
 	}
-	public function dailyledger(){
-		$title = ':: POSv2 :: - Full Summary Reports';
+
+	public function getBackDateStockReports(){
+		$title = ':: POSv2 :: - Back Date Stock Reports';
                 $input=Input::all();
+
                 if(!$input){
-                    $from=date('Y-m-d');
-                    $to=date('Y-m-d');
-                }
-                else{
-                   $from=$input['from'];
-                   $to=$input['from'];
+                    $from =date('Y-m-d');
+                    $to   =date('Y-m-d');
+                }else{
+                   $from = $input['from'];
+                    $to = date('Y-m-d');
                 }
                 $sale=  DB::select("select sum(total_item.discount) as sale_discount,sum(total_item.point_use_taka) as sale_point_use_taka,sum(total_item.amount) as sale_amount,sum(total_item.pay) as sale_pay,sum(total_item.due) as sale_due,sum(total_item.invoice_profit)as total_sale_profit
-						from(
-							select customerinfos.user_name as customer_name,empinfos.user_name as invoiced_employee,
-									each_item.*,(sum(each_item.item_profit) - (each_item.discount+each_item.point_use_taka)) as invoice_profit  
-							from
-							 (select saleinvoices.sale_invoice_id,saleinvoices.cus_id,saleinvoices.created_by,saleinvoices.discount,saleinvoices.point_use_taka,saleinvoices.amount,saleinvoices.pay,saleinvoices.due,saleinvoices.date,saleinvoices.status,saleinvoices.created_at as invoiced_datetime,
-							 			(sum(priceinfos.sale_price - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
-									priceinfos.sale_price,priceinfos.purchase_price,itemsales.quantity
-								from itemsales
-							   left join saleinvoices on saleinvoices.sale_invoice_id=itemsales.sale_invoice_id
-							   left join priceinfos on priceinfos.price_id=itemsales.price_id
-							   WHERE  date
-							   BETWEEN('$from')AND('$to')
-							   group by itemsales.i_sale_id) as each_item
-							left join customerinfos on customerinfos.cus_id=each_item.cus_id
-							left join empinfos on empinfos.emp_id=each_item.created_by
-							group by each_item.sale_invoice_id
-							) as total_item;")[0];
+							from(
+								select customerinfos.user_name as customer_name,empinfos.user_name as invoiced_employee,
+										each_item.*,(sum(each_item.item_profit) - (each_item.discount+each_item.point_use_taka)) as invoice_profit  
+								from
+								 (select saleinvoices.sale_invoice_id,saleinvoices.cus_id,saleinvoices.created_by,saleinvoices.discount,saleinvoices.point_use_taka,saleinvoices.amount,saleinvoices.pay,saleinvoices.due,saleinvoices.date,saleinvoices.status,saleinvoices.created_at as invoiced_datetime,
+								 			(sum(priceinfos.sale_price - priceinfos.purchase_price) * itemsales.quantity)-itemsales.discount as item_profit,
+										priceinfos.sale_price,priceinfos.purchase_price,itemsales.quantity
+									from itemsales
+								   left join saleinvoices on saleinvoices.sale_invoice_id=itemsales.sale_invoice_id
+								   left join priceinfos on priceinfos.price_id=itemsales.price_id
+								   WHERE  date
+								   BETWEEN('$from')AND('$to')
+								   group by itemsales.i_sale_id) as each_item
+								left join customerinfos on customerinfos.cus_id=each_item.cus_id
+								left join empinfos on empinfos.emp_id=each_item.created_by
+								group by each_item.sale_invoice_id
+								) as total_item;")[0];
+                $saleAmountCash = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',1)
+                	->select(DB::raw('sum(saleinvoices.pay) as cash_pay'))
+                	->first();
+            	$saleAmountCard = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->whereIn('payment_type_id',[2,3])
+                	->select(DB::raw('sum(saleinvoices.pay) as card_pay'))
+                	->first();
+        		$saleAmountBkash = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',4)
+                	->select(DB::raw('sum(saleinvoices.pay) as bkash_pay'))
+                	->first();
 
-					$salereturn=  DB::select("select sum(total_item.amount) as salereturn_amount,sum(total_item.less_amount) as salereturn_less,sum(total_item.loss_profit) as total_loss_profit
+            	$saleAmountRocket = DB::table('saleinvoices')
+                	->whereBetween('saleinvoices.date', array($from, $to))
+                	->where('payment_type_id',6)
+                	->select(DB::raw('sum(saleinvoices.pay) as rocket_pay'))
+                	->first();
+
+				$salereturn=  DB::select("select sum(total_item.amount) as salereturn_amount,sum(total_item.less_amount) as salereturn_less,sum(total_item.loss_profit) as total_loss_profit
 							from(
 								select customerinfos.user_name as customer_name,empinfos.user_name as invoiced_employee,paymenttypes.payment_type_name, 
 									each_item.*,(sum(each_item.item_loss_profit) - (each_item.less_amount)) as loss_profit  
@@ -775,30 +837,41 @@ from(
 									left join paymenttypes on paymenttypes.payment_type_id=each_item.payment_type_id
 									group by each_item.sale_r_invoice_id) as total_item;")[0];
 
+
                 $purchase=  DB::table('supinvoices')
                     ->select(DB::raw('sum(supinvoices.discount) as purchase_discount,
-                                       sum(supinvoices.amount) as purchase_amount,
-                                       sum(supinvoices.pay) as purchase_pay,
-                                       sum(supinvoices.due) as purchase_due'))
+                                           sum(supinvoices.amount) as purchase_amount,
+                                           sum(supinvoices.pay) as purchase_pay,
+                                           sum(supinvoices.due) as purchase_due'))
                     ->whereBetween('supinvoices.transaction_date', array($from, $to))
                     ->first();
+
                 $purchasereturn=  DB::table('supplierreturninvoices')
                     ->select(DB::raw('sum(supplierreturninvoices.less_amount) as purchasereturn_less,
-                                       sum(supplierreturninvoices.amount) as purchasereturn_amount'))
+                                   	sum(supplierreturninvoices.amount) as purchasereturn_amount'))
                     ->whereBetween('supplierreturninvoices.transaction_date', array($from, $to))
                     ->first();
+
+
+
                 $other_income=  DB::table('otherincomes')
-	                ->where('otherincomes.status', 1)
-					->whereBetween('otherincomes.date', array($from, $to))
-	                ->sum('amount');
+                    ->where('otherincomes.status', 1)
+				->whereBetween('otherincomes.date', array($from, $to))
+                                ->sum('amount');
                 $other_expense=  DB::table('otherexpenses')
-		            ->where('otherexpenses.status', 1)
-					->whereBetween('otherexpenses.date', array($from, $to))
-		            ->sum('amount');
+                    ->where('otherexpenses.status', 1)
+				->whereBetween('otherexpenses.date', array($from, $to))
+                    ->sum('amount');
+								
+//                $damage_raw = DB::select("select sum(damageinvoices.amount) as damage_amount
+//					 from damageinvoices
+//               WHERE  damageinvoices.date
+  //             BETWEEN('2015-04-03')AND('2015-04-30')");
+//
                 $damage=  DB::table('damageinvoices')
-                     ->select(DB::raw('sum(damageinvoices.amount) as damage_amount'))
-                     ->whereBetween('damageinvoices.date', array($from, $to))
-                     ->first();
+	                ->select(DB::raw('sum(damageinvoices.amount) as damage_amount'))
+	                ->whereBetween('damageinvoices.date', array($from, $to))
+	                ->first();
 	
 				$totalGodwonTk = DB::table('godownitems') 
 					->leftJoin('priceinfos', 'priceinfos.price_id', '=', 'godownitems.price_id')
@@ -811,27 +884,26 @@ from(
 					->select(DB::raw('sum(priceinfos.purchase_price * stockitems.available_quantity) as total_amount'))
 					->where('stockitems.status', 1)
 					->first();
-				/*  echo'<pre>';
-				print_r($totalStockTk);exit; */  
-                   $cusDuePayment	= DB::table('cusduepayments')
-						->select(DB::raw('SUM(amount) as total_amount'))
-						->whereBetween('date', array($from, $to))
-						->where('status', 1)
-						->first();
-					$cusDueAmount = DB::table('customerinfos')
-						->select(DB::raw('SUM(due) as total_cus_due'))
-						->first();
-					$supDueAmount = DB::table('supplierinfos')
-						->select(DB::raw('SUM(due) as total_supp_due'))
-						->first();
-                    $supDuePayment	= DB::table('supduepayments')
-                        ->select(DB::raw('SUM(amount) as total_amount'))
-                        ->whereBetween('date', array($from, $to))
-                        ->where('status', 1)
-                        ->first();
-		return View::make('reports.summary.dailyLedger', compact('title','from','to','other_expense','other_income','damage','purchasereturn','purchase','salereturn','sale', 'totalGodwonTk', 'totalStockTk', 'cusDueAmount', 'supDueAmount', 'cusDuePayment', 'supDuePayment'));
+			/*  echo'<pre>';
+			print_r($totalStockTk);exit; */  
+                $cusDuePayment	= DB::table('cusduepayments')
+					->select(DB::raw('SUM(amount) as total_amount'))
+					->whereBetween('date', array($from, $to))
+					->where('status', 1)
+					->first();
+							
+                                $supDuePayment	= DB::table('supduepayments')
+                                    ->select(DB::raw('SUM(amount) as total_amount'))
+                                    ->whereBetween('date', array($from, $to))
+                                    ->where('status', 1)
+                                    ->first();
+
+
+
+		return View::make('reports.summary.backDateStock', compact('title','from','to','other_expense','other_income','damage','purchasereturn','purchase','salereturn','sale', 'totalGodwonTk', 'totalStockTk', 'cusDuePayment', 'supDuePayment','saleAmountCash','saleAmountCard','saleAmountBkash','saleAmountRocket'));
 	}
-    public function getSummarySales(){
+
+        public function getSummarySales(){
 		$title = ':: POSv2 :: - Sales Summary Reports';
                 $input=Input::all();
                 if(!$input){
@@ -1089,89 +1161,6 @@ from(
 		return View::make('reports.summary.empSalesReport', compact('title','from','to','datas'));
 	} */
 	
-	public function saleOrderReport(){
-        return View::make('reports.details.saleOrderReport');
-	}
-	public function viewSaleOrderReport()
-	{
-		$input=Input::all();
-		$from=$input['from'];
-		$to=$input['to'];
-		$reports= DB::table('saleinvoices_order')
-				->leftJoin('empinfos', 'empinfos.emp_id', '=', 'saleinvoices_order.created_by')
-				->leftJoin('customerinfos', 'saleinvoices_order.cus_id', '=', 'customerinfos.cus_id')
-				->select([
-					'saleinvoices_order.sale_order_invoice_id',
-					'saleinvoices_order.amount',
-					'saleinvoices_order.date',
-					'saleinvoices_order.created_at as invoice_time',
-					'empinfos.user_name as invoice_by',
-					'customerinfos.full_name as customer_name',
-				])
-				->where('saleinvoices_order.status', '=', 1)
-				->whereBetween('saleinvoices_order.date', array($from, $to))
-				->orderBy('saleinvoices_order.date', 'desc')
-				->get();
-	//echo '<pre>';print_r($reports);exit;
-			return View::make('reports.details.saleOrderReport',compact('reports','from','to'));
-	}
-	public function saleOrderDetailsReport($saleReportInvoiceId){
-		$company_info = DB::table('companyprofiles')
-			->select('company_name', 'address', 'mobile')
-			->first();
-		// return $saleReportInvoiceId;
-		$receipt_info= DB::table('saleinvoices_order')
-			->leftJoin('empinfos', 'empinfos.emp_id', '=', 'saleinvoices_order.created_by')
-			->leftJoin('customerinfos', 'saleinvoices_order.cus_id', '=', 'customerinfos.cus_id')
-			->select([
-				'saleinvoices_order.sale_order_invoice_id',
-				'saleinvoices_order.amount',
-				'saleinvoices_order.date',
-				'saleinvoices_order.created_at as invoice_time',
-				'empinfos.user_name as invoice_by',
-				'customerinfos.full_name as customer_name',
-			])
-			->where('saleinvoices_order.status', '=', 1)
-			->where('saleinvoices_order.sale_order_invoice_id', $saleReportInvoiceId)
-			->first();
-		// dd($receipt_info);
-		$receipt_item_infos = DB::table('itemsales_order')
-			->join('saleinvoices_order', 'itemsales_order.sale_order_invoice_id', '=', 'saleinvoices_order.sale_order_invoice_id')
-			->leftJoin('iteminfos as ii', 'ii.item_id', '=', 'itemsales_order.item_id')
-			->leftJoin('priceinfos as pi', 'pi.price_id', '=', 'itemsales_order.price_id')
-			->select('itemsales_order.quantity', 'itemsales_order.amount', 'ii.item_name', 'pi.sale_price')
-			->where('itemsales_order.sale_order_invoice_id', $saleReportInvoiceId)
-			->where('itemsales_order.status', 1)
-			->get(); 
-		return View::make('reports.details.saleOrderReportDetails', compact('company_info', 'receipt_info', 'receipt_item_infos'));
-	}
-
-	public function saleOrderReportReceipt($saleOrderInvoiceId){
-		$company_info = DB::table('companyprofiles')
-			->select('company_name', 'address', 'mobile')
-			->first();
-		$receipt_info = DB::table('saleinvoices_order as sio')
-			->leftjoin('empinfos as ei', 'ei.emp_id', '=', 'sio.created_by')
-			->leftJoin('customerinfos as ci', 'ci.cus_id', '=', 'sio.cus_id')
-			->leftJoin('customertypes as ct', 'ct.cus_type_id', '=', 'ci.cus_type_id')
-			->leftJoin('paymenttypes as pt', 'pt.payment_type_id', '=', 'sio.payment_type_id')
-			->select('sio.sale_order_invoice_id', 'sio.discount', 'sio.point_use_taka', 'sio.amount', 'sio.pay', 'sio.due', 'sio.pay_note', 'sio.date', 'sio.created_at', 'ci.present_address','ci.full_name as customer_name', 'ct.point_unit', 'pt.payment_type_name', 'ei.user_name as invoiced_employee')
-			->where('sio.status', 1)
-			->where('sio.sale_order_invoice_id', $saleOrderInvoiceId)
-			->first();
-						
-		$receipt_item_infos = DB::table('itemsales_order as iso')
-			->join('saleinvoices_order as sio', 'iso.sale_order_invoice_id', '=', 'sio.sale_order_invoice_id')
-			->leftJoin('iteminfos as ii', 'ii.item_id', '=', 'iso.item_id')
-			->leftJoin('priceinfos as pi', 'pi.price_id', '=', 'iso.price_id')
-			->select(['iso.quantity', 'iso.discount', 'iso.amount', 'ii.item_name', 'iso.tax', 'pi.sale_price'])
-			->where('iso.status', 1)
-			->where('iso.sale_order_invoice_id', $saleOrderInvoiceId)
-			->get();
-		return View::make('reports.details.saleOrderDetailsReceipt', compact('company_info', 'receipt_info', 'receipt_item_infos'));
-	}
-//@@==============Sale order report end @@============ //
-
     public function getEmpSaleReports(){
 		$title = ':: POSv2 :: - Employees Sales Report';
 		$input=Input::all();
@@ -1474,6 +1463,8 @@ from(
                   ->make();
 	}
 
+//=====================@@ Supplier Wise Sale Report @@================
+
 	public function spplierWiseSale(){
 		$title = ':: POSv2 :: - Supplier Wise Sale Report';
         $input=Input::all();
@@ -1488,77 +1479,159 @@ from(
         }
         $suppliers = DB::table('supplierinfos')->where('status',1)->get();
         $totalValue = DB::table('supinvoices')
-        		  ->join('supplierinfos','supinvoices.supp_id','=','supplierinfos.supp_id') 
-        		  ->join('paymenttypes','supinvoices.payment_type_id','=','paymenttypes.payment_type_id') 
-        		  ->whereBetween('supinvoices.transaction_date',[$from,$to])
-        		  ->where('supplierinfos.supp_id',$supplierId)
-        		  ->groupBy('supinvoices.supp_id')
-        		  ->get([
-        		  		DB::raw('SUM(supinvoices.discount) as totalDiscount'),
-        		  		DB::raw('SUM(supinvoices.amount) as totalAmount'),
-	                    DB::raw('SUM(supinvoices.pay) as totalPay'),
-	                    DB::raw('SUM(supinvoices.due) as totalDue')
-        		  	]);
+    		->join('supplierinfos','supinvoices.supp_id','=','supplierinfos.supp_id') 
+    		->join('paymenttypes','supinvoices.payment_type_id','=','paymenttypes.payment_type_id') 
+    		->whereBetween('supinvoices.transaction_date',[$from,$to])
+    		->where('supplierinfos.supp_id',$supplierId)
+    		->groupBy('supinvoices.supp_id')
+    		->get([
+    			DB::raw('SUM(supinvoices.discount) as totalDiscount'),
+		  		DB::raw('SUM(supinvoices.amount) as totalAmount'),
+                DB::raw('SUM(supinvoices.pay) as totalPay'),
+                DB::raw('SUM(supinvoices.due) as totalDue')
+		  	]);
 		return View::make('reports.summary.supplierWiseSale', compact('title','from','to','items','suppliers','supplierId','totalValue'));
 	}
 
 	public function getspplierWiseSaleData($from = null,$to = null,$supplierId = null){
 
 		return Datatable::query(DB::table('saleinvoices')
-        		  ->join('itemsales','saleinvoices.sale_invoice_id','=','itemsales.sale_invoice_id') 
-        		  ->join('iteminfos','itemsales.item_id','=','iteminfos.item_id') 
-        		  ->join('supplierinfos','iteminfos.supplier_id','=','supplierinfos.supp_id')
-        		  ->whereBetween('saleinvoices.date',[$from,$to])
-        		  ->where('supplierinfos.supp_id',$supplierId)
-        		  ->groupBy('saleinvoices.sale_invoice_id')
-        		  )
-				  ->addColumn('sale_invoice_id', function($model) use ($supplierId) {
-                            return "<a href='#saleDetailsModal' onclick='saleDetails(".$model->sale_invoice_id.",".$supplierId.")' data-toggle='modal'>".$model->sale_invoice_id."</a>";
-                        })
-				  
-                  ->showColumns( 'supp_or_comp_name', 'date')
-                  ->addColumn('amount', function($model) use ($supplierId) {
-                            $amount = DB::table('itemsales')
-                            	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
-	                        	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
-	                        	->where('iteminfos.supplier_id',$supplierId)
-                            	->get([
-			        		  		DB::raw('SUM(itemsales.amount) as totalAmount')
-			        		  	]);
-		        		  return $amount[0]->totalAmount;
-                    })
-				  ->addColumn('pay', function($model) use ($supplierId) {
-                        $paid = DB::table('itemsales')
-                        	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
-                        	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
-                        	->where('iteminfos.supplier_id',$supplierId)
-                        	->get([
-		        		  		DB::raw('SUM(itemsales.amount) as totalAmount')
-		        		  	]);
-	        		  	return $paid[0]->totalAmount;
-                    })
-				  ->addColumn('discount', function($model) use ($supplierId) {
-                        $discount = DB::table('itemsales')
-                        	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
-                        	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
-                        	->where('iteminfos.supplier_id',$supplierId)
-                        	->get([
-		        		  		DB::raw('SUM(itemsales.discount) as totalAmount')
-		        		  	]);
-		        		  return $discount[0]->totalAmount;
-                    })
-				  ->addColumn( 'due', function($model) use ($supplierId) {
-                       return $due = 0;
-                    })
-                  ->searchColumns('sale_invoice_id', 'supp_or_comp_name')
-                  ->orderColumns('date', 'amount')
-                  ->make();
+			->join('itemsales','saleinvoices.sale_invoice_id','=','itemsales.sale_invoice_id') 
+			->join('iteminfos','itemsales.item_id','=','iteminfos.item_id') 
+			->join('supplierinfos','iteminfos.supplier_id','=','supplierinfos.supp_id')
+			->whereBetween('saleinvoices.date',[$from,$to])
+			->where('supplierinfos.supp_id',$supplierId)
+			->groupBy('saleinvoices.sale_invoice_id')
+			)
+			->addColumn('sale_invoice_id', function($model) use ($supplierId) {
+                return "<a href='#saleDetailsModal' onclick='saleDetails(".$model->sale_invoice_id.",".$supplierId.")' data-toggle='modal'>".$model->sale_invoice_id."</a>";
+            })
+	        ->showColumns( 'supp_or_comp_name', 'date')
+	        ->addColumn('amount', function($model) use ($supplierId) {
+                $amount = DB::table('itemsales')
+                	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
+                	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
+                	->where('iteminfos.supplier_id',$supplierId)
+                	->get([
+    		  			DB::raw('SUM(itemsales.amount) as totalAmount')
+    		  		]);
+        		return $amount[0]->totalAmount;
+            })
+			->addColumn('pay', function($model) use ($supplierId) {
+                $paid = DB::table('itemsales')
+                	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
+                	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
+                	->where('iteminfos.supplier_id',$supplierId)
+                	->get([
+        		  		DB::raw('SUM(itemsales.amount) as totalAmount')
+        		  	]);
+    		  	return $paid[0]->totalAmount;
+            })
+			->addColumn('discount', function($model) use ($supplierId) {
+                $discount = DB::table('itemsales')
+                	->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
+                	->where('itemsales.sale_invoice_id',$model->sale_invoice_id)
+                	->where('iteminfos.supplier_id',$supplierId)
+                	->get([
+        		  		DB::raw('SUM(itemsales.discount) as totalAmount')
+        		  	]);
+        		return $discount[0]->totalAmount;
+            })
+			->addColumn( 'due', function($model) use ($supplierId) {
+            	return $due = 0;
+            })
+	        ->searchColumns('sale_invoice_id', 'supp_or_comp_name')
+	        ->orderColumns('date', 'amount')
+	        ->make();
 	}
 
 	public function saleReportDetailsSuppWise($saleInvoiceId,$supplierId){
 		// return ;
 		// $saleInvoiceIdArr = explode("_", $saleInvoiceId);
 		// return $supplierId = $saleInvoiceIdArr[1];
+		$company_info = DB::table('companyprofiles')
+			->select('company_name', 'address', 'mobile')
+			->first();
+		
+		$receipt_info = DB::table('saleinvoices as si')
+			->leftjoin('empinfos as ei', 'ei.emp_id', '=', 'si.created_by')
+			->leftJoin('customerinfos as ci', 'ci.cus_id', '=', 'si.cus_id')
+			->leftJoin('customertypes as ct', 'ct.cus_type_id', '=', 'ci.cus_type_id')
+			->leftJoin('paymenttypes as pt', 'pt.payment_type_id', '=', 'si.payment_type_id')
+			->select('si.sale_invoice_id', 'si.discount', 'si.point_use_taka', 'si.amount', 'si.pay', 'si.due', 'si.pay_note', 'si.date', 'si.created_at', 'ci.user_name as customer_name', 'ct.point_unit', 'pt.payment_type_name', 'ei.user_name as invoiced_employee')
+			->where('si.status', 1)
+			->where('si.sale_invoice_id', $saleInvoiceId)
+			->first();
+                
+                $receipt_item_infos = DB::table('itemsales')
+					->select('i.item_name','itemsales.tax','i.supplier_id','itemsales.discount','p.sale_price', DB::raw('SUM(itemsales.quantity) as quantity, SUM(itemsales.amount) as amount'))
+                    ->join('saleinvoices', 'saleinvoices.sale_invoice_id', '=', 'itemsales.sale_invoice_id')
+                    ->leftjoin('iteminfos as i', 'itemsales.item_id', '=', 'i.item_id')
+                    ->leftJoin('priceinfos as p', 'p.price_id', '=', 'itemsales.price_id')
+                    ->where('itemsales.status', '=', 1)
+                    ->where('itemsales.sale_invoice_id', '=', $saleInvoiceId)
+                    ->groupBy('p.sale_price')
+                    ->groupBy('itemsales.item_id')
+                    ->orderBy('itemsales.i_sale_id','asc')
+                    ->get();
+		return View::make('reports.details.saleReportDetailsSuppWise', compact('company_info', 'receipt_info', 'receipt_item_infos','supplierId'));
+		// saleReportDetailsSuppWise
+	}
+
+//=====================@@ Supplier Wise Sale Report End @@================
+
+//=====================@@ Company Wise Sale Report @@=====================
+
+	public function companyWiseSale(){
+		$title = ':: POSv2 :: - Company Wise Sale Report';
+        $input=Input::all();
+        if(!$input){
+            $from 	= date('Y-m-d');
+            $to 	= date('Y-m-d');
+            $companyId = 0;
+        }else{
+            $from 	= $input['from'];
+            $to 	= $input['to'];
+            $companyId = $input['company_id'];
+        }
+        $companies = DB::table('companynames')->where('status',1)->get();
+        
+        $companyWiseSale = [];
+        if($companyId>0){
+        	$invoiceIds = DB::table('itemsales')
+	    		->join('saleinvoices','itemsales.sale_invoice_id','=','saleinvoices.sale_invoice_id') 
+	    		->join('iteminfos','itemsales.item_id','=','iteminfos.item_id') 
+	    		->join('companynames','iteminfos.company_id','=','companynames.company_id')
+	    		->whereBetween('saleinvoices.date',[$from,$to])
+	    		->where('iteminfos.item_company_id',$companyId)
+	    		->groupBy('saleinvoices.sale_invoice_id')
+	    		->get([
+	    			'saleinvoices.sale_invoice_id',
+	    			'companynames.company_name',
+	    			'companynames.company_id'
+	    		]);
+	        foreach($invoiceIds as $key => $value){
+	        	$companyWiseSale[json_encode($value)] = DB::table('itemsales')
+	        		->join('iteminfos','itemsales.item_id','=','iteminfos.item_id')
+	            	->where('itemsales.sale_invoice_id',$value->sale_invoice_id)
+	            	->where('iteminfos.item_company_id',$companyId)
+	            	->get([
+	    		  		DB::raw('SUM(itemsales.amount) as totalAmount'),
+	    		  		DB::raw('SUM(itemsales.amount) as totalAmountPaid'),
+	    		  		DB::raw('SUM(itemsales.discount) as totalDiscount'),
+	    		  	]);
+	        }
+        }
+        // return $companyWiseSale;
+		return View::make('reports.summary.companyWiseSale', compact('title','from','to','items','companies','companyId','companyWiseSale'));
+	}
+
+	
+
+	public function saleReportDetailsCompanyWise($saleInvoiceId,$companyId){
+		// return ;
+		// $saleInvoiceIdArr = explode("_", $saleInvoiceId);
+		// return $companyId = $saleInvoiceIdArr[1];
 		$company_info = DB::table('companyprofiles')
 						->select('company_name', 'address', 'mobile')
 						->first();
@@ -1574,85 +1647,20 @@ from(
 						->first();
                 
                 $receipt_item_infos = DB::table('itemsales')
-					->select('i.item_name','itemsales.tax','i.supplier_id','itemsales.discount','p.sale_price', DB::raw('SUM(itemsales.quantity) as quantity, SUM(itemsales.amount) as amount'))
-                                        ->join('saleinvoices', 'saleinvoices.sale_invoice_id', '=', 'itemsales.sale_invoice_id')
-                                        ->leftjoin('iteminfos as i', 'itemsales.item_id', '=', 'i.item_id')
-                                        ->leftJoin('priceinfos as p', 'p.price_id', '=', 'itemsales.price_id')
-                                        ->where('itemsales.status', '=', 1)
-                                        ->where('itemsales.sale_invoice_id', '=', $saleInvoiceId)
-                                        ->groupBy('p.sale_price')
-                                        ->groupBy('itemsales.item_id')
-                                        ->orderBy('itemsales.i_sale_id','asc')
-                                        ->get();
-		return View::make('reports.details.saleReportDetailsSuppWise', compact('company_info', 'receipt_info', 'receipt_item_infos','supplierId'));
+					->select('i.item_name','itemsales.tax','i.item_company_id','itemsales.discount','p.sale_price', DB::raw('SUM(itemsales.quantity) as quantity, SUM(itemsales.amount) as amount'))
+                    ->join('saleinvoices', 'saleinvoices.sale_invoice_id', '=', 'itemsales.sale_invoice_id')
+                    ->leftjoin('iteminfos as i', 'itemsales.item_id', '=', 'i.item_id')
+                    ->leftJoin('priceinfos as p', 'p.price_id', '=', 'itemsales.price_id')
+                    ->where('itemsales.status', '=', 1)
+                    // ->where('i.item_company_id',$companyId)
+                    ->where('itemsales.sale_invoice_id', '=', $saleInvoiceId)
+                    ->groupBy('p.sale_price')
+                    ->groupBy('itemsales.item_id')
+                    ->orderBy('itemsales.i_sale_id','asc')
+                    ->get();
+		return View::make('reports.details.saleReportDetailsCompanyWise', compact('company_info', 'receipt_info', 'receipt_item_infos','companyId'));
 		// saleReportDetailsSuppWise
 	}
-
-	public function otherExpenseReportDetails($expense_id = null){
-        $otherExpense = DB::table('otherexpenses as oe')
-            ->join('incomeexpensetype as iet','oe.expense_type_id','=','iet.type_id')  
-            ->join('empinfos as ei','oe.created_by','=','ei.emp_id')  
-            ->select([
-                'oe.amount','oe.comment','oe.date',
-                'ei.f_name','ei.l_name',
-                'oe.created_at', 'iet.type_name'
-            ])
-            ->where('oe.other_expense_id',$expense_id)
-            ->first();
-        $receipt_info_array=array();
-
-        $receipt_info_array['transaction_date'] = date('d F, Y h:i a', strtotime($otherExpense->created_at));
-        $receipt_info_array['amount']         = $otherExpense->amount;
-        $receipt_info_array['comment']        = $otherExpense->comment;
-        $receipt_info_array['type_name']      = $otherExpense->type_name;
-        $receipt_info_array['invoice_by']     = $otherExpense->f_name.' '.$otherExpense->f_name;
-        $receipt_info = (object) $receipt_info_array;
-        $company_info=DB::table('companyprofiles')
-            ->first();
-
-        return View::make('reports.details.expenseReportReceipt',compact('receipt_info','company_info'));
-	}
-
-	public function duepaymentreport()
-	{
-		$from=date('Y-m-d');
-	    $to=date('Y-m-d');
-	    $reports= DB::table("cusduepayments")
-	    	->select([
-	    		'cusduepayments.*',
-	    		'cusduediscounts.amount as discount_amount',
-	    		'customerinfos.full_name',
-	    		'empinfos.f_name',
-	    		'empinfos.l_name'
-	    	])
-	    	->leftJoin('cusduediscounts','cusduepayments.c_due_payment_id','=','cusduediscounts.c_due_payment_id')
-	    	->leftJoin('customerinfos','cusduepayments.cus_id','=','customerinfos.cus_id')
-	    	->leftJoin('empinfos','cusduepayments.created_by','=','empinfos.created_by')
-	    	->whereBetween('cusduepayments.date',[$from,$to])
-	    	->groupBy('cusduepayments.c_due_payment_id')
-	    	->get();
-	    return View::make('reports.details.duePaymentReport',compact('from','to','reports'));
-	}
-    public function viewDuePaymentReport()
-	{
-	    $input=Input::all();
-	    //echo '<pre>';print_r($input);exit;
-	    $from=$input['from'];
-	    $to=$input['to'];
-	    $reports= DB::table("cusduepayments")
-	    	->select([
-	    		'cusduepayments.*',
-	    		'cusduediscounts.amount as discount_amount',
-	    		'customerinfos.full_name',
-	    		'empinfos.f_name',
-	    		'empinfos.l_name'
-	    	])
-	    	->leftJoin('cusduediscounts','cusduepayments.c_due_payment_id','=','cusduediscounts.c_due_payment_id')
-	    	->leftJoin('customerinfos','cusduepayments.cus_id','=','customerinfos.cus_id')
-	    	->leftJoin('empinfos','cusduepayments.created_by','=','empinfos.created_by')
-	    	->whereBetween('cusduepayments.date',[$from,$to])
-	    	->groupBy('cusduepayments.c_due_payment_id')
-	    	->get();
-        return View::make('reports.details.duePaymentReport',compact('reports','from','to'));
-	}
+//=====================@@ Company Wise Sale Report End @@=====================
+        
 }

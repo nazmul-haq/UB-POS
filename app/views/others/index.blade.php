@@ -19,11 +19,6 @@
 					<i class="setup-icon icon-arrow-down"></i><span class="setup-label">Add Expense</span>
 				</a>
 			</div>
-			<div class="setup-items"> 				
-				<a href="{{ route('admin.empSalary') }}" class="setup-item">
-					<i class="setup-icon icon-arrow-down"></i><span class="setup-label">Employee Payment</span>
-				</a>
-			</div>
 			<div class="setup-items"> 
 				<a href="javascript:;" class="setup-item">
 					<i class="setup-icon icon-file"></i><span class="setup-label">Notes</span> 

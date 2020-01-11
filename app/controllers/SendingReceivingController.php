@@ -186,14 +186,15 @@ class SendingReceivingController extends \BaseController {
             return Redirect::to('sending')->with('errorMsg', 'Something is wrong in save sending.');
         }
     }
-    
+       
+
 
 public function receive()
     {
         $items = DB::table('receivingitems')
                         ->leftjoin('iteminfos', 'iteminfos.item_id', '=', 'receivingitems.item_id')
                         ->leftjoin('priceinfos', 'priceinfos.price_id', '=', 'receivingitems.price_id')
-                        ->select('receivingitems.branch_id','receivingitems.receiving_item_id','receivingitems.item_id','receivingitems.quantity','iteminfos.item_name','priceinfos.sale_price','priceinfos.purchase_price','priceinfos.price_id')
+                        ->select('receivingitems.receiving_item_id','receivingitems.item_id','receivingitems.quantity','iteminfos.item_name','priceinfos.sale_price','priceinfos.purchase_price','priceinfos.price_id')
                         ->where('receivingitems.status', '=', 1)
                         ->get();
                 return View::make('sendingreceiving.receivingForm',compact('items'));
@@ -209,7 +210,6 @@ public function receive()
                     
                 
         $vdata=Input::all();
-        $branch_id = Session::get('branch_id');
         if(empty($vdata['receiving_item_id'])){
             return Redirect::back()->with('errorMsg', 'Please Select  Items');
         }
@@ -256,7 +256,6 @@ public function receive()
                       if($result){
                        // print_r($items);
                             $stockItemInfo = DB::table('stockitems')
-                                                    ->where('branch_id', '=', $branch_id)
                                                     ->where('item_id', '=', $items->item_id)
                                                     ->where('price_id', '=', $items->price_id)
                                                     ->first();
@@ -281,7 +280,6 @@ public function receive()
                                     $getAvailable=DB::table('stockitems')
                                                     ->join('priceinfos', 'priceinfos.price_id', '=', 'stockitems.price_id')
                                                     ->where('stockitems.item_id', '=', $items->item_id)
-                                                    ->where('stockitems.branch_id', '=', $branch_id)
                                                     ->where('stockitems.available_quantity', '>',0)
                                                     ->get();
                                                     
@@ -344,7 +342,6 @@ public function receive()
 
                                 //end of updated
                                 $insertData=array();
-                                $insertData['branch_id']=$branch_id;
                                 $insertData['item_id']=$items->item_id;
                                 $insertData['price_id']=$items->price_id;
                                 $insertData['available_quantity']=$items->quantity+$mergeQnt;
@@ -372,7 +369,6 @@ public function receive()
                                     $getAvailable=DB::table('stockitems')
                                                     ->join('priceinfos', 'priceinfos.price_id', '=', 'stockitems.price_id')
                                                     ->where('stockitems.item_id', '=', $items->item_id)
-                                                    ->where('stockitems.branch_id', '=', $branch_id)
                                                     ->where('stockitems.item_id', '!=', $stockItemInfo->stock_item_id)
                                                     ->where('stockitems.available_quantity', '>',0)
                                                     ->get();
@@ -409,7 +405,6 @@ public function receive()
 
                                                 DB::table('stockitems')
                                                     ->where('item_id', '=', $items->item_id)
-                                                    ->where('branch_id', '=', $branch_id)
                                                     ->where('price_id', '=', $val->price_id)
                                                     ->update(['price_id'=>$found->price_id,'updated_at'=>date('Y-m-d h:i:s')]);
                                                     }
@@ -847,7 +842,7 @@ public function savereturnReceiveItem()
 //quick sending system//
    public function itemAddForQuickSending()
     {
-        $branch_id = Session::get('branch_id');
+        
       //print_r(Session::get("sending")); exit;  
                     $data=DB::table('godownitems')
                         ->leftjoin('iteminfos', 'iteminfos.item_id', '=', 'godownitems.item_id')
@@ -870,7 +865,6 @@ public function savereturnReceiveItem()
             
             foreach($data as $value){
                 $item_info=array();
-                $item_info['branch_id']=$branch_id;
                 $item_info['godown_item_id']=$value->godown_item_id;
                 $godown_item_id=$item_info['godown_item_id'];
                 $item_info['item_id']=$value->item_id;
@@ -920,7 +914,6 @@ public function saveSendingQuickMode()
             $sendingDateTime=date('Y-m-d')." ".date('h:i:s');
             foreach(Session::get("sending") as $eachItem){
                     $sendingData=array();
-                    $sendingData['branch_id']=$eachItem['branch_id'];
                     $sendingData['item_id']=$eachItem['item_id'];
                     $sendingData['price_id']=$eachItem['price_id'];
                     $sendingData['quantity']=$eachItem['now_send'];

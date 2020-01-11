@@ -5,6 +5,10 @@
  * @package  Laravel
  * @author   Taylor Otwell <taylorotwell@gmail.com>
  */
+	
+// 	Header("Location:http://192.168.10.150/home_plus/");
+	
+// 	return;
 
 /*
 |--------------------------------------------------------------------------

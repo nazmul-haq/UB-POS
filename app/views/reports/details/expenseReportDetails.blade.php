@@ -29,7 +29,6 @@
 					<th>Comment</th>
 					<th>Date</th>
                     <th>Created By</th>
-                    <th> Action </th>
 				</tr>
 			</thead>
 			<tbody>
@@ -37,23 +36,18 @@
 					<? $i = 0; $total_amount = 0; ?>
 				   @foreach($reports as $otherExpense)
 					   <tr>
-						   <td> {{++$i}} </td>
-						   <td>{{ $otherExpense->type_name }}</td>
-						   <td>{{ $otherExpense->amount }}</td>
+						   <td>{{++$i}}</td>
+						   <td>{{{ $otherExpense->type_name }}}</td>
+						   <td>{{{ $otherExpense->amount }}}</td>
 						   <? $total_amount = $total_amount + $otherExpense->amount; ?>
-						   <td>{{ $otherExpense->comment }}</td>
-						   <td>{{ $otherExpense->date }}</td>
-						   <td>{{ $otherExpense->employee_name }}</td>
-						   <td width="80px">
-								<a href="{{URL::to('admin/otherExpenseReportDetails/'.$otherExpense->other_expense_id)}}" class="btn btn-warning btn-small" role="button">
-									<i class="icon-zoom-in"></i> Details
-								</a>
-							</td>
+						   <td>{{{ $otherExpense->comment }}}</td>
+						   <td>{{{ $otherExpense->date }}}</td>
+						   <td>{{{ $otherExpense->employee_name }}}</td>
 					   </tr>
 				   @endforeach
                         <tr bgcolor="#DBEAF9">
 						   <td colspan="2"><strong style="font-size: 1.3em;">Total<strong></td>
-						   <td colspan="5"><strong style="color: green;">{{ $total_amount }}<strong></td>   
+						   <td colspan="4"><strong style="color: green;">{{ $total_amount }}<strong></td>   
 					   </tr>
 				@else
 					<tr>

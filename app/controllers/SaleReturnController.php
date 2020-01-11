@@ -54,12 +54,10 @@ class SaleReturnController extends \BaseController {
                                  'saleinvoices.point_use_taka',
                                  'saleinvoices.amount',
                                  'customerinfos.user_name',
-                                 'customerinfos.full_name',
-                                 'customerinfos.present_address',
-                                 'customerinfos.due'
+                                 'customerinfos.due',
+                                 'customerinfos.point'
                                 )
                         ->where('saleinvoices.sale_invoice_id', '=', $sale_invoice_id)
-                        ->where('saleinvoices.branch_id', '=', Session::get('branch_id'))
                         ->first();
 
             if(!$data){
@@ -71,9 +69,8 @@ class SaleReturnController extends \BaseController {
                         'point_use_taka'  =>  $data->point_use_taka,
 			'cus_id' 	  =>  $data->cus_id,
                         'customer_name'   =>  $data->user_name,
-                        'customer_full_name'   =>  $data->full_name,
-                        'present_address'   =>  $data->present_address,
                         'customer_due'    =>  $data->due,
+                        'customer_point'  =>  $data->point
 
             );
            // echo'<pre>';print_r($invoice_info);exit;
@@ -192,25 +189,36 @@ public function invoiceAndSaleReturn()
                  $month=date("m");
                  $day=date("d");
                  $date=$year.$month.$day;
-                 $branch_id = Session::get('branch_id');
-                $insert = DB::select("insert into salereturninvoices (branch_id,sale_r_invoice_id,sale_invoice_id,cus_id,payment_type_id,amount,less_amount,transaction_date,created_by,created_at) values ('$branch_id',
+
+                $insert = DB::select("insert into salereturninvoices (sale_r_invoice_id,sale_invoice_id,cus_id,payment_type_id,amount,less_amount,transaction_date,created_by,created_at) values (
                                                     ifnull (concat('$date',1+(
 									SELECT right(sl_re_inv.sale_r_invoice_id, 8) AS LAST8 FROM salereturninvoices as sl_re_inv
 									  where( (SELECT left(sl_re_inv.sale_r_invoice_id, 6)='$date'))
 									  order by LAST8 desc limit 1)),concat('$date','10000000')),'$sale_invoice_id','$cus_id','$payment_type_id','$pay_amount','$less_taka','$transaction_date','$created_by','$created_at')");
+
                  $last_insert_id =DB::getPdo()->lastInsertId();
+
+
                  $value = DB::table('salereturninvoices')->select('sale_r_invoice_id')
                                         ->where('id', '=', $last_insert_id)
                                         ->first();
                 $sale_r_invoice_id=$value->sale_r_invoice_id;
+               
+                
             #### ---- End of Invoice Part ----####
+
+
             ### --- Item Sale Return Part --- ###
+
+
+
                 $receipt_return_item_infos=array();
                  foreach(Session::get("saleReturnItemInfo") as $eachItem){
                    // echo '<pre>';dd($eachItem);exit;
 			 $receipt_return_item_infos[]=$eachItem;
+
+                    
                     $saleReturnData=array();
-                    $saleReturnData['branch_id']=$branch_id;
                     $saleReturnData['sale_r_invoice_id']=$sale_r_invoice_id;
                     $saleReturnData['item_id']=$eachItem['item_id'];
                     $item_id=$saleReturnData['item_id'];
@@ -236,7 +244,6 @@ public function invoiceAndSaleReturn()
                                                     ->first();
                             if(!$stockItemInfo){
                                 $insertData=array();
-                                $insertData['branch_id']=Session::get('branch_id');
                                 $insertData['item_id']=$item_id;
                                 $insertData['price_id']=$price_id;
                                 $insertData['available_quantity']=$saleReturnData['quantity'];
@@ -264,10 +271,8 @@ public function invoiceAndSaleReturn()
                  
                // echo '<pre>';print_r(Session::get("invoice_info"));exit;
 
-                $receipt_info=array();
+                 $receipt_info=array();
                 $receipt_info['customer_name']=Session::get('sale_return_invoice_info.customer_name');
-                $receipt_info['customer_full_name']=Session::get('sale_return_invoice_info.customer_full_name');
-                $receipt_info['customer_name']=Session::get('sale_return_invoice_info.present_address');
                 $receipt_info['date']=$transaction_date;
                 $receipt_info['created_at']=$this->timestamp;
                 $receipt_info['invoice_id']=$sale_r_invoice_id;
@@ -279,7 +284,7 @@ public function invoiceAndSaleReturn()
                         ->first();
                 $receipt_info['emp_name']=$emp_info->user_name;
                 $receipt_info['payment_type_name']=$payment_type_info->payment_type_name;
-                $receipt_info['less_amount']= ($less_taka>0) ? $less_taka : 0;
+                $receipt_info['less_amount']=$less_taka;
                 $receipt_info['total_amount']=$pay_amount;
               // echo'<pre>';print_r($receipt_info);exit;
                  Session::forget("sale_return_invoice_info");

@@ -1,0 +1,30 @@
+<div class="modal-body">
+			<div id="message" style="display: none;"></div>
+			<table class="table table-striped" width="100%">
+			<thead class="table-head">
+				<tr>
+					<th>#SL No</th>
+					<th>Supplier name</th>
+					<th>Address</th>
+					<th>Supplier Mobile</th>
+				</tr>
+			</thead>
+			<tbody><? $i=0;?>
+				<?php foreach($supplierInfos as $supplierInfo): ?>
+				<tr>
+					<td><?php echo ++$i; ?></td>
+					<td>
+						<span><?php echo $supplierInfo->user_name; ?></span>
+					</td>
+					<td>
+						<span><?php echo $supplierInfo->present_address; ?></span>						
+					</td>
+					<td>
+						<span><?php echo $supplierInfo->mobile; ?></span>						
+					</td>
+					
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+			</table>
+		</div>

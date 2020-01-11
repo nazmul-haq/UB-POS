@@ -11,6 +11,9 @@ class Setup extends \Eloquent {
 	public static $cateogryOffer_rules = [
 		'offer'	=> 'required|number_dot'
 	];
+	public static $supplierOffer_rules = [
+		'offer'	=> 'required|number_dot'
+	];
 	public static $type_rules = [
 		'type_name'	=> 'required'
 	];
