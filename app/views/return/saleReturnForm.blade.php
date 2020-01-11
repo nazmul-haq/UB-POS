@@ -31,8 +31,8 @@ if(Session::get('saleReturnItemInfo')) {
                     <th>Item Name</th>
                     <th>Sale Price</th>
                     <th>Quantity</th>
-                    <!-- <th>Disc (Tk)</th> -->
-                    <!-- <th>Tax</th> -->
+                    <th>Disc (Tk)</th>
+                    <th>Tax</th>
                     <th>Total</th>
                     <th>Action</th>
                 </tr>
@@ -53,17 +53,17 @@ if(Session::get('saleReturnItemInfo')) {
                     </td>
 
                     <td>
-                        <input class="span1" type="text" readonly name="sale_price" value="{{$item['total']/$item['quantity']}}" />
+                        <input class="span1" type="text" readonly name="sale_price" value="{{$item['sale_price']}}" />
                     </td>
 
                     <td>
                         <input class="span1 quantity" type="text" name="quantity"  autocomplete="off" value="{{$item['quantity']}}" />
                     </td>
-                    <td style="display: none;">
+                    <td>
                         <input class="span1" type="text" readonly="readonly" name="discount" autocomplete="off" value="{{$item['discount']}}" />
                     </td>
 
-                    <td style="display: none;">
+                    <td>
                         <input class="span1" type="text" readonly name="tax" value="{{$item['tax']}}" />
                     </td>
                     <td>

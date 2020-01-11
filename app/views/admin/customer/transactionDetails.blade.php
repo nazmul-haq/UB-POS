@@ -1,4 +1,5 @@
 @extends('_layouts.default')
+
 @section('content')
 	<div class="row print_disable">
 		<div class="span12">@include('_sessionMessage')</div>
@@ -37,6 +38,7 @@
 					</tbody>
 				</table>
 				{{ Form::close() }}
+			
 		</div>
 		<div class="span4">				
 			<div class="widget-header setup-title"> <i class="icon-list"></i>
@@ -44,6 +46,10 @@
             </div>
 			<table class="table table-bordered" style="margin: 0; padding:0;">
 					<tbody>
+						<tr>
+							<td><strong style="float:right;">Current Point</strong></td>
+							<td style="padding-left:10px;"><strong style="color: #FF5400; font-size: 1.2em;">{{ $get_customer->point }}</strong></td>
+						</tr>
 						<tr>
 							<td><strong style="float:right;">Net Purchase</strong></td>
 							<td style="padding-left:10px;">{{ $calculate->total_purchase-$calculate->return_amount }}</strong></td>
@@ -93,17 +99,14 @@
 				<div class="control-group">
 					<label for="username" class="control-label"><i class="icon-user"></i>&nbsp; Report Type &nbsp;&nbsp;&nbsp;: &nbsp;</label>
 					<div class="controls">
-						{{ Form::select('report_type',array('3'=>'Purchase'), null, ['class' => 'span2']) }}
+						{{ Form::select('report_type',array('3'=>'Purchase','1'=>'Point Withdraw','2'=>'Point Increasing'), null, ['class' => 'span2']) }}
 					</div> <!-- /controls -->	
 				</div> <!-- /control-group -->
-				<?php
-				    $fromDate = '2018-02-01';
-				    $toDate = date("Y-m-d");
-				?>
+				
 				<div class="control-group" align="center">		
-					<i class="icon-calendar"></i> Form : {{ Form::text('from', $fromDate, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')) }}
+					<i class="icon-calendar"></i> Form : {{ Form::text('from', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'Form date')) }}
 					&nbsp;&nbsp;&nbsp;
-					<i class="icon-calendar"></i> To   : {{ Form::text('to', $toDate, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')) }}
+					<i class="icon-calendar"></i> To   : {{ Form::text('to', null, array('class' => 'input-small datepicker', 'id'=>'auto_search_item', 'data-date-format'=> 'yyyy-mm-dd', 'placeholder' => 'To date')) }}
 				</div> <!-- /control-group -->	
 				<center><input class="btn btn-info" type="submit" value="Search"></center>
 				{{ Form::close() }}
@@ -132,37 +135,93 @@
 						Report : <span style="font-weight:normal;">{{ Helper::onlyDMY($date_exp[0]) }}  <b>To: </b> {{ Helper::onlyDMY($date_exp[1]) }}</span>
 					</strong>
 				</div>
-				@if($report_type==1)
+				
+
+				@if($report_type==2)
+			<table class="table table-striped" width="100%">
+					<thead class="table-head">
+						<tr>
+								<th># SL No</th>
+								<th>Invoice Id</th>
+								<th>Invoice Amount</th>
+								<th>Increased Point</th>
+								<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php $i=0; ?>
+					@if($reports)
+						@foreach($reports as $report)
+							<tr>
+								<td>{{++$i}}</td>
+								<td><span class="span3">{{$report->sale_invoice_id}}</span></td>
+								<td><span class="span3">{{$report->amount}}</span></td>
+								<td><span class="span3">{{$report->no_of_point}}</span></td>
+								<td><span class="span3">{{$report->date}}</span></td>
+							</tr>
+							@endforeach
+						@endif
+					</tbody>
+			</table>
+				@elseif($report_type==1)
+				<table class="table table-striped" width="100%">
+				<thead class="table-head">
+					<tr>
+						<th># SL No</th>
+						<th>Invoice Id</th>
+						<th>Invoice Amount</th>
+						<th>Used Point</th>
+                        <th>Point Use Taka</th>
+                         <th>Date</th>
+
+                    </tr>
+				</thead>
+				<tbody>
+					<?php $i=0; ?>
+					@if($reports)
+						@foreach($reports as $report)
+							<tr>
+								<td>{{++$i}}</td>
+								<td><span class="span3">{{$report->sale_invoice_id}}</span></td>
+								<td><span class="span3">{{$report->amount}}</span></td>
+								<td><span class="span3">{{$report->use_point}}</span></td>
+								<td><span class="span3">{{$report->point_taka}}</span></td>
+								<td><span class="span3">{{$report->date}}</span></td>
+							</tr>
+							@endforeach
+						@endif
+
+				</tbody>
+			</table>
+				
 				@else
 				<table class="table table-striped table-bordered" width="100%">
 					<thead class="table-head" >
-						<tr>
-							<th>SL</th>
-							<th>Invoice ID</th>
-							<th>Payment Type</th>
-							<th>Sub Total Amount</th>
-							<th>Discount (Tk)</th>
-							<th>Payable</th>
-							<th>Paid</th>
-							<th>Due</th>
-							<th>Sold By</th>
-							<th>Sold At</th>
-						</tr>
-					</thead>
+				<tr>
+					<th>SL</th>
+					<th>Invoice ID</th>
+					<th>Payment Type</th>
+					<th>Sub Total Amount</th>
+					<th>Discount (Tk)</th>
+					<th>Point Use Taka</th>
+					<th>Payable</th>
+					<th>Paid</th>
+					<th>Due</th>
+					<th>Sold By</th>
+					<th>Sold At</th>
+				</tr>
+			</thead>
 					<tbody>
 				<? $i=0;$total_amount_taka=0;$total_discount=0;$total_point_use_taka=0;$total_payable=0;$total_pay=0;$total_due=0; //echo'<pre>';print_r($items);exit;?>
 				@if($reports)
 				   @foreach($reports as $invoice)
 					   <tr>
 							<td>{{++$i}}</td>
-							<td>
-								<a href="#saleDetailsModal" onclick="saleDetails({{$invoice->sale_invoice_id}})" data-toggle="modal">
-									{{$invoice->sale_invoice_id}}
-								</a>
-							</td>
+							<td>{{$invoice->sale_invoice_id}}</td>
 							<td>{{$invoice->payment_type_name}}</td>
 							<td>{{$invoice->amount + $invoice->discount + $invoice->point_use_taka}}<? $total_amount_taka=$total_amount_taka+$invoice->amount; ?></td>
 							<td>{{$invoice->discount}}<? $total_discount=$total_discount+$invoice->discount; ?></td>
+							<td>{{$invoice->point_use_taka}}<? $total_point_use_taka=$total_point_use_taka+$invoice->point_use_taka;?></td>
 							<td>{{$invoice->pay+$invoice->due}}<? $total_payable=$total_payable+$invoice->pay+$invoice->due ?></td>
 							<td>{{$invoice->pay}}<? $total_pay=$total_pay+$invoice->pay; ?></td>
 							<td>{{$invoice->due}}<? $total_due=$total_due+$invoice->due; ?></td>
@@ -174,52 +233,27 @@
                         <tr bgcolor="#DBEAF9">
 						   <td colspan="4"><strong style="font-size: 1.3em;">Total<strong></td>
 						   <td>{{$total_discount}}</td>
+						   <td>{{$total_point_use_taka}}</td>
 						   <td><strong>{{$total_payable}}</td>
                            <td><strong style="color: green;">{{$total_pay}}<strong></td>
-						   <td colspan="5"><strong style="color: red;">{{$total_due}}<strong></td>   
+						   <td colspan="4"><strong style="color: red;">{{$total_due}}<strong></td>   
 					   </tr>
 				@else
 					<tr>
 						<td colspan="10" style="text-align:center; color:#E98203;"><strong>There are no record available.</strong><td>
 					</tr>
 				@endif
+                               
 			</tbody>
 				</table>
 				@endif
 			</div>	
 		</div>
 	</div>
-		<!--Sale Details Model-->
-		<div id="saleDetailsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="saleDetailsLabel" aria-hidden="true">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#735;</button>
-				<h3 id="saleDetailsLabel"><i class="icon-zoom-in"></i>&nbsp; Sale Details</h3>
-			</div>
-			<div id="printable">
-				<div class="modal-body print_modal" id="saleDetailsBody">
-					<div id="loading">
-						{{ HTML::image('img/loader.gif', 'Please Wait...')  }}
-					</div>			
-				</div>
-			</div>	
-		</div>				
+							
 
 	<script>
-		function loadingImg(){
-			$('#loading').ajaxStart(function() {
-				$(this).show();
-			}).ajaxComplete(function() {
-				$(this).hide();
-			});
-		}
-		function saleDetails(saleInvoiceId){
-			$(function(){									
-				loadingImg();
-				$("#saleDetailsBody").load("{{ URL::to('admin/sale/saleReportDetails') }}"+"/"+saleInvoiceId);
-			});
-		}
-
-	$('.Customers').addClass('active btn btn-fill');
+		$('.Customers').addClass('active btn btn-fill');
 		$(function(){  
 			
 			$('#amount').keyup(function(){
@@ -261,9 +295,18 @@
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
+
 @stop

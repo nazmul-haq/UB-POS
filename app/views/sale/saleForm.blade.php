@@ -1,31 +1,35 @@
 @extends('_layouts.default')
+
 @section('content')
+
             <?php 
             $amount=0;
+           // Session::forget("saleItems");
+           // echo'<pre>';print_r(Session::get('saleItems'));
             if(Session::get('saleItems')){
                 foreach(Session::get('saleItems') as $item)
-                $amount=$amount+$item['total'];
+                                 $amount=$amount+$item['total'];
             }
             $invoicesInQueue=count(Session::get('saleInvoiceQueue'));
              ?>
         @if(Session::get('saleInvoiceQueue'))
         <div id="sticky">
-        <ul id="example-1" class="sticklr stick-que" style="margin-left: 40px !important; border-left:1px;">
-            <li style="border-left: 1px solid #f7f7f7;">
+        <ul id="example-1" class="sticklr stick-que" style="margin-left: 40px;">
+            <li>
                 <a href="javascript:;" title="Sales Queue">{{ HTML::image('img/nav_icon/purchase.png', 'title', array('class' => 'sticky_icon')) }} <span class="notification-count">{{$invoicesInQueue}}</span></a>
-                <ul style="">
+                <ul>
                     <li class="sticklr-title">
                         <a href="#">Queue List</a>
                     </li>
-                    @foreach(Session::get('saleInvoiceQueue') as $customer => $invoice)
+                    @foreach(Session::get('saleInvoiceQueue') as $customer=>$invoice)
                     <li>
                         {{ Form::open(array('route' => 'sale.reloadDeleteInvoiceQueueElement', 'id' => 'formReloadDeleteInvoiceQueueElement', 'class' => 'form-horizontal')) }}
                             {{$customer}}
                             <input type="hidden" name="customer" value="{{$customer}}">
                            <span id="btn-queue">
                             <button type="submit" class="btn btn-info btn-small" name="reloadDelete"  onclick="isSureToReloadInvoiceFromQueue();"><i class="setup-icon icon-undo"></i></button>
-                            <!-- <a class="btn btn-success btn-small" ><i class="setup-icon icon-print"></i></a> -->
                             <button type="submit"  class="btn btn-warning btn-small" name="reloadDelete" value="delete"  onclick="return isSureToDeleteInvoiceFromQueue();"><i class="icon-remove"></i></button>
+                                                    
                            </span>
                         {{ Form::close() }}
                     </li>
@@ -37,68 +41,71 @@
         @endif
     <div class="row">
         <div class="span8">
-            <div style="height:24px;" class='label label-info'>
-            <h4><i class='icon-shopping-cart'></i> Sales Register 
-            @if(Session::get('saleItems'))
-                <a style="float:right;"  id="addInvoiceToQueue" role="button" data-toggle="modal" onclick="addInvoiceToQueue();" class="btn btn-success btn-small">Hold this invoice</a>
-                <a style="float:right;"  class="btn btn-warning btn-small" href="{{route('sale.emptyCart')}}">Clear Screen</a>
-            @endif
-            <span id='topTotalQuantity' class='label label-warning' style='font-size:22px; border-radius:90px;'></span>
-            <a href="{{route('sale.salesOrder')}}" class="btn btn-small btn-success" style="margin-left: 50px;">
-                <i class='icon-forward'></i> Go to Sales Order
-            </a> 
-            </h4> 
+                    @include('_sessionMessage')
+                    <div style="height:24px;" class='label label-info'>
+                    <h4><i class='icon-shopping-cart'></i> Sales Register 
+                    @if(Session::get('saleItems'))
+                        <a style="float:right;"  id="addInvoiceToQueue" role="button" data-toggle="modal" onclick="addInvoiceToQueue();" class="btn btn-success btn-small">Hold this invoice</a>
+                        <span id='topTotalQuantity' class='label label-warning' style='font-size:22px; border-radius:90px;'></span>
+                        <a style="float:right;"  class="btn btn-warning btn-small" href="{{route('sale.emptyCart')}}">Clear Screen</a>
+                    @endif
+                    </h4> 
+                    </div>
+            <div class="invoice-reg"><input type="hidden" id="max_dis_percent" value="{{Session::get('max_inv_dis_percent');}}">
+                                <!-- {{Session::get('max_inv_dis_percent');}}!-->
+                {{ Form::open(array('route' => 'sale.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal')) }}
+                    <div class="control-group">
+                        {{ Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight: bold;']) }}
+                        <div class="controls">
+                            {{ Form::text('item_id', null, array('class' => 'span6','autofocus'=>'yes','id'=>'auto_search_item', 'placeholder' => 'Start Typing item\'s name or scan barcode...')) }}
+                        </div> <!-- /controls -->
+                    </div> <!-- /control-group -->
+                {{ Form::close() }}
             </div>
+
             <table class="table table-bordered" width="100%">
                 <thead class="table-head">
                     <tr>
                         <th>SL</th>
                         <th>Item Name</th>
-                        <th colspan="2" style="width: 300px;">Sale Qty.</th>      
-                        <th>Available Qty.</th>
                         <th>Sale Price</th>
-                        <th style="width: 50px;">Total</th>
-                        <th style="width: 90px;">Action</th>
+                        <th>Available Qty.</th>
+                        <th>Sale Qty.</th>      
+                        <th>Total</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                <tbody class="addTr">
+                <tbody>
                     <?php 
                         $i=0; $invoice_total=0; 
                         if(Session::get('saleItems')){
-                            $reverse_items= Session::get('saleItems');
+                            $reverse_items= array_reverse(Session::get('saleItems'));
                         }
                         $totalQuantity = 0;
                         $totalPoint = 0;
                     ?>
                     @if(Session::get('saleItems'))
-                        @foreach($reverse_items as $key => $item)
+                        
+                        @foreach($reverse_items as $item)
                             <? $invoice_total=$invoice_total+$item['total'];
                             $totalQuantity+=$item['sale_quantity'];
-                            //$totalPoint = $totalPoint + ($item['item_point'] * $item['sale_quantity']);
+                            $totalPoint = $totalPoint + ($item['item_point'] * $item['sale_quantity']);
                             ?>
                             {{ Form::open(array('route' => 'sale.editDeleteItem', 'class' => 'form-horizontal')) }}
                                 <tr>                            
-                                    <td id="sl_{{$key+1}}">{{++$i}}</td>
-                                    <td>
-                                        <span class="span3">
+                                    <td>{{++$i}}</td>
+                                    <td style="width: 330px;">
+                                        <span class="span3" style="font-weight: bolder; font-size: 14px;">
                                             {{$item['item_name']}}
                                             <input type="hidden" name="key" value="{{$item['key']}}">
                                             <input type="hidden" name="item_id" value="{{$item['item_id']}}">
+                                            <input type="hidden" name="item_point" value="{{$item['item_point']}}">
                                             <input type="hidden" name="price_id" value="{{$item['price_id']}}">
                                             <input type="hidden" name="item_name" value="{{$item['item_name']}}">
-                                            <input type="hidden" id="pcsPerCarton_{{$key}}" name="pcs_per_cartoon" value="{{$item['pcs_per_carton']}}">
-                                            <input type="hidden" id="availableQuantity_{{$key}}" name="available_quantity" value="{{$item['available_quantity']}}">
                                         </span>
                                     </td>
-                                    <td colspan="2">
-                                        <div class="span3">
-                                            <div class="span1" style="float: left; margin-right: 20px;"><label>PCS</label>
-                                                <input style="width: 100%;" class="span1 saleQuanty" id="pcs_{{$key}}" type="text" name="sale_quantity"  autocomplete="off" value="{{$item['sale_quantity']}}"/></div>
-                                            <div @if($item['unit'] == 1 || $item['unit'] == 3) style="float: left; margin-right: 20px; display: none;" @elseif($item['unit'] == 2) style="float: left; margin-right: 20px;" @endif class="span1"><label>Dozz</label><input style="width: 100%;" class="span1 saleQuanty" id="saleQuantityDozz_{{$key}}" type="text" name="sale_quantity_dozz"  autocomplete="off" value="{{round($item['dozz'],4)}}" /></div>
-                                            <div @if($item['unit'] == 1 || $item['unit'] == 2) style="float: left; margin-right: 20px; display: none;" @elseif($item['unit'] == 3) style="float: left; margin-right: 20px;" @endif  class="span1"><label>Set</label><input style="width: 100%;" class="span1 saleQuanty" type="text" id="saleQuantitySet_{{$key}}" name="sale_quantity_set"  autocomplete="off" value="{{round($item['set'],4)}}" /></div>
-                                            <div style="float: left;" class="span1"><label>Carton</label><input style="width: 100%;" class="span1 saleQuanty" type="text" name="sale_quantity_carton" id="saleQuantityCarton_{{$key}}" autocomplete="off" value="{{round($item['carton'],4)}}" /></div>
-                                        </div>
-                                            <input class="span1 floatingCheck" type="text" name="discount" id="discount_{{$key}}" autocomplete="off" value="{{$item['discount']}}" readonly="" style="display: none;" />
+                                    <td>
+                                        <input class="span1" type="text" readonly name="sale_price" value="{{$item['sale_price']}}" />
                                     </td>
                                     <td>
                                     @if($item['sale_quantity']==0)
@@ -108,46 +115,39 @@
                                     @endif
                                     </td>
                                     <td>
-                                        <input class="span1 price_change saleQuanty" type="text" name="sale_price" id="price_{{$key}}" value="{{$item['sale_price']}}" />
-                                        <input type="hidden" name="purchase_price" id="purchasePrice_{{$key}}" value="{{$item['purchase_price']}}" />
+                                        <input class="span1 saleQuanty" type="text" name="sale_quantity"  autocomplete="off" value="{{$item['sale_quantity']}}" />
+                                        <input class="span1 floatingCheck" type="hidden" name="discount" autocomplete="off" value="{{$item['discount']}}" readonly=""/>
                                     </td>
+                                    
                                     <td>
-                                        <input type="text" name="total" id="total_{{$key}}"  class="span1 disabled" disabled="" value="{{$item['total']}}" />
+                                        <input type="text" name="total"  class="span1 disabled" disabled="" value="{{$item['total']}}" />
                                     </td>
-                                    <td class="span2" style="width: 90px;">
-                                        <button style="display:none;" type="submit" class="edit btn btn-primary" name="edit_delete" value="edit"><i class="icon-edit"></i></button>
-                                        <button type="submit" class="btn btn-warning btn-delete" id="delete_{{$key}}" name="edit_delete"><i class="icon-trash"></i></button>
+                                    <td class="span2">
+                                        <button type="submit" class="edit btn btn-primary" name="edit_delete" value="edit"><i class="icon-edit"></i></button>
+                                        <button type="submit" class="btn btn-warning" name="edit_delete"><i class="icon-trash"></i></button>
                                     </td>
                                 </tr>
                             {{ Form::close() }}
                         @endforeach
+                        @else
+                            <tr>
+                                <td colspan="8" style="text-align:center; color:#E98203;"><strong>There are no items in the cart</strong><td>
+                            </tr>
+                    @endif
+                    @if(Session::get('saleItems'))
+                            <tr>
+                                <td colspan="8" style="text-align:center; color:#E98203;">
+                                <strong>Total Item : {{$totalQuantity}}</strong>
+                                <input type='hidden' id='toalQuantity' value='{{ $totalQuantity }}'>
+                                <td>
+                            </tr>
                     @endif
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="8" style="text-align:center; color:#E98203;">
-                        <strong>Total Item : <span id="cartAddedQty">{{count(Session::get('saleItems'))}}</span></strong>
-                        <input type='hidden' id='toalQuantity' value='{{ $totalQuantity }}'>
-                        <td>
-                    </tr>
-                </tfoot>
             </table>
-            <div class="invoice-reg"><input type="hidden" id="max_dis_percent" value="{{Session::get('max_inv_dis_percent');}}">
-                <!-- {{Session::get('max_inv_dis_percent');}}!-->
-                @include('_sessionMessage')
-                {{ Form::open(array('route' => 'sale.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal itemAddCartForm')) }}
-                    <div class="control-group">
-                        {{ Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight:bold;margin-top:7px;font-size:18px;']) }}
-                        <div class="controls">
-                            {{ Form::text('item_id', null, array('class' => 'span6 item_id','autofocus'=>'yes','id'=>'auto_search_item', 'placeholder' => 'Start Typing item\'s name or scan barcode...','style' => 'height: 30px;border: 1px solid #125f0d;')) }}
-                        </div> <!-- /controls -->
-                    </div> <!-- /control-group -->
-                {{ Form::close() }}
-            </div>
         </div>
-        <div class="span4" style="position: fixed; left: 858px;">
+        <div class="span4">
             <div class="invoice-right">
-                {{ Form::open(array('route' => 'sale.selectDeleteCustomer','autocomplete'=>'off', 'id' => 'customerForm', 'style' => 'margin : 0 0 9px !important;')) }}
+                {{ Form::open(array('route' => 'sale.selectDeleteCustomer','autocomplete'=>'off', 'id' => 'customerForm')) }}
                     @if(Session::get('sale_invoice_info.user_name'))                                        
                         <div class="control-group hr">
                             <label class="control-label" for="supplier_name"><strong style="font-size: 1.1em;"><u>Customer</u></strong></label>
@@ -158,15 +158,15 @@
                                             <td>Customer Name</td>
                                             <td>:</td>
                                             <td><strong id="customer_name" style="color: green; font-size: 1.4em;">
-                                                {{Session::get('sale_invoice_info.full_name')}}
+                                                {{Session::get('sale_invoice_info.user_name')}}
                                                 <input type="hidden" id="customer" value="{{Session::get('sale_invoice_info.user_name')}}">
-                                                <input type="hidden" id="cust_type_discount_percent" value="0">
+                                                <input type="hidden" id="cust_type_discount_percent" value="{{Session::get('sale_invoice_info.discount_percent')}}">
                                             </strong>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <button type="submit" style="margin: 3px 0 3px" class="btn btn-warning" name="customer" value="delete"><i class="icon-trash"></i> &nbsp;Remove</button>
+                                <button type="submit" style="margin: 7px 0 7px" class="btn btn-warning" name="customer" value="delete"><i class="icon-trash"></i> &nbsp;Remove</button>
                             </div> <!-- /controls -->
                         </div>
                     @else
@@ -180,16 +180,9 @@
                     @endif
                 {{ Form::close() }}
                 <div>
-                    {{ Form::open(array('route' => 'sale.invoiceAndSale','autocomplete'=>'off', 'class' => 'form-horizontal', 'style' => 'margin : 0 0 1px !important;')) }}
+                    {{ Form::open(array('route' => 'sale.invoiceAndSale','autocomplete'=>'off', 'class' => 'form-horizontal')) }}
                     <table class="table table-striped" style="margin: 0; padding:0;">
                         <tbody>
-                        <tr>
-                            <td>Branch </td>
-                            <td>:</td>
-                            <td style="padding:0;">
-                                <span> {{Helper::getBranchName()}}</span>
-                            </td>
-                        </tr>
                         @if(Session::get('backdate_sales')==0)
                         <input name="date" type="hidden" value="<?= date("Y-m-d") ?>">
                         @else
@@ -217,9 +210,23 @@
                                 <td>Discount</td>
                                 <td>:</td>
                                 <td style="padding:0;">
-                                    <input style="margin-top: 3px; width:95px;" type="text" maxlength="5" readonly id="dis_percent" name="discount_percent" data-toggle="tooltip" title="Discount (%)" value="%"  placeholder="Discount(%)">&nbsp;&nbsp;
-                                    <input style="margin-top: 3px; width:95px;"  type="text" maxlength="10" id="dis_taka" name="invoice_discount"  data-toggle="tooltip" title="Discount (Tk.)" placeholder="Discount(Taka)" value="0">
+
+                                  
+                                    <input style="margin-top: 3px; width:65px;" type="text" maxlength="5" readonly id="dis_percent" name="discount_percent" data-toggle="tooltip" title="Discount (%)" value="@if(Session::get('sale_invoice_info.user_name')){{Session::get('sale_invoice_info.discount_percent')}}%@endif"  placeholder="Discount(%)">&nbsp;&nbsp;
+                                    <input type="text" maxlength="10" id="dis_taka" name="invoice_discount"  data-toggle="tooltip" title="Discount (Tk.)" placeholder="Discount(Taka)" @if(Session::get('sale_invoice_info.user_name')) readonly="" value="{{($invoice_total-Session::get('invoice_info.invoice_discount'))*(Session::get('sale_invoice_info.discount_percent')/100)}}" @endif  @if(Session::get('sale_invoice_info.discount_permission') == 0) readonly="" style="width:85px !important;" @endif style="margin-top: 3px; width:120px;">
+
+                                    @if(Session::get('sale_invoice_info.discount_permission') == 0)
+                                        <a id="discountPermission" class="btn btn-xs btn-success" role="button" data-toggle="modal" onclick="discountPermissionCheck();"> 
+                                            <i class="icon-check"></i> 
+                                        </a>
+                                    @endif
                                 </td>
+
+                            </tr>
+                            <tr>
+                                <td>Total Point</td>
+                                <td>:</td>
+                                <td><strong id="" style="color: green; font-size: 1.8em; font-family:Times;">{{$totalPoint}}</strong></td>
                             </tr>
                             <tr>
                                 <td>Total Amount (Tk)</td>
@@ -228,6 +235,7 @@
                                 @if(Session::get('sale_invoice_info.user_name'))
                                 <?php
                                     $amountTaka = $invoice_total-Session::get('invoice_info.invoice_discount');
+                                    $amountTaka = $amountTaka - ($amountTaka*(Session::get('sale_invoice_info.discount_percent')/100));
                                     echo $amountTaka;
                                 ?>
                                 @else
@@ -240,60 +248,456 @@
                                 <td>:</td>
                                 <td style="padding:0;">
                                     <div class="input-prepend input-append">
-                                        <input class="span2" type="text" id="appendedPrependedInput" maxlength="10" class="span2" name="pay" value="{{$amount}}">
-                                        <!--<input class="span2" type="text" id="appendedPrependedInput" maxlength="10" class="span2" name="pay" value="">-->
+                                        <input class="span2" type="text" readonly id="appendedPrependedInput" maxlength="10" class="span2" name="pay" value="@if(Session::get('sale_invoice_info.user_name')){{$amountTaka}}@else{{$amount}}@endif">
                                     </div>
                                 </td>
                             </tr>
-                            <tr style="display: none;">
+                            <tr>
                                 <td>Pay Note</td>
                                 <td>:</td>
                                 <td style="padding:0;">
                                     <input type="text" class="span2" id="paynote" autocomplete="off" maxlength="10" name="paynote" value="">
+                                    <input type='hidden' id='totalPoint' name="totalPoint" value='{{ $totalPoint }}'>
+
                                 </td>
                             </tr>
                             <tr>
-                                <td>Due</td>
+                                <td>Return Taka</td>
                                 <td>:</td>
-                                <td><strong id="due" style="color: green; font-size: 1.4em;">0.00</strong></td>
+                                <td><strong id="return_taka" style="color: green; font-size: 1.4em;">0.00</strong></td>
                             </tr>
-                            @if(Session::has('sale_invoice_info.customer_due'))
-                            @if(Session::get('sale_invoice_info.customer_due') > 0)
-                            <tr>
-                                <td>Previous Due</td>
-                                <td>:</td>
-                                <td><strong id="due" style="color: green; font-size: 1.4em;">{{Session::get('sale_invoice_info.customer_due')}}</strong></td>
-                            </tr>
-                            @endif
-                            @endif
+                             
                         </tbody>
                     </table>
                     <div style="text-align: left; margin-left: 10px;">
-                        <button name="sale" type="submit" class="btn btn-danger" onclick="return isUnRegisteredCustomer();">
-                            Complete Sale
-                        </button>
-                        <button name="saleOrder" type="submit" class="btn btn-success" onclick="return isUnRegisteredCustomer();">
-                            Send To Sale Order
-                        </button>
+                        <button type="submit" class="btn btn-danger" onclick="return isUnRegisteredCustomer();">Complete Sale</button>
                     </div>
                     {{ Form::close() }}
                 </div>
+
             </div>
         </div>
     </div>
     {{ HTML::script('js/jquery-ui.min.js') }}
-    @include('sale.saleFormAjaxRequest')
-    <div id="addInvoiceToQueueModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addInvoiceToQueueModalLabel" aria-hidden="true">
+    <script>
+        $().ready(function(){
+             //Auto Complete for Item Search
+             $("#auto_search_item").autocomplete("{{route('sale.itemAutoSuggest')}}", {
+                width: 260,
+                matchContains: true,
+                queryDelay : 0,
+                formatItem: function(row) {
+                    return row[1];
+                },
+            });
+            //Submit Search Item Form
+            $("#auto_search_item").result(function(event, data, formatted) {
+                $("#formItemLocation").submit();
+            });
+
+            //Customer auto suggest
+            $("#customerAutoSugg").autocomplete("{{route('sale.autoCustomerSuggest')}}", {
+                width: 260,
+                matchContains: true,
+                queryDelay : 0,
+                formatItem: function(row) {
+                    return row[1];
+                }
+            });
+            //Submit Supplier Form
+            $("#customerAutoSugg").result(function(event, data, formatted) {
+                $("#customerForm").submit();
+            });
+        
+            //Discount Calculate for percent
+            var totalAmount = parseFloat($("#total_amount").html());
+            if(totalAmount>=1000){
+                autoDiscountCalculation(totalAmount);
+            }
+
+            function autoDiscountCalculation(totalAmount){
+                var discountPercent= parseFloat($("#cust_type_discount_percent").val());
+                 if(discountPercent>0){
+                     var discountAmount= ((totalAmount*discountPercent)/100).toFixed(0);
+                     $("#dis_percent").val(discountPercent+" %");
+                     $("#dis_taka").val(discountAmount);
+                     $("#pay_amount").html(totalAmount-discountAmount);
+                     $("#appendedPrependedInput").val(totalAmount-discountAmount);
+                 }
+            }
+
+            $('#dis_percent').keyup(function(){
+                var $total_amount = $('#total_amount').html();
+                var $point_taka = parseFloat($('#point_taka').html());
+                if(isNaN($point_taka)){
+                    $point_taka = 0;
+                }
+                var max_dis_percent = parseFloat(document.getElementById("max_dis_percent").value);
+                var discount_percent=parseFloat(this.value);
+                if(isNaN(discount_percent)){
+                    discount_percent = 0;
+                }
+                var discount_taka=0;
+                var $sub_total_amount=($total_amount-$point_taka).toFixed(2);
+                var $sub_total_percent=(($sub_total_amount*100)/$total_amount);
+                
+                var intRegex = /^\d+$/;
+                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                var str = $(this).val();
+
+                if(this.value==''){
+                   this.value=null;
+                    $('#dis_taka').val(0);
+                    $('#pay_amount').html(($total_amount-$point_taka).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-$point_taka).toFixed(2));
+                }
+                else if(intRegex.test(str) || floatRegex.test(str)) {
+                    $('#dis_taka').attr('readonly','readonly');
+                    var new_discount_percent1=0;
+                    var new_discount_percent2=0;
+                    var confirm_discount_percent=0;
+                    if(discount_percent>max_dis_percent){
+                        if(max_dis_percent>$sub_total_percent){
+                            new_discount_percent1=$sub_total_percent;
+                        }
+                        else{
+                            new_discount_percent1=max_dis_percent;
+                        }
+                    }
+                    if(discount_percent>$sub_total_percent){
+                        new_discount_percent2=$sub_total_percent;
+                    }
+
+                    new_discount_percent1=parseFloat(new_discount_percent1);
+                    new_discount_percent2=parseFloat(new_discount_percent2);
+
+                    if((new_discount_percent1==0) && (new_discount_percent2==0)){
+                       // alert("no break one");
+                        this.value=this.value;
+                        confirm_discount_percent=parseFloat(this.value);
+                    }
+                    else if((new_discount_percent1==0)&&(new_discount_percent2>0)){
+                       // alert("first break one");
+                       // alert(new_discount_taka2);
+                        this.value=new_discount_percent2.toFixed(2);
+                        confirm_discount_percent=parseFloat(new_discount_percent2);
+                    }
+                    else if((new_discount_percent1!=0)&&(new_discount_percent2==0)){
+                        //alert("2nd break one");
+                        this.value=new_discount_percent1.toFixed(2);
+                        confirm_discount_percent=parseFloat(new_discount_percent1);
+                    }
+                    else{
+
+                        if(new_discount_percent1<new_discount_percent2){
+                            this.value=new_discount_percent1.toFixed(2);
+                            confirm_discount_percent=parseFloat(new_discount_percent1);
+                        }
+                        else{
+                            this.value=new_discount_percent2.toFixed(2);
+                            confirm_discount_percent=parseFloat(new_discount_percent2);
+                        }
+                    }
+                    discount_taka=(($total_amount/100)*confirm_discount_percent);
+                    
+                    $('#dis_taka').val(discount_taka.toFixed(2));
+                    $('#pay_amount').html(($total_amount-(discount_taka+$point_taka)).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-(discount_taka+$point_taka)).toFixed(2));
+                }
+                else{
+                    alert('Wrong Data');
+                    this.value = '';
+                    $('#dis_taka').val(0.00);
+                    $('#pay_amount').html(($total_amount-$point_taka).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-$point_taka).toFixed(2));
+                    $('#due').html(0.00);
+                    return false;
+                }
+            });
+
+            //Discount Calculate for Taka
+            $('#dis_taka').keyup(function(){                
+                var $total_amount = $('#total_amount').html();
+                var $point_taka = parseFloat($('#point_taka').html());
+                if(isNaN($point_taka)){
+                    $point_taka = 0;
+                }
+                var max_dis_percent = parseFloat(document.getElementById("max_dis_percent").value);
+                var max_dis_taka=(($total_amount/100)*max_dis_percent);                              
+                var $sub_total_amount=($total_amount-$point_taka).toFixed(2);
+                var discount_taka=parseFloat(this.value);
+                if(isNaN(discount_taka)){
+                    discount_taka = 0;
+                }   
+                var intRegex = /^\d+$/;
+                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                var str = $(this).val();                               
+                                
+                if(this.value==''){
+                   this.value=null;
+                    $('#dis_percent').val(0);
+                    $('#pay_amount').html(($total_amount-$point_taka).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-$point_taka).toFixed(2));
+                }
+                else if(intRegex.test(str) || floatRegex.test(str)) {                                    
+                    $('#dis_percent').attr('readonly','readonly');
+                    var new_discount_taka1=0;
+                    var new_discount_taka2=0;
+                    var confirm_discount=0;
+                    if(discount_taka>max_dis_taka){
+                        if(max_dis_taka>$sub_total_amount){
+                            new_discount_taka1=$sub_total_amount;
+                        }
+                        else{
+                            new_discount_taka1=max_dis_taka;
+                        }
+                    }
+                    if(discount_taka>$sub_total_amount){
+                        new_discount_taka2=$sub_total_amount;
+                    }
+
+                    new_discount_taka1=parseFloat(new_discount_taka1);
+                    new_discount_taka2=parseFloat(new_discount_taka2);
+
+                    if((new_discount_taka1==0) && (new_discount_taka2==0)){
+                        this.value=this.value;
+                        confirm_discount=parseFloat(this.value);
+                    }
+                    else if((new_discount_taka1==0)&&(new_discount_taka2>0)){
+                       
+                        this.value=new_discount_taka2.toFixed(2);
+                        confirm_discount=parseFloat(new_discount_taka2);
+
+                    }
+                    else if((new_discount_taka1!=0)&&(new_discount_taka2==0)){
+                        //alert("2nd break one");
+                        this.value=new_discount_taka1.toFixed(2);
+                        confirm_discount=parseFloat(new_discount_taka1);
+                        
+                    }
+                    else{
+                       
+                        if(new_discount_taka1<new_discount_taka2){
+                            
+                            this.value=new_discount_taka1.toFixed(2);
+                            confirm_discount=parseFloat(new_discount_taka1);
+                        }
+                        else{
+                            this.value=new_discount_taka2.toFixed(2);
+                            confirm_discount=parseFloat(new_discount_taka2);
+                        }
+                    }
+                    $('#dis_percent').val((((confirm_discount*100)/$total_amount).toFixed(2))+' %');
+                    $('#pay_amount').html(($total_amount-(confirm_discount+$point_taka)).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-(confirm_discount+$point_taka)).toFixed(2));
+                }                                
+                else{
+                    alert('Wrong Data');
+                    this.value = '';
+                    $('#dis_percent').val(0.00);
+                    $('#pay_amount').html(($total_amount-$point_taka).toFixed(2));
+                    $('#appendedPrependedInput').val(($total_amount-$point_taka).toFixed(2));
+                    $('#due').html(0.00);
+                    return false;
+                }
+            });
+
+
+            $('#appendedPrependedInput').keyup(function(){
+                //var discount_taka = parseFloat(this.value);
+                var regex =  /^\d*(?:\.{1}\d+)?$/;
+                var pay =parseFloat(this.value);
+                var $payable = parseFloat($('#pay_amount').html());
+                //alert(pay>$payable)
+                var pay_note =parseFloat(document.getElementById("paynote").value);
+                var return_taka=0;
+                
+                if(this.value==''){
+                    this.value=null;
+                    $('#due').html($payable.toFixed(2));
+                    $('#return_taka').html(0.00);
+                }
+                else{
+                    if (this.value.match(regex)) {  
+                        if(pay>$payable){
+                            this.value=$payable;
+                            $('#due').html(0.00);
+                            $('#return_taka').html((isNaN(pay_note-$payable)) ?0:(pay_note-$payable).toFixed(2));
+                        }
+                        else{
+                        $('#due').html(($payable-pay).toFixed(2));
+                        $('#return_taka').html((isNaN(pay_note-pay)) ?0:(pay_note-pay).toFixed(2));
+                        }                                   
+                    }                                  
+                    else{   
+                        this.value='';
+                        $('#due').html($payable.toFixed(2));
+                        $('#return_taka').html(0.00);
+                    }
+                }
+            });
+                        
+            $('#paynote').keyup(function(){
+                var regex =  /^\d*(?:\.{1}\d+)?$/;
+                var pay_taka = parseFloat(document.getElementById("appendedPrependedInput").value);
+                var pay_note =parseFloat(this.value);
+                var return_taka=0;
+                if(this.value==''){
+                    this.value=null;
+                    $('#return_taka').html(0.00);
+                }
+                else{
+                    if (this.value.match(regex)) {                                        
+                        $('#return_taka').html((pay_note-pay_taka).toFixed(2));
+                    } else {   
+                        this.value='';
+                        $('#return_taka').html(0.00);
+                    }
+                }
+            });
+
+
+            $('.floatingCheck').keyup(function(){
+                var intRegex = /^\d+$/;
+                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                var str = $(this).val();
+                if(this.value==''){
+                   this.value='';
+                }
+                else if(intRegex.test(str) || floatRegex.test(str)) {
+                   
+                }
+                else{
+                    alert('Wrong Data');
+                    this.value ='';
+                }
+            });
+
+          $('.saleQuanty').blur(function(){
+                var intRegex = /^\d+$/;
+                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                var str = $(this).val();
+                if(this.value==''){
+                   this.value=1;
+                }
+                else if(this.value=='0') {
+                    this.value=1;
+                }
+                else if(intRegex.test(str) || floatRegex.test(str)) {
+
+                }
+                else{
+                    alert('Wrong Data');
+                    this.value = 1;
+                }
+
+            });
+
+            //for input box tooltip
+            $('input[type=text][name=discount_percent]').tooltip({
+                placement: "right",
+                trigger: "hover"
+            });
+
+        });
+
+
+        function saleQuantyCheck() {
+            saleQuanty.value = 22;
+        }
+
+        
+        function isUnRegisteredCustomer() {
+
+        var customer = document.getElementById("customer").value;
+        var $total_amount = parseFloat($('#total_amount').html());
+        if($total_amount==0){
+           alert("Error! There is no selected item for sale.");
+           return false;
+        }
+        
+        if(!customer){
+            //payabe cash check//
+        if(parseFloat($("#paynote").val()) < parseFloat($("#appendedPrependedInput").val())){
+            alert("Sorry you can'\t pay less than amount");
+            return false;
+        }
+            var $due = $('#due').html();
+            if($due>0){
+                alert("Error! Unregistered Customer Can not allow for due.");
+                return false;
+            }
+            var confirmation=confirm("Are you sure to complete the sale?");
+            if(confirmation){
+                return true;
+            }
+            return false;
+        }
+        else{
+            if(parseFloat($("#paynote").val()) < parseFloat($("#appendedPrependedInput").val())){
+                alert("Sorry you can'\t pay less than amount");
+                return false;
+            }
+            var confirmation=confirm("Are you sure to complete the sale?");
+            if(confirmation){
+                return true;
+            }
+            return false;
+        }
+
+
+    }
+
+        function addInvoiceToQueue() {
+            var customer = document.getElementById("customer").value;
+            var x = document.getElementById("addInvoiceToQueue");
+            
+            if(customer){
+                window.location="{{URL::to('sale/addInvoiceToQueue')}}";
+            }
+            else{   
+            x.setAttribute("href", "#addInvoiceToQueueModal");
+            }
+
+        }
+
+        function discountPermissionCheck() {
+            var x = document.getElementById("discountPermission");
+            x.setAttribute("href", "#discountPermissionModal");
+        }
+         function isSureToDeleteInvoiceFromQueue() { 
+            var confirmation=confirm("Are you sure to delete the invoice from queue ?");
+            if(confirmation){
+               return true;
+            }
+            else{
+                return false;
+            }  
+        }
+         function isSureToReloadInvoiceFromQueue() { 
+            var confirmation=confirm("Are you sure to reload the invoice from queue ?");
+            if(confirmation){
+               return true;
+            }
+            else{
+                return false;
+            }  
+        }
+
+
+    </script>
+
+    <div id="discountPermissionModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="discountPermissionModalLabel" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#735;</button>
-            <h3 id="itemEditModalLabel"><i class="icon-edit-sign"></i>&nbsp; Add Invoice To Queue</h3>
+            <h3 id="itemEditModalLabel"><i class="icon-edit-sign"></i>&nbsp; Please Enter Password To Unlock Discount Field</h3>
         </div>
-        <div class="modal-body" id="addInvoiceToQueueModalBody">
-                {{ Form::open(array('route' => 'sale.addInvoiceToQueue.post', 'id' => 'formAddInvoiceToQueue', 'class' => 'form-horizontal')) }}
+        <div class="modal-body" id="discountPermissionModalBody">
+                {{ Form::open(array('route' => 'sale.discountPermission.post', 'id' => 'formDiscountPermissionModal', 'class' => 'form-horizontal')) }}
                 <div class="control-group">     
-                    {{ Form::label('Customer', 'Customer', ['class' => 'control-label']) }}
+                    {{ Form::label('password', 'Password', ['class' => 'control-label']) }}
                     <div class="controls">
-                        {{ Form::text('customer', null, array('class' => 'span3', 'placeholder' => 'Enter Customer Name or Mobile','autofocus'=>'yes')) }}
+                        {{ Form::password('password', null, array('class' => 'span3', 'placeholder' => 'Enter Password','autofocus'=>'yes')) }}
                     </div> <!-- /controls -->                   
                 </div> <!-- /control-group -->  
                 <div class="modal-footer">
@@ -303,6 +707,32 @@
                 {{ Form::close() }}
         </div>
     </div>
+
+    <div id="addInvoiceToQueueModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addInvoiceToQueueModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#735;</button>
+            <h3 id="itemEditModalLabel"><i class="icon-edit-sign"></i>&nbsp; Add Invoice To Queue</h3>
+        </div>
+
+        <div class="modal-body" id="addInvoiceToQueueModalBody">
+                {{ Form::open(array('route' => 'sale.addInvoiceToQueue.post', 'id' => 'formAddInvoiceToQueue', 'class' => 'form-horizontal')) }}
+            
+                <div class="control-group">     
+                    {{ Form::label('Customer', 'Customer', ['class' => 'control-label']) }}
+                    <div class="controls">
+                        {{ Form::text('customer', null, array('class' => 'span3', 'placeholder' => 'Enter Customer Name or Mobile','autofocus'=>'yes')) }}
+
+                    </div> <!-- /controls -->                   
+                </div> <!-- /control-group -->  
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    {{ Form::submit('Save', array('class' => 'btn btn-primary')) }}
+                </div>
+
+                {{ Form::close() }}
+        </div>
+    </div>
+
     <script>
     $(function(){
         var formAddInvoiceToQueue = $('#formAddInvoiceToQueue');
@@ -329,13 +759,32 @@ $(window).load(function(){
             $("#paynote").focus();
             //window.location = "{{route('sale.emptyCart')}}";
         });
+
     }
+
 </script>
+
 @stop
+
 @section('stickyInfo')
+<?php
+    $string = 'Sales';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+@if(Session::has('redTheme'))
 <div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-		<li>S</li><li>a</li><li>l</li><li>e</li><li>s</li>
-	</ul>       
+    <ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+        {{$li}}
+    </ul>       
 </div>
+@else
+<div id="sticky" style="text-align: center;">        
+    <ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+        {{$li}}
+    </ul>       
+</div>
+@endif
 @stop

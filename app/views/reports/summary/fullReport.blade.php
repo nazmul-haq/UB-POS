@@ -41,22 +41,46 @@
                     <td><strong style="float:left;">Discount </strong></td>
                     <td>{{$sale->sale_discount}}</td>
                 </tr>
+                
                 <tr>
-                    <td><strong style="float:left;">Point Use Taka </strong></td>
-                    <td>{{$sale->sale_point_use_taka}}</td>
+                    <td><strong style="float:left;">Cash </strong></td>
+                    <td>{{ $saleAmountCash->cash_pay }}</td>
+                </tr>
+                <tr>
+                    <td><strong style="float:left;">Credit/Debit Card </strong></td>
+                    <td>
+                        @if($saleAmountCard->card_pay > 0)
+                            {{ $saleAmountCard->card_pay }}
+                        @else
+                            0
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong style="float:left;">BKash </strong></td>
+                    <td>
+                        @if($saleAmountBkash->bkash_pay > 0)
+                            {{ $saleAmountBkash->bkash_pay }}
+                        @else
+                            0
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong style="float:left;">Rocket </strong></td>
+                    <td>
+                        @if($saleAmountRocket->rocket_pay > 0)
+                            {{ $saleAmountRocket->rocket_pay }}
+                        @else
+                            0
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td><strong style="float:left;">Total Amount </strong></td>
                     <td><strong style="color: green; font-size: 1.5em;">{{$sale->sale_amount}}</strong></td>
                 </tr>
-                <tr>
-                    <td><strong style="float:left;">Paid </strong></td>
-                    <td>{{$sale->sale_pay}}</td>
-                </tr>
-                <tr>
-                    <td><strong style="float:left; ">Due </strong></td>
-                    <td>{{$sale->sale_due}}</td>
-                </tr>
+                
                  <tr>
                     <td><strong style="float:left; ">Sale Profit </strong></td>
                     <td><strong style="font-size: 1.5em; color: #AA80BB">{{$sale->total_sale_profit}}</strong></td>
@@ -109,12 +133,6 @@
         </div>
         <p>
             <strong>Total Amount :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{$other_expense}}</strong>
-        </p>
-        <div class="widget-header setup-title" style="margin-top:5px;"> <i class="icon-money"></i>
-            <h3>Salary GIven</h3>
-        </div>
-        <p>
-            <strong>Total Salary GIven :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{$salary_given}}</strong>
         </p>
         <div class="widget-header setup-title" style="margin-top:0px;"> <i class="icon-money"></i>
           <h3>Customer Due Payment</h3>
@@ -221,25 +239,13 @@
             <strong>Total Amount :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{ $totalGodwonTk->total_amount }}</strong>
         </p>
         <div class="widget-header setup-title"> <i class="icon-money"></i>
-            <h3>Customer Due</h3>
-        </div>
-        <p>
-            <strong>Total Customer Due :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{ $cusDueAmount->total_cus_due }}</strong>
-        </p>
-        <div class="widget-header setup-title"> <i class="icon-money"></i>
-            <h3>Supplier Due</h3>
-        </div>
-        <p>
-            <strong>Total Supplier Due :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{ $supDueAmount->total_supp_due }}</strong>
-        </p>
-        <div class="widget-header setup-title"> <i class="icon-money"></i>
             <h3>Stock Amount</h3>
         </div>
         <p>
             <strong>Total Amount :</strong>&nbsp;&nbsp;<strong style="color: green; font-size: 1.2em;">{{ $totalStockTk->total_amount }}</strong>
         </p>
-        
     </div>
+
 </div>
 <div class="row" style="margin-top: 0px; padding-top: 0px;">
     

@@ -1,0 +1,267 @@
+<?php $__env->startSection('content'); ?>
+<style>		
+	.head6{width: 240px}		
+	.head4{width: 200px}	
+	.dataTable tbody tr td{
+		margin: 0;
+		padding:2px 10px 0 10px;
+	}
+</style>
+<div class="row">
+	<div class="span12">			
+		<div class="widget-header setup-title"> <i class="icon-list"></i>
+		  <h3>Offer Type</h3>
+		</div>
+		<?php echo Form::open(array('route' => 'admin.addOffer', 'class' => 'form-horizontal', 'method' => 'GET')); ?>
+
+			<div class="control-group">
+				<label for="offer_type" style="font-weight: bolder;" class="control-label"><i class="icon-hand-right"></i>&nbsp;&nbsp;Offer Type &nbsp; : &nbsp;</label>
+				<?php echo Form::select('OfferType', ['' => 'Please Select Offer Type', '1' => 'Item Wise', '2' => 'Category Wise', '3' => 'Brand Wise','4' => 'Supplier Wise'], null, array('class' => 'span3', 'required' => 'required')); ?>
+
+				<button type="submit" class="btn btn-info"><i class="icon-arrow-right"></i>&nbsp;Next</button>
+			</div> <!-- /control-group -->
+		<?php echo Form::close(); ?>
+
+	</div> <!-- /widget-content -->
+	<? //echo '<pre>';print_r($data); ?>
+	<? if(isset($data['OfferType'])) : ?>
+	<div class="span12">
+	  <!--Item Datatable-->
+		<input type="hidden" id="offer_type" name="offer_type" value="<?= isset($data['OfferType']) ? $data['OfferType'] : null ?>" />
+	 
+		<div class="widget-header setup-title"> <i class="icon-th-list "></i>
+		  <h3>Offer Type : <?php if($data['OfferType'] == 1): ?> <?php echo 'Item Wise'; ?> <?php elseif($data['OfferType'] == 2): ?> <?php echo 'Category Wise'; ?> <?php elseif($data['OfferType'] == 4): ?> <?php echo 'Supplier Wise'; ?> <?php else: ?> <?php echo 'Brand Wise'; ?> <?php endif; ?></h3>
+		</div>
+		<div id="message" style="display: none;"></div>
+	 <?php if($data['OfferType']== 1): ?>	
+		<?php echo Datatable::table()
+				->addColumn('UPC Code','Item Name', 'Brand Name', 'Category Name', 'Offer', 'Action')
+				->setUrl(route('admin.getItemWiseData'))
+				->render(); ?>
+
+	  <?php endif; ?>
+	  <!--Brand Datatable-->
+	  <?php if($data['OfferType']== 3): ?>	
+		<?php echo Datatable::table()
+				->addColumn('id','Brand Name', 'Offer', 'Action')
+				->setUrl(route('admin.getBrandWiseData'))
+				->render(); ?>
+
+	  <?php endif; ?>
+	  <!--Category Datatable-->
+	  <?php if($data['OfferType']== 2): ?>	
+		<?php echo Datatable::table()
+				->addColumn('id','Category Name', 'Offer', 'Action')
+				->setUrl(route('admin.getCategoryWiseData'))
+				->render(); ?>
+
+	  <?php endif; ?>
+	  <!--Category Datatable-->
+	  <?php if($data['OfferType']== 4): ?>	
+		<?php echo Datatable::table()
+				->addColumn('id','Supplier Name', 'Offer', 'Action')
+				->setUrl(route('admin.getSupplierWiseItemData'))
+				->render(); ?>
+
+	  <?php endif; ?>
+	</div>
+	<? endif; ?>
+</div>
+<script>	
+	 function itemOffer(itemId){
+		$(function(){
+			var offer = $('#offer'+itemId).val();
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "itemOfferCreate/"+itemId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> ID '+itemId+' Offer Created Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	 function resetItemOffer(itemId){
+		$(function(){
+			var resetOffer = $('#offer'+itemId).val(0);
+			var offer = 0;
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "itemOfferReset/"+itemId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> Reset Item Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	 //Brand Offer
+	 function brandOffer(brandId){
+		$(function(){
+			var offer = $('#offerBrand'+brandId).val();
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "itemBrandCreate/"+brandId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> ID '+brandId+' Offer Created Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	function resetBrandOffer(brandId){
+		$(function(){
+			var resetOffer = $('#offerBrand'+brandId).val(0);
+			var offer = 0;
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "itemBrandReset/"+brandId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> Reset Offer Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 } 
+	 //Category Offer
+	 function categoryOffer(categoryId){
+		$(function(){
+			var offer = $('#offerCategory'+categoryId).val();
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "itemCategoryCreate/"+categoryId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> ID '+categoryId+' Offer Created Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	function resetCategoryOffer(categoryId){
+		$(function(){
+			var resetOffer = $('#offerCategory'+categoryId).val(0);
+			var offer = 0;
+			var offer_type = $('#offer_type').val();
+			//alert(resetOffer);
+			$.ajax({
+				url: "itemCategoryReset/"+categoryId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> Reset Offer Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});		
+		});		
+	}
+
+	function supplierOffer(suppId){
+		$(function(){
+			var offer = $('#offerSupplier'+suppId).val();
+			var offer_type = $('#offer_type').val();
+			$.ajax({
+				url: "supplierItemOfferCreate/"+suppId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> ID '+suppId+' Offer Created Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});			
+		}) ;
+	 }
+	function resetSupplierOffer(suppId){
+		// return false;
+		$(function(){
+			var resetOffer = $('#offerSupplier'+suppId).val(0);
+			var offer = 0;
+			var offer_type = $('#offer_type').val();
+			//alert(resetOffer);
+			$.ajax({
+				url: "supplierItemOfferReset/"+suppId,
+				type : "GET",
+				cache: false,
+				dataType : 'json',
+				data : {'offer': offer, 'offer_type': offer_type}, // serializes the form's elements.
+				success : function(data){
+					if(data.status == 'success'){
+						$('#message').html('<strong class="ajax-message-suc"><i class="icon-ok"></i> Reset Offer Successfully.</strong>');
+						$('#message').css('display', 'block').fadeOut(4000);				
+					} else{					
+						$('#message').html('<strong class="ajax-message-err"><i class="icon-warning-sign"></i> '+data.status+'</strong>');
+						$('#message').css('display', 'block').fadeOut(5000);						
+					}
+				},
+				error: function(){}
+			});		
+		});		
+	}
+</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

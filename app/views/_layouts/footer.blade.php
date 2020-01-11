@@ -9,14 +9,13 @@
 		</ul>       
 	</div>
 	@yield('stickyInfo')
-
 	<!-- /extra -->
 	<div class="footer">
 	  <div class="footer-inner">
 		<div class="container">
 		  <div class="row">
 			<div class="span12"> 
-				<strong> &copy; {{ date('Y') }} <a href="http://uit.unitechengr.com/" target="_blank">Unitech IT</a>.</strong> 
+				<strong> &copy; {{ date('Y') }} <a target="_blank" href="http://uit.unitechengr.com.com/">Unitech IT</a>.</strong> 
 				<div style="float:right;">
 					<span class="shortcut">F1. Sales</span>
 					<span class="shortcut">F2. Purchase</span>

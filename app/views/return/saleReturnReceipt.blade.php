@@ -1,156 +1,142 @@
 @extends('_layouts.default')
+
 @section('content')
-<?	
-	$created = substr(Session::get('receipt_info.created_at'),0,10);
-?> 
-	<!--Receipt-->
-	@if (Session::has('company_info'))
+
+<?	$created = substr(Session::get('receipt_info.created_at'),0,10); ?>
+	<!--Receipt-->	
 	<div class="row">
-		<div class="span6 mainDiv" style="margin-left: 410px !important;">    	
+		<div class="span12">    	
 			<article class="head-receipt">
-				<table align="center" style="width: 500px;">
-					<tr>
-						<td style="font-size: 10px;">
-				  			<img src="{{asset('img/company_logo.png')}}" class="" style="padding-right: 15px;height: 70px; margin-top: 20px !important;'" alt="title">
-						</td>
+				<ul style="list-style-type:none; margin: 0;">
+             @if (Session::has('company_info'))	
+				  <li><strong class="company-name">{{ Session::get('company_info')->company_name }}</strong></li>
+				  <li>{{ Session::get('company_info')->address }}</li>
+				  <li>{{ Session::get('company_info')->mobile }}</li>
+			 @endif
+				</ul>
+			 @if (Session::has('receipt_info'))	
+			 <center>
+			 <table>
+				<tbody>
+					<tr style="border-bottom: 1px solid #ccc; width:50%; margin: 3px auto;">
+						<td colspan="3" style="text-align:center;"><b>Sales Return Receipt</b></td>
 					</tr>
-					<tr>
-						<td style="font-size: 10px;">
-							{{Helper::getBranchName()}}
-						</td>
-					</tr>
-					<tr>
-						<td style="font-size: 10px;">
-							66, MOULOVIBAZAR, TAJMAHAL TOWER, CHAWKBAZAR, DHAKA,BANGLADESH.
-						</td>
-					</tr>
-					<tr>
-						<td style="font-size: 10px;">
-							Phone: 027343195,Cell: 01797185240, E-mail: shohag4321@gmail.com
-						</td>
-					</tr>
-					<tr>
-						<td style="font-size: 10px;">
-							Web: www.mbtrade-bd.com
-						</td>
-					</tr>
-				</table>
-		@endif
-		@if (Session::has('receipt_info'))
-			 <table border="1" style="width: 500px;border: 1px solid gray; margin-bottom: 5px;">
-				<tbody style='line-height:12px; font-size:10px'>
 					@if(!empty(Session::get('receipt_info.customer_name')))
 					<tr>
-						<td style="width: 40%;" align="left">Customer : {{ Session::get('receipt_info.customer_full_name') }}</td>
-						<td align="center" style="width: 20%;" rowspan="2">Sale Return Invoice</td>
-						<td style="width: 40%;" align="left">Invoice No : {{ Session::get('receipt_info.invoice_id') }}</td>
-					</tr>
-					<tr>
-						<td align="left">Address : {{ Session::get('receipt_info.present_address') }}</td>
-						<td align="left">Date : 
-							<?php 
-								if($created==Session::get('receipt_info.date')){
-
-									$transDateArr =explode(' ', Helper::dateFormat(Session::get('receipt_info.created_at')));
-									echo $transDateArr[0];
-								}else{
-									 echo Helper::dateFormat(Session::get('receipt_info.date'));
-								}
-							?>
-						</td>
-					</tr>
-					@else
-					<tr>
-						<td style="width: 40%;" align="left">Customer : </td>
-						<td align="center" style="width: 20%;" rowspan="2">Sale Return Invoice</td>
-						<td style="width: 40%;" align="left">Invoice No : {{ Session::get('receipt_info.invoice_id') }}</td>
-					</tr>
-					<tr>
-						<td align="left">Address : </td>
-						<td align="left">Date : 
-							<?php 
-								if($created==Session::get('receipt_info.date')){
-
-									$transDateArr =explode(' ', Helper::dateFormat(Session::get('receipt_info.created_at')));
-									echo $transDateArr[0];
-								}else{
-									 echo Helper::dateFormat(Session::get('receipt_info.date'));
-								}
-							?>
-						</td>
+						<td align="right">Customer Name</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left">{{ Session::get('receipt_info.customer_name') }}</td>
 					</tr>
 					@endif
-				</tbody>
-			 </table> 
-			 @endif
-			</article>	
-
-			@if(Session::has('receipt_return_item_infos'))
-			
-			<table class="item-sales" border="1" style='width: 500px;'>
-				<thead class="table-receipt-head">
 					<tr>
-						<th>SL.</th>
-						<th width='50%'>Item</th>
-						<th width='10%'>Qty.</th>
-						<th width='20%'>Price</th>
-						<th width="20%">Total</th>
+						<td align="right">Transaction Date</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left">
+						  <?php 
+								if($created==Session::get('receipt_info.date')){
+
+									$transDateArr =explode(' ', Helper::dateFormat(Session::get('receipt_info.created_at')));
+									echo $transDateArr[0];
+								}else{
+									 echo Helper::dateFormat(Session::get('receipt_info.date'));
+								}
+							?>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">Invoice No</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left">{{ Session::get('receipt_info.invoice_id') }}</td>
+					</tr>
+					<tr>
+						<td align="right">Sold By</td>
+						<td>&nbsp;&nbsp; : &nbsp;</td>
+						<td align="left">{{ Session::get('receipt_info.emp_name')  }}</td>
+					</tr>
+				</tbody>
+			 @endif
+			 </table> 
+			 </center>	
+			</article>	
+			@if(Session::has('receipt_return_item_infos'))
+			<table class="table-sales-receipt">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Item</th>
+						<th>Price</th>
+						<th>Qty.</th>
+						<th>Disc (tk)</th>
+						<th>Tax (tk)</th>
+						<th>Total</th>
 					</tr>
 				</thead>
-				<tbody style='font-size:13px'>
-					<? $i = 0;$quantity=0; ?>
+				<tbody>
+					<? $i = 0; ?>
 					@foreach(Session::get('receipt_return_item_infos') as $receipt_returnItem_info)
-					<tr class="tr-receipt">
-						<td>{{ ++$i }}</td>
-						<td width='50%' class='uppercase' nowrap><span style='text-align:left'>{{ substr($receipt_returnItem_info['item_name'],0,100) }}</span></td>
-						<td width='10%'>
-							{{ $receipt_returnItem_info['quantity'] }}
-							<?php $quantity += $receipt_returnItem_info['quantity']; ?>
-						</td>
-						<td width='20%'>{{ ($receipt_returnItem_info['total']/$receipt_returnItem_info['quantity']) }}</td>
-						<td width='20%'>{{ $receipt_returnItem_info['total'] }}</td>
+					<? $i++; ?>
+					<tr>
+						<td>{{ $i }}</td>
+						<td>{{ $receipt_returnItem_info['item_name'] }}</td>
+						<td>{{ $receipt_returnItem_info['sale_price'] }}</td>
+						<td>{{ $receipt_returnItem_info['quantity'] }}</td>
+						<td>{{ $receipt_returnItem_info['discount'] }}</td>
+						<td>{{ $receipt_returnItem_info['tax'] }}</td>
+						<td>{{ $receipt_returnItem_info['total'] }}</td>
 					</tr>
 					@endforeach
-				@endif
-				@if (Session::has('receipt_info'))
-					<tr>
-						<td></td>
-						<td colspan="2" style="text-align: right;font-weight:bold;" align="left">Total Qty.
-							<b style='text-align:left; font-size:14px;'>
-								(<? echo $quantity; ?>) pcs
-							</b>
-						</td>
-						<td align="left" colspan="2">Sub Total &nbsp;&nbsp;&nbsp;
-							{{ Session::get('receipt_info.total_amount') + Session::get('receipt_info.less_amount') }}
-						</td>
-					</tr>
-					
-					<tr>
-						<td></td>
-						<td colspan="2" style="line-height: 5px; font-size: 11px;">Less Amount: {{Session::get('receipt_info.less_amount')}}</td>
-						<td colspan="2" style="line-height: 5px; text-align: center;">Total : {{ Session::get('receipt_info.total_amount') }}</td>
-					</tr>
-					<tr>
-						<td colspan="5" align="right">Returned By : {{Session::get('receipt_info.emp_name')}}</td>
-						
-					</tr>
 				</tbody>
 			</table>
+			@endif
+			@if (Session::has('receipt_info'))
+                        <?php // echo '<pre>';print_r(Session::get('receipt_info'));exit;?>
+			<article class="btn-sale-receipt">
+				<table>
+					<tbody>
+						<tr style="font-weight: bolder;">
+							<td>Sub Total</td>
+							<td>&nbsp;:&nbsp;</td>
+							<? $sub_total = Session::get('receipt_info.total_amount') + Session::get('receipt_info.less_amount'); ?>
+							<td align="right">{{ $sub_total }}</td>
+						</tr>
+						<tr>
+							<td>Payment Type</td>
+							<td>&nbsp;:&nbsp;</td>
+							<td align="right">{{ Session::get('receipt_info.payment_type_name') }}</td>
+						</tr>
+						<tr>
+							<td>Less Amount</td>
+							<td>&nbsp;:&nbsp;</td>
+							<td align="right">{{ Session::get('receipt_info.less_amount') }}</td>
+						</tr>
+                        <tr>
+							<td>Total </td>
+							<td>&nbsp;:&nbsp;</td>
+							<td align="right">{{ Session::get('receipt_info.total_amount') }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</article>
 			<article style="clear:both; text-align: center;">
-				<h6>Sold goods can't be return.</h6>
+				<h6>Thanks for being with us</h6>
+				<div align="center">
+					{{ DNS1D::getBarcodeHTML(Session::get('receipt_info.invoice_id'), "C128", 1, 25) }}					
+					<strong>{{ Session::get('receipt_info.invoice_id') }}</strong>				
+				</div>
+				<p style="float:right;">Developed By : <strong>Unitech IT</strong></p>
+				
 			</article>
 			@endif
 		</div>		
 	</div>
 	
 	<script type="text/javascript">
-	  window.onload = function () {
-		window.print();
-	  if({{Session::get('isAutoPrintAllow')}}==1){
-		  window.print();
-		  setTimeout(function(){window.location = "{{ URL::to('sale/sales') }}"}, 200000);
-	  }
-	}
-</script>
+		window.onload = function () {
+			if({{Session::get('isAutoPrintAllow')}}==1){
+			  window.print();
+			  setTimeout(function(){window.location = "{{ URL::to('sale/returns') }}"}, 3000);
+			}
+		}
+	</script>
 @stop
 

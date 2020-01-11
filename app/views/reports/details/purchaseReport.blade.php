@@ -75,7 +75,6 @@
 		</div>
 	  </div>
 		<!--Purchase Details Model-->
-		
 		<div id="purDetailsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="purDetailsLabel" aria-hidden="true">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#735;</button>

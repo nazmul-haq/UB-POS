@@ -1,11 +1,17 @@
 <?php 
 
 class ExportToCSVController extends  BaseController{
+	
+	
 	public function index(){
 		return View::make('admin.export');
 	}
+
 	public function exportToCsv($keyword = null,$subkey = null){
-		$con = new mysqli("localhost","mbtradeb_mbt","mbtradeb_mbt!@!#!@","mbtradeb_db");
+		// return $subkey;
+		
+		// $con = new mysqli("192.168.10.150","asiabazar","asiabazar","asiabazar");
+		$con = mysqli_connect("localhost","bdhomepl_erp","bdhomepl_erp%%##",'bdhomepl_erp');
 		$tables = array();
 		$query = mysqli_query($con, 'SHOW TABLES');
 		while($row = mysqli_fetch_row($query)){
@@ -16,24 +22,34 @@ class ExportToCSVController extends  BaseController{
 		if(!in_array($keyword, $tables)){
 			return Redirect::to('admin/viewAllItem')->with('errorMsg', "Something Went Wrong !!");
 		}
+		// return $keyword;
 		$datas = [];
 		$datas = self::getAllData($keyword,$subkey);
+
+		// return ;
 		$filename = $datas['title']."-downloads-".date('dmy').".csv";
 	    $handle = fopen($filename, 'w+');
 	    fputcsv($handle, $datas['header']);
+
 	    foreach($datas['body'] as $value) {
 	        fputcsv($handle, $value);
 	    }
+
 	    fclose($handle);
+
 	    $headers = array(
 	        'Content-Type' => 'text/csv',
 	    );
+
 	    return Response::download($filename, $filename, $headers);
 	}
+
 	public static function getAllData($keyword,$subkey=null){
 		if($keyword == 'iteminfos'){
+
 			if($subkey == 'allItem'){
 				$header = ['SL No.','UPC Code','Item Name','Category Name','Last Purchase Price','Last Sale Price','Company Name','Stock Quantity','Total Quantity'];
+
 				$items = DB::select("select com.company_name,itemcategorys.category_name,iteminfos.item_id,iteminfos.item_name,iteminfos.upc_code, priceinfos.purchase_price,priceinfos.sale_price,iteminfos.price_id, COALESCE(all_item.g_qty, 0)as g_qty, COALESCE(all_item.s_qty, 0)as s_qty,sum(COALESCE(all_item.s_qty, 0) + COALESCE(all_item.g_qty, 0)) as total_qty
 						from iteminfos
 						left join itemcategorys on iteminfos.category_id=itemcategorys.category_id
@@ -65,6 +81,7 @@ class ExportToCSVController extends  BaseController{
 						where iteminfos.status=1
 						group by iteminfos.item_id
 						order by iteminfos.item_name asc;");
+				
 				foreach($items as $key => $item) {
 					$body[] = [++$key,$item->upc_code,ltrim($item->item_name),$item->category_name,$item->purchase_price,$item->sale_price,$item->company_name,$item->s_qty,$item->total_qty];
 				}
@@ -94,6 +111,7 @@ class ExportToCSVController extends  BaseController{
 				$title = 'StockItemInfo';
 			}elseif($subkey == 'catWiseItem'){
 				$header = ['SL No.','UPC Code','Item Name','Category Name','Last Purchase Price','Last Sale Price','Company Name','Stock Quantity','Total Quantity'];
+
 				$items = DB::select("select com.company_name,itemcategorys.category_name,iteminfos.item_id,iteminfos.item_name,iteminfos.upc_code, priceinfos.purchase_price,priceinfos.sale_price,iteminfos.price_id, COALESCE(all_item.g_qty, 0)as g_qty, COALESCE(all_item.s_qty, 0)as s_qty,sum(COALESCE(all_item.s_qty, 0) + COALESCE(all_item.g_qty, 0)) as total_qty
 						from iteminfos
 						left join itemcategorys on iteminfos.category_id=itemcategorys.category_id
@@ -125,6 +143,7 @@ class ExportToCSVController extends  BaseController{
 						where iteminfos.status=1
 						group by iteminfos.item_id
 						order by itemcategorys.category_name asc;");
+				
 				foreach($items as $key => $item) {
 					$body[] = [++$key,$item->upc_code,ltrim($item->item_name),$item->category_name,$item->purchase_price,$item->sale_price,$item->company_name,$item->s_qty,$item->total_qty];
 				}
@@ -158,6 +177,12 @@ class ExportToCSVController extends  BaseController{
 			}
 			$title = 'EmployeeInfo';
 		}
+
 		return $finalArray[] = ['header' => $header,'body' => $body,'title' => $title];
+
+
 	}
+	
+
+
 }

@@ -67,22 +67,4 @@
 	</div> 
 </div>
 
-<script>
-    $('.Setup').addClass('active btn btn-fill');
-</script>
-
-@stop
-@section('stickyInfo')
-<?php
-    $string = 'Setup';
-    $li = '';
-    for($j=0;$j<strlen($string);$j++){
-        $li .= '<li>'.substr($string,$j,1).'</li>';
-    }
-?>
-<div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-	    {{$li}}
-	</ul>       
-</div>
 @stop

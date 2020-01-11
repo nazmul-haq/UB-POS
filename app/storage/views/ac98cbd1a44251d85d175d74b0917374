@@ -1,0 +1,68 @@
+<?php $__env->startSection('content'); ?>
+	<style>.head5{width: 210px}</style>
+	<div class="row">
+	  <div class="span12">
+		<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<div class="employee-btn">
+			<a href="<?php echo URL::to('admin/addEmployee'); ?>"><button type="submit" class="btn btn-primary"><i class="icon-plus-sign"></i>&nbsp;Add Employee</button></a>
+			<a href="<?php echo URL::to('exportToCsv'); ?>/<?php echo base64_encode(base64_encode('empinfos')); ?>" class="btn btn-info"><i class="icon-download"></i>&nbsp; Download / Export to Excel</a>
+		</div>
+		<?php echo Datatable::table()
+				->addColumn('id','Name','First Name', 'Last Name', 'Action')      
+				->setUrl(route('admin.viewEmployee'))   
+				->render(); ?>
+
+	  </div>
+	</div>
+	
+	<script>
+		function deleteConfirm(empId){
+		if(empId==<?php echo Session::get('emp_id'); ?>){
+			alert("You can't delete yourself");
+		}
+		else{
+			var con=confirm("Do you want to delete?");
+			if(con){
+				$().ready(function(){
+					$.ajax({
+						url: "deleteEmployee/"+empId,
+						success : function(data){
+							$("#"+empId).prev().parent().parent().fadeOut("slow");
+						}
+					});
+				});
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		}
+	</script>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('stickyInfo'); ?>
+<?php
+    $string = 'Employees';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+<?php if(Session::has('redTheme')): ?>
+	<div id="sticky" style="text-align: center;">        
+		<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+		    <?php echo $li; ?>
+
+		</ul>       
+	</div>
+<?php else: ?>
+	<div id="sticky" style="text-align: center;">        
+		<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+		    <?php echo $li; ?>
+
+		</ul>       
+	</div>
+<?php endif; ?>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -25,7 +25,7 @@
 			</div>
 		  </div>
 		  <!-- /widget -->
-		  {{ HTML::image('img/company_logo.png','title', array('class' => 'company_logo','style'=>'padding-left: 60px;height: 180px;width: 220px;')) }}
+		  {{ HTML::image('img/company_logo.jpg','title', array('class' => 'company_logo','style'=>'padding:15px; width: 350px;')) }}
 		</div>
 			<?
 
@@ -63,11 +63,4 @@
 	<!-- Clock Js-->
 	{{ HTML::script('js/clock.js') }}
 	{{ HTML::script('js/moment.min.js') }}
-@stop
-@section('stickyInfo')
-<div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-		<li>D</li><li>a</li><li>s</li><li>h</li><li>b</li><li>o</li><li>a</li><li>r</li><li>d</li>
-	</ul>       
-</div>
 @stop

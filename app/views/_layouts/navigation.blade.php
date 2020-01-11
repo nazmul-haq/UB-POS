@@ -3,18 +3,18 @@
   <div class="navbar-inner">
     <div class="container"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
                     class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> </a><a class="brand" href="index.html">
-                      <img style="height: 30px; width: 40px;" class="pos_logo" src="{{asset('img/unitech.png')}}" alt="" />
-                      <img style="height: 30px; width: 100px;" class="pos_logo" src="{{asset('img/posNewLogo.png')}}" alt="" />
-                    </a>
+                      <img class="pos_logo" src="{{asset('img/unitech.png')}}" alt="" style="height: 30px" />
+                      <img class="pos_logo" src="{{asset('img/posNewLogo2.png')}}" alt="" height="30" width="100" /></a>
       
 	  <div class="nav-collapse">
         <ul class="nav pull-right">
             
           <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="icon-flag"></i> Branch Name :  <b>{{Helper::getBranchName()}} </b> </a>
+                  <i class="icon-bell"></i> Theme Switcher <span class="badge pull-right"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="javascript:;">Help</a></li>
+              <li><a href="{{route('admin.blue-theme')}}">Blue Theme</a></li>
+              <li><a href="{{route('admin.red-theme')}}">Red Theme</a></li>
             </ul>
           </li>
 		  

@@ -76,7 +76,7 @@
 	</div>
 	<!--close Item -->
 <script>
-        $('.Items').addClass('active btn btn-fill');
+	$('.Items').addClass('active btn btn-fill');
 		function ItemEdit(itemId){
 
 			$(function() {
@@ -204,9 +204,17 @@
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
 @stop

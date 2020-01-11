@@ -3,96 +3,90 @@
 @section('content')
 
             <?php $amount=0;if(Session::get('items')){ foreach(Session::get('items') as $item)
-                                $amount=$amount+$item['total'];
+                                 $amount=$amount+$item['total'];
                                  }
              ?>
 	<div class="row">
 		<div class="span8">
-	            @include('_sessionMessage')
-				<div class='label label-info' style='height:24px'><h4 style='display:inline;'><i class='icon-shopping-cart'></i> Purchase Register</h4>
-				<span style="color: orange; padding-left: 20px;"> Total items </span> 
-				<span id='topTotalQuantity' class='label label-warning' style='font-size:22px; border-radius:90px;'>  </span>
-				<a style="float:right; @if(!Session::get('items')) display: none; @endif"  class="btn btn-warning btn-small clearScreen" href="{{route('purchase.emptyCart')}}">Clear Screen</a>
-				</div>
+                    @include('_sessionMessage')
+					<div class='label label-info' style='height:24px'><h4 style='display:inline;'><i class='icon-shopping-cart'></i> Purchase Register</h4>
+					@if(Session::get('items'))
+					<a style="float:right;"  class="btn btn-warning btn-small" href="{{route('purchase.emptyCart')}}">Clear Screen</a>
+					@endif
+					</div>
+			<div class="invoice-reg">
+				{{ Form::open(array('route' => 'purchase.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal')) }}
+					<div class="control-group">		
+						{{ Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight: bold;']) }}
+						<div class="controls">
+							
+							<input type="text" name="item_id" class='span6' autofocus='yes' id='auto_search_item' placeholder='Start Typing item name or scan barcode...' @if(Session::has('is_purchase_order')) disabled="" @endif>
+						</div> <!-- /controls -->					
+					</div> <!-- /control-group -->	
+				{{ Form::close() }}
+			</div>			
+						
 			<table class="table table-striped" width="100%">
 				<thead class="table-head">
 					<tr>
 						<th>SL</th>
+						<th># Item</th>
 						<th>Item Name</th>
 						<th>Purchase Price</th>
 						<th>Sale Price</th>
 						<th>Qty.</th>
-						<!-- <th>Disc (Tk)</th> -->
+						<th>Disc (Tk)</th>
 						<th>Total</th>
 						<th>Action</th>
 					</tr>
 				</thead>
-				<tbody class="addTr">
+				<tbody>
 				<?php $i=0; $invoice_total=0; 
-                    if(Session::get('items')){
-                    	$reverse_items = Session::get('items');
-                    }
-                    $totalQuantity = 0;
-                ?>
+                                    if(Session::get('items')){
+                                    $reverse_items= array_reverse(Session::get('items'));
+                                    }
+                                ?>
 					@if(Session::get('items'))						
 						@foreach($reverse_items as $item)
-							<? $invoice_total=$invoice_total+$item['total'];
-								$totalQuantity += $item['quantity'];
-							?>
-							{{ Form::open(array('route' => 'purchase.editDeleteItem', 'class' => 'form-horizontal itemAddCartForm')) }}
+							<? $invoice_total=$invoice_total+$item['total'];?>
+							{{ Form::open(array('route' => 'purchase.editDeleteItem', 'class' => 'form-horizontal')) }}
 							<tr>
 								<td>{{++$i}}</td>
+								<td>{{$item['item_id']}}</td>
 								<td>
-									<span class="span3" id="itemName_{{$item['item_id']}}">
-										{{$item['item_name']}}
+									<span class="span3">
+										{{$item['item_name']}}<input type="hidden" name="item_id" value="{{$item['item_id']}}"><input type="hidden" name="item_name" value="{{$item['item_name']}}">
 									</span>
-									<input type="hidden" name="item_id" value="{{$item['item_id']}}">
-									<input type="hidden" name="price_id" id="priceId_{{$item['item_id']}}" value="{{$item['price_id']}}">
-									<input type="hidden" name="item_name" value="{{$item['item_name']}}">
 								</td>
 								<td>
-									<input class="span1 floatingCheck purchaseQuanty" type="text" name="purchase_price" id="purchasePrice_{{$item['item_id']}}" value="{{$item['purchase_price']}}" />
+									<input class="span1 floatingCheck" type="text" name="purchase_price" value="{{$item['purchase_price']}}" />
 								</td>
 								<td>
-									<input class="span1 floatingCheck purchaseQuanty" type="text" id="salePrice_{{$item['item_id']}}" name="sale_price" value="{{$item['sale_price']}}" />
+									<input class="span1 floatingCheck salePrice" type="text" name="sale_price" value="{{$item['sale_price']}}" />
 								</td>
 								<td>
-									<input class="span1 Quanty purchaseQuanty" type="text" maxlength="5" name="quantity" id="pcs_{{$item['item_id']}}" value="{{$item['quantity']}}" />
+									<input class="span1 Quanty" type="text" maxlength="5" name="quantity" value="{{$item['quantity']}}" />
 								</td>
-								<!-- <td>
-									<input class="span1 floatingCheck purchaseQuanty" type="text" maxlength="5" name="discount" value="{{$item['discount']}}" />
-								</td> -->
 								<td>
-									<input type="text" name="total" id="total_{{$item['item_id']}}"  class="span1 disabled" disabled="" value="{{$item['total']}}" />
+									<input class="span1 floatingCheck" type="text" maxlength="5" name="discount" value="{{$item['discount']}}" />
 								</td>
-								<td class="span1">
-									<button type="submit" id="deleteItem_{{$item['item_id']}}" class="btn btn-warning btn-delete" name="edit_delete"><i class="icon-trash"></i></button>
+								<td>
+									<input type="text" name="total"  class="span1 disabled" disabled="" value="{{$item['total']}}" />
+								</td>
+								<td class="span2">
+									<button type="submit" class="edit btn btn-primary" name="edit_delete" value="edit"><i class="icon-edit"> Edit</i></button>
+									<button type="submit" class="btn btn-warning" name="edit_delete"><i class="icon-trash"></i></button>
 								</td>
 							</tr>
 							{{ Form::close() }}
 						@endforeach
+						@else
+							<tr>
+								<td colspan="8" style="text-align:center; color:#E98203;"><strong>There are no items in the cart</strong><td>
+							</tr>
 					@endif
-						<tfoot>
-			                <tr>
-			                    <td colspan="8" style="text-align:center; color:#E98203;">
-			                    <strong>Total Item : <span id="cartAddedQty">{{count(Session::get('items'))}}</span></strong>
-			                    <input type='hidden' id='toalQuantity' value='{{ $totalQuantity }}'>
-			                    <td>
-			                </tr>
-			            </tfoot>
 				</tbody>
 			</table>
-			<div class="invoice-reg">
-				{{ Form::open(array('route' => 'purchase.addItemToChart', 'id' => 'formItemLocation', 'class' => 'form-horizontal itemAddCartForm')) }}
-					<div class="control-group">		
-						{{ Form::label('search_item', 'Find/Scan Item', ['class' => 'control-label', 'style' => 'font-weight: bold;font-weight:bold;margin-top:7px;font-size:18px; color : #022a65;']) }}
-						<div class="controls">
-							
-							<input type="text" name="item_id" class='span6 item_id' autofocus='yes' id='auto_search_item' placeholder='Start Typing item name or scan barcode...' @if(Session::has('is_purchase_order')) disabled="" @endif style='height: 30px;border: 1px solid #022a65;'>
-						</div> <!-- /controls -->					
-					</div> <!-- /control-group -->	
-				{{ Form::close() }}
-			</div>
 		</div>
 		<!--Supplier--->
 		<div class="span4">
@@ -105,7 +99,7 @@
 								<strong style="color:#348100; font-size: 1.1em;">
 									{{Session::get('invoice_info.supp_or_comp_name')}}
 								</strong>
-                                <input type="hidden" id="supplier" value="{{Session::get('invoice_info.supp_or_comp_name')}}">
+                                                                <input type="hidden" id="supplier" value="{{Session::get('invoice_info.supp_or_comp_name')}}">
 								<p>
 								<button type="submit" class="btn btn-warning" name="supplier" value="delete"><i class="icon-trash"></i> &nbsp;Remove</button>
 							</div> <!-- /controls -->				
@@ -116,22 +110,6 @@
 							<div class="controls">
 								{{Form::text('supp_id', null, array('class' => 'span3', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...'))}}
                                                                 <input type="hidden" id="supplier" value="">
-                                                        </div> <!-- /controls -->
-						</div>
-						<div class="control-group hr">											
-							<label class="control-label" for="supplier">Purchase Saved For</label>
-							<div class="controls">
-								@if(Session::get('branch_id'))
-									@if(Session::get('branch_id') == 1)
-									{{Form::text('branch_id','MB Trade', array('class' => 'span3', 'readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...'))}}
-									@elseif(Session::get('branch_id') == 2)
-									{{Session::get('branch_id')}}
-									{{Form::text('branch_id','MB Collection', array('class' => 'span3','readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...'))}}
-									@elseif(Session::get('branch_id') == 3)
-									{{Form::text('branch_id','MB Gulshan', array('class' => 'span3','readonly', 'id' => 'supplierAutoSugg', 'placeholder' => 'Start Typing Supplier\'s name...'))}}
-									@else
-									@endif
-								@endif
                                                         </div> <!-- /controls -->
 						</div>
 					@endif  
@@ -214,14 +192,277 @@
 			</div>
 		</div>
 	</div>
-	{{ HTML::script('js/jquery-ui.min.js') }}
-	@include('purchase.pruchaseFormAjaxRequest')
+	{{ HTML::script('js/jquery-ui.min.js') }} 
+	<script>
+		 $().ready(function(){
+salesInit();			 
+function salesInit() {
+		shortcut.add("Alt+c", function() {
+			window.location = "{{route('purchase.emptyCart')}}";
+		});
+}		
+			 //Auto Complete for Item Search
+			 $("#auto_search_item").autocomplete("{{route('purchase.itemAutoSuggest')}}", {
+				width: 260,
+				matchContains: true,
+				queryDelay : 0,
+				formatItem: function(row) {
+					return row[1];
+				},				
+			});	
+			//Submit Search Item Form
+			$("#auto_search_item").result(function(event, data, formatted) {
+				$("#formItemLocation").submit();
+			});
+			
+			//supplier auto suggest
+			$("#supplierAutoSugg").autocomplete("{{route('purchase.autoSupplierSuggest')}}", {
+				width: 260,
+				matchContains: true,
+				queryDelay : 0,
+				formatItem: function(row) {
+					return row[1];
+				},	
+			});
+			//Submit Supplier Form
+			$("#supplierAutoSugg").result(function(event, data, formatted) {
+				$("#supplierForm").submit();
+			});
+			
+			//Discount Calculate for percent
+			$('#dis_percent').on('keyup', function() {
+				//var discount_taka = parseFloat(this.value);
+				var intRegex = /^\d+$/;
+                                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                                var $total_amount = $('#total_amount').html();
+                                
+                                var str = $(this).val();
+                                console.log(str);
+                                if(this.value==''){
+                                    this.value=null;
+                                    $('#dis_taka').val(0);
+				    $('#pay_amount').html($total_amount);
+                                    $('#appendedPrependedInput').val($total_amount);
+                                }
+                               else if(intRegex.test(str) || floatRegex.test(str)) {
+					var abs_value = Math.abs(parseFloat(this.value));
+                                        
+                                        var confirm_discount_percent=0;
+					console.log(abs_value);
+					$('#dis_taka').attr('readonly','readonly');
+					
 
+					if(isNaN(abs_value)||(abs_value>99)){
+                                            if(isNaN(abs_value)){
+						this.value = 0;
+                                                confirm_discount_percent=0;
+                                            }
+                                            else{
+                                                this.value = 100;
+                                                confirm_discount_percent=100;
+                                            }
+					}
+					else{
+                                            confirm_discount_percent=this.value;
+                                        }
+
+					$cal_discount_taka = (confirm_discount_percent*$total_amount)/100;
+					$payable_amount = $total_amount-$cal_discount_taka ;
+
+					$('#dis_taka').val((isNaN($cal_discount_taka)) ? 0 : $cal_discount_taka.toFixed(2));
+					$('#pay_amount').html((isNaN($payable_amount)) ? $total_amount : $payable_amount.toFixed(2));
+                                        $('#appendedPrependedInput').val($payable_amount.toFixed(2));
+				}
+                                else {
+                                     alert('Invalid Character! Please Check.');
+                                     this.value = '';
+                                     $('#dis_taka').val(0);
+				     $('#pay_amount').html($total_amount);
+                                     $('#appendedPrependedInput').val($total_amount);
+                                     return false;
+                                    }
+                            });
+			//Discount Calculate for Taka
+			$('#dis_taka').on('keyup', function() {
+				//var discount_taka = parseFloat(this.value);
+				var intRegex = /^\d+$/;
+                                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+
+                                var str = $(this).val();
+                                console.log(str);
+                                if(this.value==''){
+                                 this.value=null;
+                                 $('#dis_percent').val(0);
+                                 $('#pay_amount').html(parseInt($('#total_amount').html()));
+                                 $('#appendedPrependedInput').val(parseInt($('#total_amount').html()));
+
+                                 }
+                              else if(intRegex.test(str) || floatRegex.test(str)) {
+					var abs_value = Math.abs(parseFloat(this.value));
+                                        var confirm_discount=0;
+					console.log(abs_value);
+					$('#dis_percent').attr('readonly','readonly');
+					var $total_amount = $('#total_amount').html();
+                                        if(isNaN(abs_value)||(abs_value>=$total_amount)){
+                                            if(isNaN(abs_value)){
+                                                    this.value = 0;
+                                                    confirm_discount=0;
+                                            }
+                                            else{
+                                                    this.value = $total_amount;
+                                                    confirm_discount=$total_amount;
+                                            }
+                                        }
+                                        else{
+                                            confirm_discount=this.value;
+                                        }
+					$cal_amount_onDiscount = (confirm_discount*100)/$total_amount;
+					$payable_amount = $total_amount-confirm_discount ;
+
+					$('#dis_percent').val((isNaN($cal_amount_onDiscount)) ? 0 : $cal_amount_onDiscount.toFixed(2));
+					$('#pay_amount').html((isNaN($payable_amount)) ? $total_amount : $payable_amount.toFixed(2));
+                                        $('#appendedPrependedInput').val($payable_amount.toFixed(2));
+				}
+                                else {
+                                     alert('Invalid Character! Please Check.');
+                                     this.value = '';
+                                     $('#dis_percent').val(0);
+				     $('#pay_amount').html(parseInt($('#total_amount').html()));
+                                     $('#appendedPrependedInput').val(parseInt($('#total_amount').html()));
+                                     return false;
+                                    }
+                            });
+                        $('#appendedPrependedInput').keyup(function(){
+				//var discount_taka = parseFloat(this.value);
+				var regex =  /^\d*(?:\.{1}\d+)?$/;
+
+                                var pay =parseInt(this.value);
+                                var $payable = parseInt($('#pay_amount').html());
+                               if(this.value==''){
+                                    this.value=null;
+                                    $('#due').html($payable);
+                               }
+                               else{
+				if (this.value.match(regex)) {
+
+
+                                        if(pay>$payable){
+                                            this.value=$payable;
+                                            $('#due').html(0.00);
+                                        }
+                                        else{
+                                        $('#due').html($payable-pay);
+                                        }
+
+				}
+
+                               else{   this.value='';
+                                       $('#due').html($payable);;
+                                   }
+                               }
+			});
+
+
+                      $('.Quanty').blur(function(){
+                                var intRegex = /^\d+$/;
+                                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                                var str = $(this).val();
+                                if(this.value==''){
+                                   this.value=1;
+                                }
+                                else if(this.value=='0') {
+                                        this.value=1;
+                                    }
+                                else if(intRegex.test(str) || floatRegex.test(str)) {
+
+
+                                    }
+                                else{
+                                        alert('Wrong Data');
+					this.value = 1;
+				}
+
+                            });
+                     $('.salePrice').blur(function(){                     			
+                                var purchasePrice = parseFloat($(this).parent().prev().children().val());
+                                var salePrice = parseFloat($(this).val());
+                                if(purchasePrice>salePrice)  {
+                                	alert("Sale Price can not be less then purchase price");
+                                	this.value=purchasePrice;
+                                }                          
+
+                            });
+
+
+                           
+                            $('.floatingCheck').keyup(function(){
+
+
+
+
+                                var intRegex = /^\d+$/;
+                                var floatRegex = /^((\d+\.(\.\d *)?)|((\d*\.)?\d+))$/;
+                                var str = $(this).val();
+                                if(this.value==''){
+                                   this.value='';
+                                }
+                                else if(intRegex.test(str) || floatRegex.test(str)) {
+
+                                    }
+                                else{
+                                        alert('Wrong Data');
+					this.value = 0;
+				}
+                            });
+			
+			//for input box tooltip
+			$('input[type=text][name=discount_percent]').tooltip({
+				placement: "right",
+				trigger: "hover"
+			});
+		});
+      function isSupplierAvailable() {
+
+        var supplier = document.getElementById("supplier").value;
+        if(!supplier){
+            
+             alert("Error !   Please select supplier");
+            return false;
+        }
+        else{
+            var confirmation=confirm("Are you sure to complete the purchase?");
+            if(confirmation){
+                return true;
+            }
+            return false;
+        
+        }
+    }
+	</script>
+	
+	<!--end purchase-->
+	
 @stop
+
 @section('stickyInfo')
+<?php
+    $string = 'Purchase';
+    $li = '';
+    for($j=0;$j<strlen($string);$j++){
+        $li .= '<li>'.substr($string,$j,1).'</li>';
+    }
+?>
+@if(Session::has('redTheme'))
 <div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-		<li>P</li><li>u</li><li>r</li><li>c</li><li>h</li><li>a</li><li>s</li><li>e</li>
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
 	</ul>       
 </div>
+@else
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@endif
 @stop

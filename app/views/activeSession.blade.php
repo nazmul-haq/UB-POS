@@ -23,12 +23,14 @@
             <div class="content clearfix">
                 <div class="login-wrapper">
                     <div class="logo">
-					{{ HTML::image('img/unitech.png', 'Unitech IT', array('class' => 'login-img')) }}
-                        <p class="head-text"><strong class="unitech">UNITECH IT</strong><br/><strong>Technology for humanity</strong></p>
+                    {{ HTML::image('img/unitech.png', 'Unitech IT', array('class' => 'login-img')) }}
+                    
                     </div>
                     <div class="login-heading">
-                        <p>{{ HTML::image('img/logo-pos.png', 'Point of sale') }}</p>
-                        <p style="float:right; margin: -5px 7px 0 0"><strong>Point Of Sale</strong></p>
+                        <p>
+                        {{ HTML::image('img/unitech.png', 'Unitech IT', array('class' => 'login-img', 'style' => 'margin: 13px 0px 0 0px !important;float: left;height: 35px;')) }} 
+                        {{ HTML::image('img/posNewLogo.png', 'Unitech IT', array('class' => 'login-img', 'style' => 'margin: 0px !important;height: 60px; width: 190px;')) }}
+                        </p>
                     </div>
                 </div>
 

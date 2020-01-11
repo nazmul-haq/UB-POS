@@ -88,7 +88,7 @@ class SetupController extends \BaseController {
 		}
 	}
 	//Brand Offer
-    public function getBrandWiseData() {		
+    public function getBrandWiseData() {
         return Datatable::query(DB::table('itembrands as b')
 				->select('b.brand_id', 'b.brand_name', 'b.offer')
 				->leftJoin('iteminfos as i', 'b.brand_id', '=', 'i.brand_id')
@@ -236,6 +236,81 @@ class SetupController extends \BaseController {
 			return Response::json(['status' => 'Something Wrong!']);
 		}
 	}
+
+
+	//Supplier Wise
+	//Category Wise Offer
+    public function getSupplierWiseItemData() {		
+        return Datatable::query(DB::table('supplierinfos as si')
+				->select('si.supp_id', 'si.supp_or_comp_name', 'si.offer')
+				->leftJoin('iteminfos as i', 'si.supp_id', '=', 'i.supplier_id')
+				->where('i.status', 1)
+				->where('si.status', 1)
+				->groupBy('i.supplier_id'))
+                ->showColumns('supp_id', 'supp_or_comp_name')
+				->addColumn('offer', function($model){
+					return '<input type="text" class="input-small" id="offerSupplier'.$model->supp_id.'" name="offer[]" value="'.$model->offer.'" />';
+				})
+                ->addColumn('action', function($model) {
+					$html = '<button class="btn btn-info btn-small" onclick="supplierOffer('.$model->supp_id.')"><i class="icon-edit"></i> Create Offer</button> '.
+                            '<a class="btn btn-warning btn-small" href="#" onclick="resetSupplierOffer('.$model->supp_id.')" id="'.$model->supp_id.'"><i class="icon-undo"></i> Reset Offer</a>';
+                    return $html;
+                })
+                ->searchColumns('item_id','supp_or_comp_name')
+                ->setSearchWithAlias()
+                ->orderColumns('supp_or_comp_name')
+                ->make();
+    }
+    public function supplierItemOfferCreate($supp_id) {
+		try{
+			$data = Input::all();
+			$validator = Validator::make($data, Setup::$supplierOffer_rules);
+			if($validator->fails()) {
+				return Response::json(['status' =>'Validation Error occurred']);
+			}			
+			DB::table('supplierinfos')
+				->where('supp_id', $supp_id)
+				->update(array('offer' => Input::get('offer')));
+			
+			$offer = Input::get('offer');
+			$offer_type = Input::get('offer_type');
+			$supplier_offer_up = DB::table('iteminfos')
+				->whereRaw("supplier_id = $supp_id AND ($offer > offer OR ($offer < offer AND offer_type = $offer_type))")
+				->update(array('offer_type'=>$offer_type, 'offer'=> $offer));
+				
+			if($supplier_offer_up){	
+				return Response::json(['status' => 'success']);
+			} 
+			return Response::json(['status' => 'No operation occur! You can\'t assign offer less than current offer.']);
+		} catch(\Exception $e){
+			return Response::json(['status' => 'Something Wrong!']);
+		}
+	}
+	
+	public function supplierItemOfferReset($supp_id) {
+		try{
+			$data = Input::all();
+			$validator = Validator::make($data, Setup::$supplierOffer_rules);
+			if($validator->fails()) {
+				return Response::json(['status' =>'Validation Error occurred']);
+			}			
+			DB::table('supplierinfos')
+				->where('supp_id', $supp_id)
+				->update(array('offer' => 0));
+				
+			$offerReset = DB::table('iteminfos')
+				->where('offer_type', Input::get('offer_type'))
+				->where('supplier_id', $supp_id)
+				->update(array('offer' => Input::get('offer'), 'offer_type' => 0));
+			if($offerReset){	
+				return Response::json(['status' => 'success']);
+			} 
+			return Response::json(['status' => 'No operation occur! You can\'t assign offer less than current offer.']);
+		} catch(\Exception $e){
+			return Response::json(['status' => 'Something Wrong!']);
+		}
+	}
+	//Supplier Offer Reset
 	
 	public function offerView(){
 		$title = ':: POS :: - View Offer';
@@ -356,5 +431,21 @@ class SetupController extends \BaseController {
 		return Response::json(['status' => 'error']);
 	}
 	
+	public function blueTheme()
+	{
+		if(Session::has('redTheme')){
+			Session::forget('redTheme');
+		}
+		Session::set('blueTheme',1);
+		return Redirect::back();
+	}
+	public function redTheme()
+	{
+		if(Session::has('blueTheme')){
+			Session::forget('blueTheme');
+		}
+		Session::set('redTheme',1);
+		return Redirect::back();
+	}
 
 }

@@ -1,0 +1,61 @@
+<?php if(Session::has('message')): ?>
+	<div class="alert alert-success fade in" >
+	  <i class="icon-ok"></i>&nbsp;&nbsp;<strong><?php echo Session::get('message'); ?></strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+<?php endif; ?>
+
+<?php if(Session::has('errorMsg')): ?>
+	<div class="alert alert-warning fade in" >
+	  <i class="icon-warning-sign"></i>&nbsp;&nbsp;<strong><?php echo Session::get('errorMsg'); ?></strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+<?php endif; ?>
+
+<?php if( ! empty( $errors ) ): ?>
+    <?php foreach( $errors->all() as $error ): ?>
+		<div class="alert alert-warning fade in" >
+		  <i class="icon-warning-sign"></i>&nbsp;&nbsp;<strong><?php echo $error; ?></strong>
+		  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+		</div>
+	<?php endforeach; ?>
+<?php endif; ?>
+
+
+<?php if(Session::has('insert')): ?>
+	<div class="alert alert-success fade in" >
+	  <strong><?php echo Session::get('insert'); ?> Permission has been permitted for the employee</strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+<?php endif; ?>
+<?php if(Session::has('delete')): ?>
+	<div class="alert alert-success fade in" >
+	  <strong><?php echo Session::get('delete'); ?>  Permission has been canceled for the employee</strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+<?php endif; ?>
+<?php if(Session::has('quantityError')): ?>
+	<div class="alert alert-success fade in" >
+	  <strong><?php echo Session::get('quantityError'); ?></strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+<?php endif; ?>
+
+
+<?php if(Session::has('success')): ?>
+    <?php if(Session::get('success')>0): ?>
+	<div class="alert alert-success fade in" >
+	  <i class="icon-ok"></i>&nbsp;&nbsp;<strong><?php echo Session::get('success'); ?> Item has been send</strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if(Session::has('fail')): ?>
+    <?php if(Session::get('fail')>0): ?>
+	<div class="alert alert-warning fade in" >
+	  <i class="icon-ok"></i>&nbsp;&nbsp;<strong><?php echo Session::get('fail'); ?> Item send Faild</strong>
+	  <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&#735;</button>
+	</div>
+    <?php endif; ?>
+<?php endif; ?>
