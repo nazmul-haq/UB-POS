@@ -108,7 +108,25 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=>	'admin.resetCategoryOffer',
 		'uses'	=>	'SetupController@resetCategoryOffer'
 	));
+
+	//Supplier Wise Offer
 	
+	Route::get('offer/getSupplierWiseItemData', array(
+		'as'	=>	'admin.getSupplierWiseItemData',
+		'uses'	=>	'SetupController@getSupplierWiseItemData'
+	));
+	Route::get('supplierItemOfferCreate/{suppId}', array(
+		'as'	=>	'admin.supplierItemOfferCreate',
+		'uses'	=>	'SetupController@supplierItemOfferCreate'
+	));
+	Route::get('supplierItemOfferReset/{suppId}', array(
+		'as'	=>	'admin.supplierItemOfferReset',
+		'uses'	=>	'SetupController@supplierItemOfferReset'
+	));
+
+	//Supplier Wise Offer End
+
+
 	Route::get('viewOffer', array(
 		'as'	=>	'admin.offerView',
 		'uses'	=>	'SetupController@offerView'
@@ -155,20 +173,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.deleteEmployee',
 		'uses'	=> 'EmpInfoController@deleteEmployee'
 	));
-	//emp Salary (Azim) @Start
-	Route::get('empSalary', array(
-		'as'	=> 'admin.empSalary',
-		'uses'	=> 'EmpInfoController@empSalary'
-	));
-	Route::post('empSalary', array(
-		'as'	=> 'admin.empSalary.post',
-		'uses'	=> 'EmpInfoController@empSalary'
-	));
-	Route::get('empSalaryDetails/{invoiceId}', array(
-		'as'	=> 'admin.empSalaryDetails',
-		'uses'	=> 'EmpInfoController@empSalaryDetails'
-	));
-	//emp Salary (Azim) @End
 /*=================***=======================*/
 
 /*=========Customer Routes==============*/
@@ -177,17 +181,9 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.customer',
 		'uses'	=> 'CustomerInfoController@index'
 	));
-	Route::get('customersExcel', array(
-		'as'	=> 'admin.customersExcel',
-		'uses'	=> 'CustomerInfoController@rawCustAdd'
-	));
 	Route::get('customers/viewCustomer', array(
 		'as'	=> 'admin.viewCustomer',
 		'uses'	=> 'CustomerInfoController@getCustomerData'
-	));
-	Route::get('mergeNatId', array(
-		'as'	=> 'admin.mergeNatId',
-		'uses'	=> 'CustomerInfoController@mergeNatId'
 	));
 	
 	Route::post('customers', array(
@@ -230,10 +226,10 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'uses'	=> 'CustomerInfoController@destroy'
 	));
 	// Customer payment routes
-	Route::get('customer/paymentCus/{cus_id}', array(
+	Route::get('customer/paymentCus/{supp_id}', array(
 		'as'	=> 'admin.customer.payment',
 		'uses'	=> 'CustomerInfoController@paymentCus'
-	))->where('cus_id', '[1-9][0-9][0-9]*');
+	))->where('cus_id', '[1-9][0-9]*');
 	
 	Route::post('customer/savePayment', array(
 		'as'	=> 'customer.saveSupplierPayment.post',
@@ -279,13 +275,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.suppliers',
 		'uses'	=> 'SupplierInfoController@index'
 	));
-	//Excel
-	Route::get('supplierFromExcel', array(
-		// 'before' => array('auth','module'),
-		'as'	=> 'admin.supplierFromExcel',
-		'uses'	=> 'SupplierInfoController@supplierFromExcel'
-	));
-	//End Excel
 	Route::get('suppliers/viewSupplierAll', array(
 		'as'	=> 'admin.viewSupplierAll',
 		'uses'	=> 'SupplierInfoController@getSupplierData'
@@ -460,6 +449,38 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.removeItemCategory.post',
 		'uses'	=> 'ItemController@deleteItemCategory'
 	));
+
+
+	//Inventory Dialog Box//
+	Route::get('inventory', array(
+		'as'	=> 'admin.inventory',
+		'uses'	=> 'InventoryDialogController@index'
+	));
+	Route::get('autoInventoryItemSuggest', array(
+		'as'	=> 'admin.autoInventoryItemSuggest',
+		'uses'	=> 'InventoryDialogController@autoInventoryItemSuggest'
+	));
+	Route::get('inventoryDialogItem', array(
+		'as'	=> 'admin.inventoryDialogItem',
+		'uses'	=> 'InventoryDialogController@viewAllItemForInventory'
+	));
+	Route::get('emptyCart', array(
+		'as'	=> 'admin.emptyCart',
+		'uses'	=> 'InventoryDialogController@emptyCart'
+	));
+	Route::post('editDeleteItem', array(
+		'as'	=> 'admin.editDeleteItem',
+		'uses'	=> 'InventoryDialogController@saleEditDeleteItem'
+	));
+	Route::post('inventoryItemToChart', array(
+        'as'	=> 'admin.inventoryItemToChart',
+        'uses'	=> 'InventoryDialogController@inventoryItemAddToChart'
+    ));
+	Route::post('inventoryDialogSave', array(
+		'as'	=> 'admin.inventoryDialogSave',
+		'uses'	=> 'InventoryDialogController@inventoryDialogSave'
+	));
+//Inventory Dialog Box//
 // item Brand Setup routes admin.setUp.itemBrandSetup	
 	Route::get('ItemBrand', array(
 		'as'	=> 'admin.itemBrandForm',
@@ -564,7 +585,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.getGodownItemData',
 		'uses'	=> 'ItemController@getGodownItemData'
 	));
-	
 	Route::get('viewRecentItem', array(
 		'as'	=> 'admin.getRecentItems',
 		'uses'	=> 'ItemController@getRecentItems'
@@ -577,90 +597,98 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.godDiffPriceItem',
 		'uses'	=> 'ItemController@goDownDifferentPricesItem'
 	));
-        Route::get('item/godownLowInventory', array(
+    Route::get('item/godownLowInventory', array(
 		'as'	=> 'admin.godownLowInventory',
 		'uses'	=> 'ItemController@godownLowInventory'
 	));
-        Route::get('item/getGLInventory', array(
+    Route::get('item/getGLInventory', array(
 		'as'	=> 'admin.getGLInventory',
 		'uses'	=> 'ItemController@getGLInventory'
 	));
-         Route::get('stockLowInventory', array(
+    Route::get('stockLowInventory', array(
 		'as'	=> 'admin.stockLowInventory',
 		'uses'	=> 'ItemController@stockLowInventory'
 	));
-         Route::get('item/getSLInventory', array(
+    Route::get('item/getSLInventory', array(
 		'as'	=> 'admin.getSLInventory',
 		'uses'	=> 'ItemController@getSLInventory'
 	));
-         Route::get('returnQtyFromGodown', array(
+    Route::get('returnQtyFromGodown', array(
 		'as'	=> 'admin.returnQtyFromGodown',
 		'uses'	=> 'TempReturn@returnQtyFromGodown'
 	));
-        Route::get('returnAutoSuggestGodown', array(
-                    'as'	=> 'admin.godownItemAutoSuggestion',
-                    'uses'	=> 'TempReturn@godownItemAutoSuggestion'
-            ));
-        Route::post('selectDeleteSupplierGodown', array(
+    Route::get('returnAutoSuggestGodown', array(
+        'as'	=> 'admin.godownItemAutoSuggestion',
+        'uses'	=> 'TempReturn@godownItemAutoSuggestion'
+    ));
+    Route::post('selectDeleteSupplierGodown', array(
 		'as'	=> 'admin.selectDeleteSupplierGodown',
 		'uses'	=> 'TempReturn@selectDeleteSupplierGodown'
 	));
-         Route::post('addReturnQtyFromGodown', array(
+ 	Route::post('addReturnQtyFromGodown', array(
 		'as'	=> 'admin.addReturnQtyFromGodown',
 		'uses'	=> 'TempReturn@addReturnQtyFromGodown'
 	));
-        Route::post('returnGodownEditDeleteItem', array(
+    Route::post('returnGodownEditDeleteItem', array(
 		'as'	=> 'admin.returnGodownEditDeleteItem',
 		'uses'	=> 'TempReturn@returnGodownEditDeleteItem'
 	));
-        Route::post('invoiceAndGodownReturn', array(
+	Route::post('invoiceAndGodownReturn', array(
 		'as'	=> 'admin.invoiceAndGodownReturn',
 		'uses'	=> 'TempReturn@invoiceAndGodownReturn'
 	)); 
-         Route::get('returnGodownReceipt', array(
-                    'as'	=> 'admin.returnGodownReceipt',
-                    'uses'	=> 'TempReturn@returnGodownReceipt'
-            )); 
-      
-         Route::get('returnQtyFromStock', array(
+ 	Route::get('returnGodownReceipt', array(
+        'as'	=> 'admin.returnGodownReceipt',
+        'uses'	=> 'TempReturn@returnGodownReceipt'
+    )); 
+
+
+    Route::get('returnReplace', array(
+        'as'	=> 'admin.returnReplace',
+        'uses'	=> 'TempReturn@returnReplace'
+    )); 
+         
+         
+         
+    Route::get('returnQtyFromStock', array(
 		'as'	=> 'admin.returnQtyFromStock',
 		'uses'	=> 'TempReturn@returnQtyFromStock'
 	));
-        Route::get('returnAutoSuggest', array(
-                    'as'	=> 'admin.stockItemAutoSuggestion',
-                    'uses'	=> 'TempReturn@stockItemAutoSuggestion'
-            ));
-        Route::post('selectDeleteSupplier', array(
+    Route::get('returnAutoSuggest', array(
+        'as'	=> 'admin.stockItemAutoSuggestion',
+        'uses'	=> 'TempReturn@stockItemAutoSuggestion'
+    ));
+    Route::post('selectDeleteSupplier', array(
 		'as'	=> 'admin.selectDeleteSupplier',
 		'uses'	=> 'TempReturn@selectDeleteSupplier'
 	));
-        Route::post('addReturnQtyFromStock', array(
+    Route::post('addReturnQtyFromStock', array(
 		'as'	=> 'admin.addReturnQtyFromStock',
 		'uses'	=> 'TempReturn@addReturnQtyFromStock'
 	));
-        Route::post('returnStockEditDeleteItem', array(
+    Route::post('returnStockEditDeleteItem', array(
 		'as'	=> 'admin.returnStockEditDeleteItem',
 		'uses'	=> 'TempReturn@returnStockEditDeleteItem'
 	));
-        Route::post('invoiceAndStockReturn', array(
+    Route::post('invoiceAndStockReturn', array(
 		'as'	=> 'admin.invoiceAndStockReturn',
 		'uses'	=> 'TempReturn@invoiceAndStockReturn'
 	));
-        Route::get('returnStockReceipt', array(
-                    'as'	=> 'admin.returnStockReceipt',
-                    'uses'	=> 'TempReturn@returnStockReceipt'
-            ));
+    Route::get('returnStockReceipt', array(
+        'as'	=> 'admin.returnStockReceipt',
+        'uses'	=> 'TempReturn@returnStockReceipt'
+    ));
         
-        
-        Route::get('returnQtyFromCustomer', array(
+    
+    Route::get('returnQtyFromCustomer', array(
 		'as'	=> 'admin.returnQtyFromCustomer',
 		'uses'	=> 'TempReturn@returnQtyFromCustomer'
 	));
-        Route::get('AutoSugForCusReturn', array(
-                    'as'	=> 'admin.itemAutoSugForCusReturn',
-                    'uses'	=> 'TempReturn@itemAutoSugForCusReturn'
-            ));
-        Route::post('selectDeleteCustomer', array(
+    Route::get('AutoSugForCusReturn', array(
+        'as'	=> 'admin.itemAutoSugForCusReturn',
+        'uses'	=> 'TempReturn@itemAutoSugForCusReturn'
+    ));
+    Route::post('selectDeleteCustomer', array(
 		'as'	=> 'admin.selectDeleteCustomer',
 		'uses'	=> 'TempReturn@selectDeleteCustomer'
 	));
@@ -668,20 +696,19 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'admin.addItemFromCustomer',
 		'uses'	=> 'TempReturn@addItemFromCustomer'
 	));
-        Route::post('editDeleteItemFromCus', array(
+    Route::post('editDeleteItemFromCus', array(
 		'as'	=> 'admin.editDeleteItemFromCus',
 		'uses'	=> 'TempReturn@editDeleteItemFromCus'
 	));
-        Route::post('iWiseReturnInvoice', array(
+    Route::post('iWiseReturnInvoice', array(
 		'as'	=> 'admin.invoiceAndSaleReturnItemWise',
 		'uses'	=> 'TempReturn@invoiceAndSaleReturnItemWise'
 	));
-        Route::get('itemWisereturnReceipt', array(
-                    'as'	=> 'admin.itemWiseReturnReceipt',
-                    'uses'	=> 'TempReturn@itemWiseReturnReceipt'
-            ) );
+    Route::get('itemWisereturnReceipt', array(
+        'as'	=> 'admin.itemWiseReturnReceipt',
+        'uses'	=> 'TempReturn@itemWiseReturnReceipt'
+    ) );
          
-
 /*
 *	Reports Routes
 */
@@ -695,8 +722,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'send.report',
 		'uses'	=> 'ReportController@sendReport'
 	));
-
-
     Route::post('sending/viewReport', array(
 		'as'	=> 'send.viewReceivingReport',
 		'uses'	=> 'ReportController@viewSendReport'
@@ -734,7 +759,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'sale.saleReportReceipt',
 		'uses'	=> 'ReportController@saleReportReceipt'
 	));
-
 
 	//del invoices Section //
 
@@ -799,28 +823,7 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'purchase.purchaseOrderDetailsReport',
 		'uses'	=> 'ReportController@purchaseOrderDetailsReport'
 	));
-	
 	//purchase order end
-
-
-	//sale order
-	Route::get('saleOrder/report', array(
-		'as'	=> 'saleOrder.report',
-		'uses'	=> 'ReportController@saleOrderReport'
-	));
-	Route::post('sale/viewSaleOrderReport', array(
-		'as'	=> 'sale.viewSaleOrderReport',
-		'uses'	=> 'ReportController@viewSaleOrderReport'
-	));
-	Route::get('sale/saleOrderDetailsReport/{saleReportInvoiceId}', array(
-		'as'	=> 'sale.saleOrderDetailsReport',
-		'uses'	=> 'ReportController@saleOrderDetailsReport'
-	));
-	Route::get('sale/saleOrderReportReceipt/{saleOrderInvoiceId}', array(
-		'as'	=> 'sale.saleOrderReportReceipt',
-		'uses'	=> 'ReportController@saleOrderReportReceipt'
-	));
-	//sale order end
 	
     Route::get('saleReturn/report', array(
 		'as'	=> 'saleReturn.report',
@@ -851,10 +854,6 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 	Route::post('otherExpenseReport/viewReport', array(
 		'as'	=> 'expense.viewExpenseReport',
 		'uses'	=> 'ReportController@viewExpenseReport'
-	));
-	Route::get('otherExpenseReportDetails/{expense_id}', array(
-		'as'	=> 'expense.otherExpenseReportDetails',
-		'uses'	=> 'ReportController@otherExpenseReportDetails'
 	));
 	
     Route::get('damageProducts/report', array(
@@ -913,10 +912,19 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'as'	=> 'summary.fullReports',
 		'uses'	=> 'ReportController@getSummaryFullReport'
 	));
-        Route::post('summary/viewfullReports', array(
-                    'as'	=> 'summary.viewFullReports',
-                    'uses'	=> 'ReportController@getSummaryFullReport'
-            ));
+    Route::post('summary/viewfullReports', array(
+            'as'	=> 'summary.viewFullReports',
+            'uses'	=> 'ReportController@getSummaryFullReport'
+    ));
+
+    Route::get('summary/backDateStockReports', array(
+		'as'	=> 'summary.backDateStockReports',
+		'uses'	=> 'ReportController@getBackDateStockReports'
+	));
+    Route::post('summary/viewBackDateStockReports', array(
+            'as'	=> 'summary.viewBackDateStockReports',
+            'uses'	=> 'ReportController@getBackDateStockReports'
+    ));
 
     Route::get('summary/sales', array(
 		'as'	=> 'summary.sales',
@@ -1015,24 +1023,11 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 		'uses'	=> 'ReportController@categoryWiseSalesReport'
 	));
 
-	Route::get('duepaymentreport', array(
-		'as'	=> 'duepaymentreport.report',
-		'uses'	=> 'ReportController@duepaymentreport'
-	));
-	Route::post('viewDuePaymentReport', array(
-		'as'	=> 'viewDuePaymentReport.report',
-		'uses'	=> 'ReportController@viewDuePaymentReport'
-	));
 
-	//Daily ledger report
-	Route::get('dailyledger/report', array(
-		'as'	=> 'dailyledger.report',
-		'uses'	=> 'ReportController@dailyledger'
-	));
-	Route::post('summary/dailyledger', array(
-	    'as'	=> 'summary.dailyledger',
-	    'uses'	=> 'ReportController@dailyledger'
-	));
+
+
+
+
 /*
 * End Reports Routes
 */
@@ -1157,24 +1152,31 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
 Route::group(array('prefix' => 'purchase', 'before' => 'auth'), function(){
 
     Route::get('purchases', array(
-	    'before'    =>array('auth','module'),
-	    'as'	=> 'perchase.index',
-	    'uses'	=> 'PurchaseController@index'
-    ));
+                    'before'    =>array('auth','module'),
+                    'as'	=> 'perchase.index',
+                    'uses'	=> 'PurchaseController@index'
+            ));
     Route::get('purchasesExcel', array(
-   	 	// 'before'    =>array('auth','module'),
-        'as'	=> 'purchasesExcel.index',
-    	'uses'	=> 'PurchaseController@itemAddTochartExcel'
-    ));
+                    // 'before'    =>array('auth','module'),
+                    'as'	=> 'purchasesExcel.index',
+                    'uses'	=> 'PurchaseController@itemAddTochartExcel'
+            ));
     Route::get('autoSuggest', array(
-        'as'	=> 'purchase.itemAutoSuggest',
-        'uses'	=> 'PurchaseController@autoItemSuggest'
-    ));
+                    'as'	=> 'purchase.itemAutoSuggest',
+                    'uses'	=> 'PurchaseController@autoItemSuggest'
+            ));
     Route::post('itemAddTochart', array(
-        'as'	=> 'purchase.addItemToChart',
-        'uses'	=> 'PurchaseController@itemAddChart'
+                    'as'	=> 'purchase.addItemToChart',
+            'uses'	=> 'PurchaseController@itemAddChart'
     ));
-    Route::get('editDeleteItem', array(
+
+    Route::post('discountPermission', array(
+        'as'	=> 'sale.discountPermission.post',
+        'uses'	=> 'SaleController@discountPermission'
+    ));
+
+
+    Route::post('editDeleteItem', array(
 		'as'	=> 'purchase.editDeleteItem',
 		'uses'	=> 'PurchaseController@editDeleteItem'
 	));
@@ -1191,13 +1193,13 @@ Route::group(array('prefix' => 'purchase', 'before' => 'auth'), function(){
 		'uses'	=> 'PurchaseController@invoiceAndPurchase'
 	));
    Route::get('receipt', array(
-        'as'	=> 'receipt',
-        'uses'	=> 'PurchaseController@purchaseReceipt'
-    ));
+                    'as'	=> 'receipt',
+                    'uses'	=> 'PurchaseController@purchaseReceipt'
+        ));
    Route::get('orderReceipt', array(
-        'as'	=> 'orderReceipt',
-        'uses'	=> 'PurchaseController@orderReceipt'
-	));
+                    'as'	=> 'orderReceipt',
+                    'uses'	=> 'PurchaseController@orderReceipt'
+        ));
    Route::get('sendOrderToPurchase/{purchaseInvoiceId}', array(
 		'as'	=> 'purchase.sendOrderToPurchase',
 		'uses'	=> 'PurchaseController@sendOrderToPurchase'
@@ -1207,13 +1209,13 @@ Route::group(array('prefix' => 'purchase', 'before' => 'auth'), function(){
 		'uses'	=> 'PurchaseReturnController@index'
 	));
     Route::get('returnAutoSuggest', array(
-	    'as'	=> 'purchaseReturn.invoiceAutoSuggest',
-	    'uses'	=> 'PurchaseReturnController@autoInvoiceSuggest'
-    ));
+                    'as'	=> 'purchaseReturn.invoiceAutoSuggest',
+                    'uses'	=> 'PurchaseReturnController@autoInvoiceSuggest'
+            ));
     Route::post('returnItemAddTochart', array(
-        'as'	=> 'purchaseReturn.returnItemAddTochart',
-        'uses'	=> 'PurchaseReturnController@returnItemAddTochart'
-    ));
+                    'as'	=> 'purchaseReturn.returnItemAddTochart',
+                    'uses'	=> 'PurchaseReturnController@returnItemAddTochart'
+            ));
     Route::post('returnEditDeleteItem', array(
 		'as'	=> 'purchaseReturn.editDeleteItem',
 		'uses'	=> 'PurchaseReturnController@purchaseReturnEditDeleteItem'
@@ -1224,15 +1226,9 @@ Route::group(array('prefix' => 'purchase', 'before' => 'auth'), function(){
 	));
 
   Route::get('returnReceipt', array(
-		'as'	=> 'purchaseReturn.returnReceipt',
-        'uses'	=> 'PurchaseReturnController@purchaseReturnReceipt'
-    ));
-//Purchase form calculate
-  Route::get('purchaseFormCalculate', array(
-        'as'	=> 'purchase.purchaseFormCalculate',
-        'uses'	=> 'PurchaseController@purchaseFormCalculate'
-    ));
-
+                    'as'	=> 'purchaseReturn.returnReceipt',
+                    'uses'	=> 'PurchaseReturnController@purchaseReturnReceipt'
+            ));
 });
 
 /*=========- End of Purchases Routes -==============*/
@@ -1391,7 +1387,7 @@ Route::group(array('prefix' => 'sale', 'before' => 'auth'), function(){
                     'as'	=> 'sale.addItemToChart',
                     'uses'	=> 'SaleController@saleItemAddChart'
             ));
-    Route::get('editDeleteItem', array(
+    Route::post('editDeleteItem', array(
 		'as'	=> 'sale.editDeleteItem',
 		'uses'	=> 'SaleController@saleEditDeleteItem'
 	));
@@ -1425,84 +1421,29 @@ Route::group(array('prefix' => 'sale', 'before' => 'auth'), function(){
 		'as'	=> 'sale.invoiceAndSale',
 		'uses'	=> 'SaleController@invoiceAndSale'
 	));
-    Route::get('receipt', array(
-        'as'	=> 'sale.receipt',
-        'uses'	=> 'SaleController@saleReceipt'
-    )); 
-    Route::get('saleFormCalculate', array(
-        'as'	=> 'sale.saleFormCalculate',
-        'uses'	=> 'SaleController@saleFormCalculate'
-    )); 
-//=============== @@ Sales Order @@ ===============
-    Route::get('salesOrder', array(
-        'before'    =>array('auth'),
-        'as'	=> 'sale.salesOrder',
-        'uses'	=> 'SaleController@salesOrder'
-    ));
 
-    Route::post('addItemToOrderChart', array(
-        'as'	=> 'sale.addItemToOrderChart',
-        'uses'	=> 'SaleController@itemAddTochartForSaleOrder'
-    ));
-    Route::get('editDeleteItemForSaleOrder', array(
-		'as'	=> 'sale.editDeleteItemForSaleOrder',
-		'uses'	=> 'SaleController@editDeleteItemForSaleOrder'
-	));
-    Route::get('emptySaleOrderCart', array(
-		'as'	=> 'sale.emptySaleOrderCart',
-		'uses'	=> 'SaleController@emptySaleOrderCart'
-	));
-    Route::post('selectDeleteCustomerForOrder', array(
-		'as'	=> 'sale.selectDeleteCustomerForOrder',
-		'uses'	=> 'SaleController@selectDeleteCustomerForOrder'
-	));
-	Route::post('invoiceAndSaleOrder', array(
-		'as'	=> 'sale.invoiceAndSaleOrder',
-		'uses'	=> 'SaleController@invoiceAndSaleOrder'
-	));
-	Route::post('editInvoiceAndSaleOrder', array(
-		'as'	=> 'sale.editInvoiceAndSaleOrder',
-		'uses'	=> 'SaleController@editInvoiceAndSaleOrder'
-	));
-	Route::get('saleOrderReceipt', array(
-        'as'	=> 'sale.saleOrderReceipt',
-        'uses'	=> 'SaleController@saleOrderReceipt'
-    ));
-	Route::get('saleOrderFormCalculate', array(
-        'as'	=> 'sale.saleOrderFormCalculate',
-        'uses'	=> 'SaleController@saleOrderFormCalculate'
-    )); 
-    Route::get('sendOrderToSale/{saleOrderInvoiceId}', array(
-		'as'	=> 'sale.sendOrderToSale',
-		'uses'	=> 'SaleController@sendOrderToSale'
-	));
-	Route::get('editSaleOrder/{saleOrderInvoiceId}', array(
-		'as'	=> 'sale.editSaleOrder',
-		'uses'	=> 'SaleController@editSaleOrder'
-	));
 	
-	Route::get('deleteSaleOrder/{invoiceId}', array(
-		'as'	=> 'sale.deleteSaleOrder',
-		'uses'	=> 'SaleController@deleteSaleOrder'
-	));
 
-//===============@@ Sales Order End @@ ===============
 
-   
+    Route::get('receipt', array(
+                    'as'	=> 'sale.receipt',
+                    'uses'	=> 'SaleController@saleReceipt'
+            ));
      
 
     Route::get('returns', array(
-        'as'	=> 'saleReturn.index',
-        'uses'	=> 'SaleReturnController@index'
-    ));
+                    
+                    'as'	=> 'saleReturn.index',
+                    'uses'	=> 'SaleReturnController@index'
+            ));
     Route::get('returnAutoSuggest', array(
-        'as'	=> 'saleReturn.invoiceAutoSuggest',
-        'uses'	=> 'SaleReturnController@autoInvoiceSuggest'
-    ));
+                    'as'	=> 'saleReturn.invoiceAutoSuggest',
+                    'uses'	=> 'SaleReturnController@autoInvoiceSuggest'
+            ));
     Route::post('returnItemAddTochart', array(
-        'as'	=> 'saleReturn.returnItemAddTochart',
-        'uses'	=> 'SaleReturnController@returnItemAddTochart'
-    ));
+                    'as'	=> 'saleReturn.returnItemAddTochart',
+                    'uses'	=> 'SaleReturnController@returnItemAddTochart'
+            ));
     Route::post('returnEditDeleteItem', array(
 		'as'	=> 'saleReturn.editDeleteItem',
 		'uses'	=> 'SaleReturnController@saleReturnEditDeleteItem'
@@ -1513,15 +1454,18 @@ Route::group(array('prefix' => 'sale', 'before' => 'auth'), function(){
 	));
 
   Route::get('returnReceipt', array(
-        'as'	=> 'saleReturn.returnReceipt',
-        'uses'	=> 'SaleReturnController@saleReturnReceipt'
-	));
+                    'as'	=> 'saleReturn.returnReceipt',
+                    'uses'	=> 'SaleReturnController@saleReturnReceipt'
+            ));
   
 });
 
 /*=========- End of Sale Routes -==============*/
 
-/****** barcode generator  *****/
+
+
+
+	/****** barcode generator  *****/
 
 Route::group(array('before' => 'auth'), function(){
 
@@ -1625,7 +1569,27 @@ Route::post('summary/spplierWiseSale', array(
 		'as'	=> 'spplierWiseSale.report',
 		'uses'	=> 'ReportController@spplierWiseSale'
 	)); 
+//Company Wise Sale
+Route::get('summary/companyWiseSale', array(
+		'as'	=> 'summary.companyWiseSale',
+		'uses'	=> 'ReportController@companyWiseSale'
+	));
 
+Route::get('summary/getcompanyWiseSaleData/{from}/{to}/{companyId}', array(
+		'as'	=> 'summary.getcompanyWiseSaleData',
+		'uses'	=> 'ReportController@getcompanyWiseSaleData'
+	)); 
+Route::post('summary/companyWiseSale', array(
+		'as'	=> 'companyWiseSale.report',
+		'uses'	=> 'ReportController@companyWiseSale'
+	));
+
+Route::get('summary/saleReportDetailsCompanyWise/{saleInvoiceId}/{companyId}', array(
+		'as'	=> 'summary.saleReportDetailsCompanyWise',
+		'uses'	=> 'ReportController@saleReportDetailsCompanyWise'
+	));
+
+//Company Wise Sale End
 
 Route::get('summary/viewAllItemDataJsonFormat', array(
 		'as'	=> 'summary.viewAllItemDataJsonFormat',
@@ -1664,29 +1628,54 @@ Route::get('exportToCsv/{keyword}/{subkey?}',array(
 	// return Hash::make("123456");
 ));
 
-Route::get('test','ItemController@saveItemCustom');
+Route::get('test','ItemController@manageInvoice');
+// Route::get('test',function(){
+// 	return Hash::make(12345);
+// });
 
-Route::get('trans',function(){
-	// return strtolower(implode('_',explode(' ','Azim Uddin')));
-	// function translate($from_lan, $to_lan, $text){
-		// $from_lan = 'english';
-		// $to_lan = 'bangla';
-		// $text = 'About';
-	 //    $json = json_decode(file_get_contents('https://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q='.urlencode($text).'&langpair='.$from_lan.'|'.$to_lan));
-	 //    $translated_text = $json->responseData->translatedText;
-	 //    return $translated_text;
-	// }
-	
-	$text = '';
-	foreach ($arrayWord as $key => $value) {
-		if($key%2 == 0){
-			$text .= $value.',';
-		}
-	}
-	$text = rtrim($text,',');
-	for($i = 0; $i <= 10; $i++){
-		return Redirect::to('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=bn&dt=t&q=abate,about');
-		// https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=bn&dt=t&q=About
-	}
+Route::post('dbBackupRestore',[
+		'as' 	=> 'dbBackupRestore.post',
+		'uses'  => 'ItemController@dbBackupRestore' 
+	]);
 
+// Start Bank Deposit
+Route::group(array('prefix' => 'admin', 'before' => 'auth'), function(){
+	Route::get('bankDeposit',array(
+		'as' 	=> 'admin.bank.deposit',
+		'uses' 	=> 'BankDepositController@bankDeposit')
+	);
+	Route::post('getBankDeposit',array(
+		'as' 	=> 'admin.bank.deposit.getBankDeposit',
+		'uses' 	=> 'BankDepositController@bankDeposit')
+	);
+	Route::get('getBankDeposit/{from?}/{to?}',array(
+		'as' 	=> 'admin.bank.deposit.datatable',
+		'uses' 	=> 'BankDepositController@getBankDeposit')
+	);
+	Route::post('bankDeposit',array(
+		'as' 	=> 'admin.bank.deposit.post',
+		'uses' 	=> 'BankDepositController@saveBankDeposit')
+	);
+	Route::get('bankDepositEdit/{id}',array(
+		'as' 	=> 'admin.bank.deposit.edit',
+		'uses' 	=> 'BankDepositController@bankDepositEdit')
+	);
+	Route::post('bankDepositEdit',array(
+		'as' 	=> 'admin.bank.deposit.edit.post',
+		'uses' 	=> 'BankDepositController@saveEditBankDeposit')
+	);
+	Route::get('bankDepositDelete/{id}',array(
+		'as' 	=> 'admin.bank.deposit.delete',
+		'uses' 	=> 'BankDepositController@bankDepositDelete')
+	);
+	Route::get('blue-theme',array(
+		'as' 	=> 'admin.blue-theme',
+		'uses' 	=> 'SetupController@blueTheme')
+	);
+	Route::get('red-theme',array(
+		'as' 	=> 'admin.red-theme',
+		'uses' 	=> 'SetupController@redTheme')
+	);
 });
+
+// End Bank Deposit

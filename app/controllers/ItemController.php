@@ -10,6 +10,7 @@ class ItemController extends \BaseController
         $this->beforeFilter('csrf', array('on' => 'post'));
         $this->timestamp = date('Y-m-d H:i:s');
     }
+
     public function getAllItemJsonData()
     {
         $all_items = DB::select("select iteminfos.item_id,iteminfos.item_name,iteminfos.upc_code, priceinfos.purchase_price,priceinfos.sale_price,iteminfos.price_id, COALESCE(all_item.g_qty, 0)as g_qty, COALESCE(all_item.s_qty, 0)as s_qty,sum(COALESCE(all_item.s_qty, 0) + COALESCE(all_item.g_qty, 0)) as total_qty
@@ -134,16 +135,22 @@ class ItemController extends \BaseController
 //                        ->setSearchWithAlias()
 //                        ->orderColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'tax_amount', 'offer', 'available_qty')
 //                        ->make();
+
+
     }
+
+
     public function index()
     {
         return View::make('admin.items.viewItem');
     }
+
 //=======Item Category========
     public function itemCategoryForm()
     {
         return View::make('admin.setup.itemCategorySetup.addItemCategory');
     }
+
     public function saveItemCategory()
     {
         try {
@@ -168,11 +175,13 @@ class ItemController extends \BaseController
             return Redirect::to('admin/setup')->with('errorMsg', $err_msg)->withInput();
         }
     }
+
     public function itemCategoryView()
     {
         $item_categorys = DB::table('itemcategorys')->where('status', 1)->get();
         return View::make('admin.setup.itemCategorySetup.itemCategory', compact('item_categorys'));
     }
+
     public function editItemCategory($categoryId)
     {
         try {
@@ -200,6 +209,7 @@ class ItemController extends \BaseController
             return Response::json(['status' => $err_msg]);
         }
     }
+
     public function deleteItemCategory($categoryId)
     {
         $categoryItemDelete = DB::table('itemcategorys')
@@ -210,11 +220,13 @@ class ItemController extends \BaseController
         }
         return Response::json(['status' => 'error']);
     }
+
 //========Item Brand=============
     public function itemBrandForm()
     {
         return View::make('admin.setup.itemBrandSetup.addNewBrand');
     }
+
     public function saveItemBrand()
     {
         try {
@@ -438,7 +450,8 @@ class ItemController extends \BaseController
     public function multipleItemAdd() {
         // return 'hi';
 
-        $company = DB::table('sub_companies')
+        $company = array(
+            '' => 'Select Company') + DB::table('sub_companies')
             ->where('status', 1)
             ->orderBy('id', 'asc')
             ->lists('company_name', 'id');
@@ -610,14 +623,14 @@ class ItemController extends \BaseController
             $item = array(
                 'item_name' => Input::get('item_name'),
                 'upc_code' => Input::get('upc_code'),
+                'item_point' => Input::get('item_point'),
                 'company_id' => empty(Input::get('company_id')) ? null : Input::get('company_id'),
                 'supplier_id' => empty(Input::get('supplier_id')) ? null : Input::get('supplier_id'),
                 'item_company_id' => empty(Input::get('item_company_id')) ? null : Input::get('item_company_id'),
                 'category_id' => Input::get('category_id'),
                 'brand_id' => empty(Input::get('brand_id')) ? null : Input::get('brand_id'),
                 'location_id' => empty(Input::get('location_id')) ? null : Input::get('location_id'),
-                'unit' => Input::get('unit'),
-                'carton' => Input::get('carton'),
+                'tax_amount' => Input::get('tax_amount'),
                 'description' => Input::get('description'),
                 'created_by' => Session::get('emp_id'),
                 'created_at' => $this->timestamp
@@ -658,120 +671,27 @@ class ItemController extends \BaseController
             return Redirect::to('admin/items')->with('message', 'Added Successfully');
         } catch (\Exception $e) {
             DB::rollback();
-            return $e;
             Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
             $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
             return Redirect::to('admin/items')->with('errorMsg', $err_msg)->withInput();
         }
     }
-    public function saveItemCustom()
-    {      
-        return Session::get('branch_id');
-        print "<pre>";
-        $allItems = Helper::multipleBarcodeItem();
-        $finalArray = [];
-        foreach($allItems as $item){
-            $barcodeArray = [];
-            $objItem['product_name']    = $item['product_name'];
-            $objItem['category']        = $item['category'];
-            $objItem['carton_qty']      = $item['carton_qty'];
-            $objItem['purchase_price']  = $item['purchase_price'];
-            $objItem['sale_price']      = $item['sale_price'];
-            for($i=0;$i<8;$i++){
-                $barcodeArray[$i] = $item["barcode[".$i."]"];
-                if ($i == 7) {
-                    $objItem['barcode'] = implode(' ', $barcodeArray);
-                }
-            }
-            $catId = DB::table('itemcategorys')
-                ->where('category_name',$objItem['category'])
-                ->first();
-            
-            $objItem['category_id'] = $catId->category_id;
-            $carton_qty_unit_array = explode(' ', $objItem['carton_qty']);
-            $objItem['carton'] = $carton_qty_unit_array[0];
-            $objItem['unit'] = $carton_qty_unit_array[1];
-            $finalArray[] = $objItem;
-        }
-        // print_r($finalArray);
-        // exit;
-        foreach($finalArray as $value){
-            $singleItem = (object) $value;
-            // print_r($singleItem);
-            // exit;
-            DB::beginTransaction();
-            try {
-                $item = array(
-                    'item_name' => $singleItem->product_name,
-                    'upc_code' => $singleItem->barcode,
-                    'company_id' => null,
-                    'supplier_id' => null,
-                    'item_company_id' => null,
-                    'category_id' => $singleItem->category_id,
-                    'brand_id' => null,
-                    'location_id' => null,
-                    'unit' => $singleItem->unit,
-                    'carton' => $singleItem->carton,
-                    'description' => null,
-                    'created_by' => Session::get('emp_id'),
-                    'created_at' => $this->timestamp
-                );
-                $last_item_id = DB::table('iteminfos')->insertGetId($item);
-                $price_data = array(
-                    'item_id' => $last_item_id,
-                    'purchase_price' => $singleItem->purchase_price,
-                    'sale_price' => $singleItem->sale_price,
-                    'created_by' => Session::get('emp_id'),
-                    'created_at' => $this->timestamp
-                );
-                $last_price_id = DB::table('priceinfos')->insertGetId($price_data);
 
-                $update_item = array(
-                    'price_id' => $last_price_id,
-                    'updated_by' => Session::get('emp_id'),
-                    'updated_at' => $this->timestamp
-                );
-                /*
-                 * If UPC not provided, item id and y-m-d will make upc code. if upc code length is
-                 * less than 7 digit, 0 will be concate to fillup desire range
-                 * Example itemId=25, custom_upc_code=2500000, final_upc_code=1503232500000
-                 */
-
-                if (empty($item['upc_code'])) {
-                    $custom_upc_code = $last_item_id;
-                    $max = 7;
-                    while (strlen($custom_upc_code) < $max) {
-                        $custom_upc_code .= 0;
-                    }
-                    $update_item['upc_code'] = date('ymd') . $custom_upc_code;
-                }
-                DB::table('iteminfos')->where('item_id', $last_item_id)
-                    ->update($update_item);
-                DB::commit();
-                // return Redirect::to('admin/items')->with('message', 'Added Successfully');
-            } catch (\Exception $e) {
-                DB::rollback();
-                return $e;
-                Session::flash('mySqlError', $e->errorInfo[2]); // session set only once
-                $err_msg = Lang::get("mysqlError." . $e->errorInfo[1]);
-                return Redirect::to('admin/items')->with('errorMsg', $err_msg)->withInput();
-            }
-        }
-    }
     public function getAllItem()
     {
         return Datatable::query(DB::table('iteminfos as i')
-            ->select('i.item_id', 'ic.category_name', 'com.company_name', 'i.upc_code', 'i.item_name', 'p.purchase_price', 'p.price_id', 'p.sale_price', 'i.tax_amount', 'i.offer')
+            ->select('i.item_id', 'ic.category_name', 'com.company_name', 'i.upc_code', 'i.item_name','i.item_point', 'p.purchase_price', 'p.price_id', 'p.sale_price', 'i.tax_amount', 'i.offer',DB::raw('SUM(s.available_quantity) as available_qty'))
             ->join('itemcategorys as ic', 'ic.category_id', '=', 'i.category_id')
             ->leftJoin('companynames as com', 'com.company_id', '=', 'i.item_company_id')
+            ->leftJoin('stockitems as s', 'i.item_id', '=', 's.item_id')
             ->leftJoin('itembrands as b', 'i.brand_id', '=', 'b.brand_id')
             ->leftJoin('priceinfos as p', 'i.price_id', '=', 'p.price_id')
             ->where('i.status', '=', '1')
-            ->groupBy('i.item_id'))
+            ->groupBy('s.item_id'))
             ->addColumn('#', function ($model) {
                 return '<input type="checkbox" name="barcodeInfo[]" value="' . $model->item_id . '-' . $model->sale_price . '">';
             })
-            ->showColumns('upc_code', 'item_name', 'company_name', 'category_name', 'purchase_price', 'sale_price')
+            ->showColumns('upc_code', 'item_name', 'company_name', 'category_name', 'purchase_price', 'sale_price', 'available_qty')
             ->addColumn('action', function ($model) {
                 $html = '<div class="btn-group">';
                 $html .= '<a class="btn btn-primary btn-small" href="javascript:;" data-toggle="dropdown"><i class="icon-user icon-white"></i> Action</a>';
@@ -793,10 +713,12 @@ class ItemController extends \BaseController
             ->orderColumns('upc_code', 'item_name', 'company_name', 'category_name', 'purchase_price', 'sale_price', 'offer')
             ->make();
     }
+
+
     public function getItemData()
     {
         return Datatable::query(DB::table('stockitems as s')
-            ->select('s.stock_item_id', 'i.item_id', 'ic.category_name', 'com.company_name', 'i.upc_code', 'i.item_name','i.carton', 'p.purchase_price', 'p.price_id', 'p.sale_price', 'i.tax_amount', 'i.offer', DB::raw('SUM(s.available_quantity) as available_qty'), DB::raw('count(s.item_id) as differentPrice'))
+            ->select('s.stock_item_id', 'i.item_id', 'ic.category_name', 'com.company_name', 'i.upc_code', 'i.item_name', 'p.purchase_price', 'p.price_id', 'p.sale_price', 'i.tax_amount', 'i.offer', DB::raw('SUM(s.available_quantity) as available_qty'), DB::raw('count(s.item_id) as differentPrice'))
             ->leftJoin('iteminfos as i', 's.item_id', '=', 'i.item_id')
             ->leftJoin('itemcategorys as ic', 'ic.category_id', '=', 'i.category_id')
             ->leftJoin('companynames as com', 'com.company_id', '=', 'i.item_company_id')
@@ -812,15 +734,9 @@ class ItemController extends \BaseController
                     return '<input type="checkbox" name="barcodeInfo[]" value="' . $model->item_id . '-' . $model->sale_price . '">';
                 }
             })
-            ->showColumns('upc_code', 'item_name', 'purchase_price', 'sale_price', 'category_name', 'available_qty')
-            ->addColumn('PCS/Carton', function ($model) {
-                return '<label class="label label-success" style="font-size:14px; width:60%; height:15px; padding-top:5px; text-align:center;">'.$model->carton. '</label> ';
-            })
-            ->addColumn('carton_quantity', function ($model) {
-                return round($model->available_qty/$model->carton,3);
-            })
+            ->showColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'category_name', 'offer', 'available_qty')
             ->addColumn('action', function ($model) {
-                $html = '<div class="btn-group" style="width:170px;">';
+                $html = '<div class="btn-group">';
                 $html .= '<a class="btn btn-primary btn-small" href="javascript:;" data-toggle="dropdown"><i class="icon-user icon-white"></i> Action</a>';
                 $html .= '<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:;"><span class="caret"></span></a>';
                 $html .= '<ul class="dropdown-menu">';
@@ -834,7 +750,7 @@ class ItemController extends \BaseController
 
                 } else {
                     $html .= '<li><a onclick="editPrice(' . $model->stock_item_id . ')" href="#editPriceModal"  role="button" data-toggle="modal"><i class="icon-edit"></i>&nbsp; Price Edit</a></li>';
-                    if (Session::get('role') == 2 || Session::get('role') == 1) {
+                    if (Session::get('role') == 2) {
                         $html .= '<li><a onclick="editQuantity(' . $model->stock_item_id . ')" href="#editQuantityModal"  role="button" data-toggle="modal"><i class="icon-pencil"></i>&nbsp; Quantity Edit</a></li>';
                     }
                 }
@@ -846,12 +762,12 @@ class ItemController extends \BaseController
                 $html .= '</div>';
                 return $html;
             })
-            
             ->searchColumns('upc_code', 'item_name', 'company_name', 'category_name')
             ->setSearchWithAlias()
-            ->orderColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'category_name', 'available_qty')
+            ->orderColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'category_name', 'offer', 'available_qty')
             ->make();
     }
+
     public function editItemForm($itemId)
     {
         $iteminfos = DB::table('iteminfos')->where('item_id', $itemId)->first();
@@ -889,6 +805,7 @@ class ItemController extends \BaseController
 
         return View::make('admin.items.editItemModal', compact('suppliers','company','iteminfos', 'item_categorys', 'item_brands', 'item_locations', 'item_company'));
     }
+
     public function viewItemSuppliers($itemId)
     {
         $supplierInfos = DB::table('itempurchases as ip')
@@ -901,6 +818,7 @@ class ItemController extends \BaseController
 
         return View::make('admin.items.viewItemSuppliers', compact('supplierInfos'));
     }
+
     public function itemPriceEdit($stockItemId)
     {
         //echo $stockItemId;exit;
@@ -913,6 +831,7 @@ class ItemController extends \BaseController
         //echo'<pre>';print_r($itemInfo);exit;
         return View::make('admin.items.editPriceModal', compact('itemInfo'));
     }
+
     public function savePriceEdit()
     {
         //echo '<pre>'; print_r(Input::all());exit;
@@ -1017,6 +936,7 @@ class ItemController extends \BaseController
             //return Redirect::to('admin/items')->with('errorMsg', $err_msg)->withInput();
         }
     }
+
     public function editItemSave()
     {
         try {
@@ -1029,15 +949,15 @@ class ItemController extends \BaseController
             $item_update = array(
                 'item_name' => Input::get('item_name'),
                 'upc_code' => Input::get('upc_code'),
+                'item_point' => Input::get('item_point'),
                 'company_id' => empty(Input::get('company_id')) ? null : Input::get('company_id'),
                 'supplier_id' => empty(Input::get('supplier_id')) ? null : Input::get('supplier_id'),
                 'item_company_id' => empty(Input::get('item_company_id')) ? null : Input::get('item_company_id'),
                 'category_id' => Input::get('category_id'),
                 'brand_id' => empty(Input::get('brand_id')) ? null : Input::get('brand_id'),
                 'location_id' => empty(Input::get('location_id')) ? null : Input::get('location_id'),
+                'tax_amount' => Input::get('tax_amount'),
                 'description' => Input::get('description'),
-                'unit' => Input::get('unit'),
-                'carton' => Input::get('carton'),
                 'updated_by' => Session::get('emp_id'),
                 'updated_at' => $this->timestamp
             );
@@ -1051,9 +971,11 @@ class ItemController extends \BaseController
             return Redirect::to('admin/items')->with('errorMsg', $err_msg)->withInput();
         }
     }
+
     /*
      * Item Qty Eidt 
      */
+
     public function itemQtyEdit($stockItemId)
     {
         //echo $stockItemId;exit;
@@ -1064,6 +986,7 @@ class ItemController extends \BaseController
             ->first();
         return View::make('admin.items.editQtyModal', compact('itemInfo'));
     }
+
     public function saveQtyEdit()
     {
         try {
@@ -1109,14 +1032,18 @@ class ItemController extends \BaseController
             ->get();
         return View::make('admin.items.multipleItemViewModal', compact('itemInfo'));
     }
+
+
     /*
      * 	Godown Item
      */
+
     public function godownItem()
     {
         $title = ':: POSv2 :: - Godown Item List';
         return View::make('admin.items.viewGodownItem', compact('title'));
     }
+
     public function getGodownItemData()
     {
         return Datatable::query(DB::table('godownitems as gdi')
@@ -1155,6 +1082,7 @@ class ItemController extends \BaseController
             ->orderColumns('upc_code', 'item_name', 'company_name', 'brand_name', 'location_name', 'purchase_price', 'sale_price', 'available_qty')
             ->make();
     }
+
     public function goDownDifferentPricesItem($itemId)
     {
         $itemInfos = DB::table('godownitems')
@@ -1164,9 +1092,12 @@ class ItemController extends \BaseController
             ->get();
         return View::make('admin.items.multipleGodownItemModal', compact('itemInfos'));
     }
+
+
     /*
      * Recent Add Items
      */
+
     public function getRecentItems()
     {
         $title = ':: POSv2 :: - View Recent Add Items';
@@ -1197,12 +1128,15 @@ class ItemController extends \BaseController
             ->orderColumns('upc_code', 'item_name', 'company_name', 'brand_name', 'category_name', 'location_name', 'tax_amount', 'offer', 'created_at')
             ->make();
     }
+
     public function godownLowInventory()
     {
         return View::make('admin.items.viewGodownInventory');
     }
+
     public function getGLInventory()
     {
+
         return Datatable::query(DB::table('godownitems as g')
             ->select('g.godown_item_id', 'i.item_id', 'i.upc_code', 'com.company_name', 'i.item_name', 'p.purchase_price', 'p.sale_price', 'i.tax_amount', 'i.offer', DB::raw('SUM(g.available_quantity) as available_qty'))
             ->leftJoin('iteminfos as i', 'g.item_id', '=', 'i.item_id')
@@ -1225,12 +1159,15 @@ class ItemController extends \BaseController
             ->orderColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'offer', 'available_qty')
             ->make();
     }
+
     public function stockLowInventory()
     {
         return View::make('admin.items.viewStockInventory');
     }
+
     public function getSLInventory()
     {
+
         return Datatable::query(DB::table('stockitems as s')
             ->select('s.stock_item_id', 'i.item_id', 'i.upc_code', 'com.company_name', 'i.item_name', 'p.purchase_price', 'p.sale_price', 'i.tax_amount', 'i.offer', DB::raw('SUM(s.available_quantity) as available_qty'))
             ->leftJoin('iteminfos as i', 's.item_id', '=', 'i.item_id')
@@ -1251,8 +1188,11 @@ class ItemController extends \BaseController
             ->orderColumns('upc_code', 'item_name', 'company_name', 'purchase_price', 'sale_price', 'offer', 'available_qty')
             ->make();
     }
+
+
     public function barcodeQueueAll()
     {
+
         $barcodeInfo = Input::get('barcodeInfo');
         //Session::forget('BarcodeQueueItems');
         //return Redirect::back();
@@ -1268,9 +1208,14 @@ class ItemController extends \BaseController
 
         }
         return Redirect::back()->with('message', 'Item added to barcode Queue');
+
+
     }
+
+
     public function generateBarcode()
     {
+
         $BarcodeQueueItems = Session::get('BarcodeQueueItems');
 
         if (empty($BarcodeQueueItems)) {
@@ -1595,7 +1540,150 @@ class ItemController extends \BaseController
 
         */
 
+    }
 
+    public function manageInvoice()
+    {
+
+        // return 'hi';
+
+        return View::make('admin.dbBackupRestore');
+
+        return 'not found';
+
+
+        $from = '2018-05-04';
+        $to   = '2018-05-04';
+        $date = '2018-05-03';
+        $created_at = '2018-05-03 14:08:52';
+        $newInvoice = 18050310000010;
+        $invoiceIds = [];
+        $invoiceTarget = DB::table('supinvoices')
+            ->whereBetween('transaction_date', array($to,$from))
+            ->get();
+        print "<pre>";
+        foreach($invoiceTarget as $key => $value){
+            $invoiceIds[] = $value->sup_invoice_id;
+        }
+
+        // print_r($invoiceIds);
+
+        // $invoiceChildTarget = DB::table('itempurchases')
+        //     ->whereIn('sup_invoice_id',$invoiceIds)
+        //     ->update([
+        //         'created_at' => $created_at
+        //     ]);
+        // print_r($invoiceChildTarget);
+        // $update = DB::table('saleinvoices')
+        //     ->whereIn('sale_invoice_id',$invoiceTarget)
+        //     ->update(['created_at' => $created_at]);
+        // exit;
+
+        foreach($invoiceIds as $key => $invoice){
+            $newInvoice++;
+            // echo $invoice.' => '.$newInvoice.' => '.$date.' => '.$created_at;
+            // echo '<br>';
+            $update = DB::table('supinvoices')
+                ->where('sup_invoice_id',$invoice)
+                ->update([
+                    'sup_invoice_id' => $newInvoice,
+                    'transaction_date' => $date,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                    'updated_by' => 17,
+                ]);
+        }
+        exit;
+    }
+
+    public function dbBackupRestore()
+    {
+        // return Input::file('dbFile');
+        $myfile = fopen(Input::file('dbFile'), "r");
+        while(!feof($myfile)) {
+          echo fgets($myfile) . "<br>";
+        }
+        fclose($myfile);
+    }
+
+    public function datas(){
+        return array(
+        '18050410000000',
+        '18050410000001',
+        '18050410000002',
+        '18050410000003',
+        '18050410000004',
+        '18050410000004',
+        '18050410000005',
+        '18050410000006',
+        '18050410000007',
+        '18050410000008',
+        '18050410000009',
+        '18050410000010',
+        '18050410000011',
+        '18050410000012',
+        '18050410000013',
+        '18050410000014',
+        '18050410000015',
+        '18050410000016',
+        '18050410000017',
+        '18050410000018',
+        '18050410000019',
+        '18050410000020',
+        '18050410000021',
+        '18050410000022',
+        '18050410000023',
+        '18050410000024',
+        '18050410000025',
+        '18050410000026',
+        '18050410000027',
+        '18050410000028',
+        '18050410000029',
+        '18050410000030',
+        '18050410000031',
+        '18050410000032',
+        '18050410000033',
+        '18050410000034',
+        '18050410000035',
+        '18050410000036',
+        '18050410000037',
+        '18050410000038',
+        '18050410000039',
+        '18050410000040',
+        '18050410000041',
+        '18050410000042',
+        '18050410000043',
+        '18050410000044',
+        '18050410000045',
+        '18050410000046',
+        '18050410000047',
+        '18050410000048',
+        '18050410000049',
+        '18050410000050',
+        '18050410000051',
+        '18050410000052',
+        '18050410000053',
+        '18050410000054',
+        '18050410000055',
+        '18050410000056',
+        '18050410000057',
+        '18050410000058',
+        '18050410000059',
+        '18050410000060',
+        '18050410000061',
+        '18050410000062',
+        '18050410000063',
+        '18050410000064',
+        '18050410000065',
+        '18050410000066',
+        '18050410000067',
+        '18050410000068',
+        '18050410000069',
+        '18050410000070',
+        '18050410000071',
+        '18050410000072',
+        '18050410000073',
+        '18050410000074',
+    );
     }
 
 

@@ -120,50 +120,59 @@
 			<h3 id="addCusModalLabel"><i class="icon-user"></i>&nbsp; Add New Customer</h3>
 		</div>
 			<div class="modal-body">
+ 
 			{{ Form::open(array('route' => 'admin.saveCustomer.post', 'class' => 'form-horizontal')) }}
 				<div class="control-group">	
 					{{ Form::label('customerType', 'Select Customre Type', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::select('cus_type_id', $cus_type, 1, ['class' => 'span3']) }}
-					</div>
+					</div>							
 				</div> <!-- /control-group -->
+                                
 				<div class="control-group">		
 					{{ Form::label('fullName', 'Full Name', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::text('full_name', null, array('class' => 'span3', 'id' => 'full_name', 'placeholder' => 'Enter full name')) }}
 					</div> <!-- /controls -->					
 				</div> <!-- /control-group -->
-                <!-- <div class="control-group">
+
+                                <div class="control-group">
 					{{ Form::label('userName', 'User Name', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::text('user_name', null, array('class' => 'span3', 'id' => 'user_name', 'placeholder' => 'Enter user name')) }} *
-					</div>
-				</div> -->
-                <div class="control-group">
+					</div> <!-- /controls -->
+				</div> <!-- /control-group -->
+                                
+
+                                <div class="control-group">
 					{{ Form::label('mobile', 'Mobile No', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::text('mobile', null, array('class' => 'span3', 'id' => 'mobile', 'placeholder' => 'Enter mobile no')) }} *
 					</div> <!-- /controls -->
 				</div> <!-- /control-group -->
-                <!-- <div class="control-group">
+
+                                <div class="control-group">
 					{{ Form::label('email', 'Email', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::email('email', null, array('class' => 'span3', 'id' => 'email', 'placeholder' => 'Enter email')) }}
-					</div>
-				</div> -->
-                <!-- <div class="control-group">
+					</div> <!-- /controls -->
+				</div> <!-- /control-group -->
+
+                                <div class="control-group">
 					{{ Form::label('nationalId', 'Customer Barcode', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::text('national_id', null, array('class' => 'span3', 'id' => 'national_id', 'placeholder' => '')) }}
-					</div>
-				</div> -->
-                <div class="control-group">
+					</div> <!-- /controls -->
+				</div> <!-- /control-group -->
+
+                                <div class="control-group">
 					{{ Form::label('permanentAddress', 'Permanent Address', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::textarea('permanent_address', null, array( 'rows' =>'1', 'class' => 'span3', 'id' => 'permanent_address', 'placeholder' => '')) }}
 					</div> <!-- /controls -->
 				</div> <!-- /control-group -->
-                <div class="control-group">
+
+                                <div class="control-group">
 					{{ Form::label('presentAddress', 'Present Address', ['class' => 'control-label']) }}
 					<div class="controls">
 						{{ Form::textarea('present_address', null, array('rows' =>'1', 'class' => 'span3', 'id' => 'present_address', 'placeholder' => '')) }}
@@ -313,9 +322,17 @@
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
 @stop

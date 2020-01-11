@@ -1,0 +1,70 @@
+
+
+<?php $__env->startSection('content'); ?>
+	<div class="row">		
+		<div class="span12">
+			<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>	
+		</div>			
+		<div class="span4">
+		  <div class="widget widget-nopad">
+			<!-- /widget-header -->
+			<div class="widget-content">
+			  <div class="widget big-stats-container">
+				<div class="widget-content">
+				  <div id="clock" class="light">
+						<div class="display">
+							<div class="weekdays"></div>
+							<div class="ampm"></div>
+							<div class="alarm"></div>
+							<div class="digits"></div>
+						</div>
+					</div>
+				</div>
+				<!-- /widget-content --> 			
+			  </div>
+			</div>
+		  </div>
+		  <!-- /widget -->
+		  <?php echo HTML::image('img/company_logo.jpg','title', array('class' => 'company_logo','style'=>'padding:15px; width: 350px;')); ?>
+
+		</div>
+			<?
+
+//only module, which has no sub Module
+  // $modulesWithoutSub=DB::table('moduleemppermissions')
+  //          ->join('modulenames', 'moduleemppermissions.module_id', '=', 'modulenames.module_id')
+  //          ->select('modulenames.*')
+  //          ->where('moduleemppermissions.status', '=',1)
+  //          ->where('emp_id', '=', Session::get('emp_id'))
+  //          ->orderBy('modulenames.sorting', 'asc')
+  //          ->get();
+  //          dd($modulesWithoutSub);
+			?>
+		<div class="span8">		
+			  <div class="widget">
+				<!-- /widget-header -->
+				<div class="widget-content">
+				  <div class="shortcuts"> 
+				  
+          <?php if(count($modulesWithoutSub) >1): ?> 
+          <?php foreach($modulesWithoutSub as $moduleWithoutSub): ?>
+            			<a href="<?php echo Route("$moduleWithoutSub->module_url"); ?>" class="shortcut">
+							<?php echo HTML::image('img/nav_icon/'.$moduleWithoutSub->icon.'','title', array('class' => 'icon')); ?> <span class="shortcut-label"><?php echo $moduleWithoutSub->module_name; ?></span> 
+						</a>
+            <?php endforeach; ?>
+          <?php endif; ?>
+					</div>
+				  <!-- /shortcuts -->
+					</div>
+				<!-- /widget-content --> 
+			  </div>
+		</div>
+	</div>
+	
+	<!-- Clock Js-->
+	<?php echo HTML::script('js/clock.js'); ?>
+
+	<?php echo HTML::script('js/moment.min.js'); ?>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

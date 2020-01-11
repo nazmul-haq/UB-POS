@@ -45,15 +45,17 @@
 
 		</div>
 		@endif 
-        <h3>View Stock Items</h3>
+                
+                <h3>View Stock Items</h3>
 		<div id="message" style="display: none;"></div>
+                
 		{{ Form::open(array('route' => 'barcode.queue.all','id'=>'itemForm')) }}
 		{{ Datatable::table()
-				->addColumn('#','Upc Code','Item Name','Purchase Price','Sale Price','Category','Available Quantity','PCS/Carton','Carton Quantity', 'Action')
+				->addColumn('#','Upc Code','Item Name','Company Name','Purchase Price','Sale Price','Category','Offer','Available Quantity', 'Action')
 				->setUrl(route('admin.viewItem'))
 				->render() }}
 		{{ Form::close()}}
-  		</div>
+	  </div>
 	</div>
 	<!--Add New Item Modal-->
 	<div id="itemAddModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newItemModalLabel" aria-hidden="true">
@@ -67,6 +69,7 @@
 				$().ready(function(){
 					$("#barcodeQueue").click(function(){
 						$("#itemForm").submit();
+
 					});
 					$("#addItemModal").click(function(){
 						$('#loading').ajaxStart(function() {
@@ -82,8 +85,9 @@
 	</div>
 	<!--close Item -->
 <script>
-$('.Items').addClass('active btn btn-fill');
+	$('.Items').addClass('active btn btn-fill');
 		function ItemEdit(itemId){
+
 			$(function() {
 				/* $('#loading').ajaxStart(function() {
 					$(this).show();
@@ -229,15 +233,23 @@ $('.Items').addClass('active btn btn-fill');
 @stop
 @section('stickyInfo')
 <?php
-    $string = 'Items';
+    $string = 'Stock Items';
     $li = '';
     for($j=0;$j<strlen($string);$j++){
         $li .= '<li>'.substr($string,$j,1).'</li>';
     }
 ?>
+@if(Session::has('redTheme'))
+<div id="sticky" style="text-align: center;">        
+	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #71253a;font-size:18px;font-family:monospace;">
+	    {{$li}}
+	</ul>       
+</div>
+@else
 <div id="sticky" style="text-align: center;">        
 	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
 	    {{$li}}
 	</ul>       
 </div>
+@endif
 @stop

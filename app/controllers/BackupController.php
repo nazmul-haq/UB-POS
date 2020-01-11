@@ -3,9 +3,11 @@
 class BackupController extends  BaseController{
 	
 	public function dbBackup(){
-
-		$con = new mysqli("192.168.10.150","mb_trade","mb_trade","mb_trade");
-		// $con = mysqli_connect("localhost","root","","posv2");
+		// $con = new mysqli("192.168.10.10","db_home_plus","home_plus","uni##tech");
+		$con = mysqli_connect("localhost","bdhomepl_erp","bdhomepl_erp%%##",'bdhomepl_erp');
+		ini_set('memory_limit', '-1');
+		// echo '<pre>';print_r($con);exit;
+		// return;
 		$tables = array();
 		$query = mysqli_query($con, 'SHOW TABLES');
 		while($row = mysqli_fetch_row($query)){
@@ -41,13 +43,6 @@ class BackupController extends  BaseController{
 		}
 		$result .="\n\n";
 		}
-		print "<pre>";
-		$encrypt = base64_encode(base64_encode($result));
-		print($encrypt);
-		print "<br><br>";
-		$data = '';
-		print(base64_decode(base64_decode($encrypt)));
-		exit;
 		//Create Folder
 		$folder = base_path(). '/backup/';
 		if (!is_dir($folder))

@@ -1,0 +1,75 @@
+
+
+<?php $__env->startSection('content'); ?>
+	<div class="row">
+	  <div class="span12">
+		<div class='label label-info' style="margin-bottom: 5px;">
+			<h4><i class='icon-shopping-cart'></i> Item  receiving in the Shop</h4>
+		</div>
+		<?php echo $__env->make('_sessionMessage', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>		
+		<?php echo Form::open(array('route' => 'receive.saveReceiveItem', 'class' => 'form-horizontal', 'id' => 'form')); ?>	
+		<table class="table table-striped">
+			<thead class="table-head">
+				<tr>
+					<th><input type="checkbox" id="check_all" class=""> Check All</th>
+					<th>Receiving ID</th>
+					<th>SL</th>
+					<th>Item Id</th>
+					<th>Item Name</th>
+					<th>Purchase Price</th>
+					<th>Sale Price</th>
+					<th>Quatity</th>
+					<th>Total Price</th>
+				</tr>
+			</thead>
+			<tbody>				
+				<? $i=0; ?>
+				<?php if($items): ?>
+					<p>
+						<button class="btn btn-primary" id="receiveSubmit" name="accept_cancel" value="Accept"><i class="icon-ok"> Accept</i></button>
+						<button class="btn btn-warning" id="receiveSubmit" name="accept_cancel" value="Discard"><i class="icon-remove"> Discard</i></button>
+					</p>
+					<?php foreach($items as $item): ?>
+					 	<tr>
+						   <td>
+								<input class="check" type="checkbox" name="receiving_item_id[]" value="<?php echo $item->receiving_item_id; ?>" >
+						   </td>
+						   
+						   <td><?php echo $item->receiving_item_id; ?></td>
+						   <td><?php echo ++$i; ?></td>
+						   <td><?php echo $item->item_id; ?></td>
+						   <td><?php echo $item->item_name; ?></td>
+						   <td><?php echo $item->purchase_price; ?></td>
+						   <td><?php echo $item->sale_price; ?></td>
+						   <td><?php echo $item->quantity; ?></td>
+						   <td><?php echo $item->sale_price*$item->quantity; ?></td>
+
+						   <input type="hidden"  value="<?php echo $item->item_id; ?>" id="item<?php echo $item->item_id; ?>" class='ItemId uncheck'>
+						   <input type="hidden"  value="<?php echo $item->price_id; ?>" class='PriceId uncheck'>
+						   <input type="hidden" value="<?php echo $item->quantity; ?>" class='Quantity uncheck'>
+					   </tr>
+					<?php endforeach; ?>
+					<?php else: ?>
+						<tr>
+							<td colspan="8" style="text-align:center; color:#E98203;"><strong>There are no receiving items in the cart</strong><td>
+						</tr>
+				<?php endif; ?>
+			</tbody>
+		</table>
+		<?php echo Form::close(); ?>
+
+	  </div>
+	</div>
+	<script>
+	  $(document).ready(function(){
+			$("#check_all").on("click", function(){
+				$(".check").prop('checked', $(this).prop('checked'));  
+			});
+			$('#receiveSubmit').click(function(){
+				$('#form').submit();
+			});
+		});
+	</script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('_layouts.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -266,27 +266,6 @@
 	</div>
 
 <script>	
-        function printElement(elem, append, delimiter) {
-			var domClone = elem.cloneNode(true);			
-			var $printSection = document.getElementById("printSection");
-			if (!$printSection) {
-				var $printSection = document.createElement("div");
-				$printSection.id = "printSection";
-				document.body.appendChild($printSection);
-			}
-			if (append !== true) {
-				$printSection.innerHTML = "";
-			}
-			else if (append === true) {
-				if (typeof(delimiter) === "string") {
-					$printSection.innerHTML += delimiter;
-				}
-				else if (typeof(delimiter) === "object") {
-					$printSection.appendChlid(delimiter);
-				}
-			}
-			$printSection.appendChild(domClone);
-		}
 		function loadingImg(){
 			$('#loading').ajaxStart(function() {
 				$(this).show();
@@ -311,18 +290,4 @@
 
 	</script>
 
-@stop
-@section('stickyInfo')
-<?php
-    $string = 'Supplier';
-    $li = '';
-    for($j=0;$j<strlen($string);$j++){
-        $li .= '<li>'.substr($string,$j,1).'</li>';
-    }
-?>
-<div id="sticky" style="text-align: center;">        
-	<ul id="example-3" class="sticklr" style="margin-left:5px;color:#ffffff;background-color: #053a64;font-size:18px;font-family:monospace;">
-	    {{$li}}
-	</ul>       
-</div>
 @stop

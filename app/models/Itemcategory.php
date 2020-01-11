@@ -20,6 +20,6 @@ class Itemcategory extends \Eloquent {
 	public static $item_rules = [
 		'item_name'			=> 'required',
 		'category_id'		=> 'required',
-		'carton'		    => 'required',
+		'tax_amount'		=> 'required'
 	];
 }

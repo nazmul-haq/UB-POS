@@ -6,13 +6,14 @@ class Customerinfo extends \Eloquent {
 
 	public static $customer_rules = [
 		'cus_type_id'		=> 'required',
-
+                'user_name'             => 'required',
+                'mobile'                => 'required'
 	];
 
     public static $cus_rules = [
 		'cus_type_name'		=> 'required|alpha_dash',
 		'discount_percent'	=> 'required|number_dot',
-        'point_unit'        => 'required|number_dot'
+        'point_unit'            => 'required|number_dot'
 	];
     public static $cusType_rules = [
 		'cus_type_name'		=> 'required|alpha_dash'

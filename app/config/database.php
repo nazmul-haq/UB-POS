@@ -48,13 +48,12 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'ub_pos',//mbtradeb_db
-			'username'  => 'root',//mbtradeb_mbt
-			'password'  => '',//mbtradeb_mbt!@!#!@
+			'database'  => 'the_pos',
+			'username'  => 'root',
+			'password'  => '',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
-			'strict' => true,
 		),
 		// 'mysql' => array(
 		// 	'driver'    => 'mysql',
@@ -66,9 +65,17 @@ return array(
 		// 	'collation' => 'utf8_unicode_ci',
 		// 	'prefix'    => '',
 		// ),
-		
-
-		
+		// 'mysql2' => [
+  //           'driver'    => 'mysql',
+  //           'host'      => '192.168.10.150',
+  //           'database'  => 'del_asiabazar',
+  //           'username'  => 'asiabazar',
+  //           'password'  => 'asiabazar',
+  //           'charset'   => 'utf8',
+  //           'collation' => 'utf8_unicode_ci',
+  //           'prefix'    => '',
+  //           'strict'    => false,
+  //       ],
 
 	),
 

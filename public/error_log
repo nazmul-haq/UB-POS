@@ -1,8 +1,2 @@
-[10-Feb-2018 14:28:43 Asia/Dhaka] PHP Fatal error:  Class 'EmpInfo' not found in /home/mbtradebd/public_html/app/controllers/EmpInfoController.php on line 30
-[24-Feb-2018 16:20:24 Asia/Dhaka] PHP Fatal error:  Class 'EmpInfo' not found in /home/mbtradebd/erp/app/controllers/EmpInfoController.php on line 27
-[27-Feb-2018 14:28:04 Asia/Dhaka] PHP Parse error:  syntax error, unexpected ''ct.point_unit'' (T_CONSTANT_ENCAPSED_STRING) in /home/mbtradebd/erp/app/controllers/ReportController.php on line 158
-[08-Mar-2018 14:46:43 Asia/Dhaka] PHP Fatal error:  Cannot redeclare class ItemController in /home/mbtradebd/erp/app/storage/views/79f5a055f699e22673175155c1484514 on line 1599
-[23-May-2018 15:43:53 Asia/Dhaka] PHP Parse error:  syntax error, unexpected '$vdata' (T_VARIABLE) in /home/mbtradebd/erp/app/controllers/SupplierInfoController.php on line 297
-[23-May-2018 15:44:02 Asia/Dhaka] PHP Parse error:  syntax error, unexpected '$vdata' (T_VARIABLE) in /home/mbtradebd/erp/app/controllers/SupplierInfoController.php on line 297
-[23-May-2018 15:44:03 Asia/Dhaka] PHP Parse error:  syntax error, unexpected '$vdata' (T_VARIABLE) in /home/mbtradebd/erp/app/controllers/SupplierInfoController.php on line 297
-[23-May-2018 15:44:19 Asia/Dhaka] PHP Parse error:  syntax error, unexpected '$vdata' (T_VARIABLE) in /home/mbtradebd/erp/app/controllers/SupplierInfoController.php on line 297
+[11-Mar-2019 18:20:41 Asia/Dhaka] PHP Fatal error:  Class 'EmpInfo' not found in /home/bdhomeplus/erp.bdhomeplus.com/app/controllers/EmpInfoController.php on line 30
+[11-Mar-2019 18:22:05 Asia/Dhaka] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN) in /home/bdhomeplus/erp.bdhomeplus.com/app/controllers/EmpInfoController.php on line 11

@@ -39,7 +39,13 @@ Route::filter('auth', function() {
             return Redirect::guest('/'); //that means route to index page
         }
     }
-    
+    // return 'hi';
+    // $checkSessionBeforeLogin = DB::table('empinfos')
+    //   ->where('emp_id',Auth::user()->emp_id)
+    //   ->first();
+    // if($checkSessionBeforeLogin->last_logged_ip != $_SERVER['REMOTE_ADDR']){
+    //     return Redirect::to('/')->with('message', 'You are no longer logged in!.');
+    // }
 });
 
 Route::filter('module', function() {

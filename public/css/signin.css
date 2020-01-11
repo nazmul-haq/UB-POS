@@ -86,7 +86,7 @@ body:after {
     width: 242px;
     height: 100px;
     text-align: center;
-    padding-top: 25px;
+    padding-top: 35px;
 }
 
 
@@ -295,8 +295,6 @@ span.login-checkbox > input[type='checkbox']:checked + label {
 	color:#fff;
 	border: 1px solid #053A64;
 }
-
-
 
 @media (max-width: 480px) {
 	.account-container {

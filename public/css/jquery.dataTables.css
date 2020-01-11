@@ -2,13 +2,13 @@
  * Table styles
  */
 table.dataTable {
-	font: 15px/1.7em 'Open Sans';
-	width: 100%;
-	margin: 0 auto;
-	clear: both;
-	border-collapse: separate;
-	border-spacing: 0;
-	background-color: #ccc;
+  font: 15px/1.7em 'Open Sans';
+  width: 100%;
+  margin: 0 auto;
+  clear: both;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #ccc;
 
   /*
    * Header and footer styles
@@ -312,13 +312,13 @@ table.dataTable td {
   float: left;
 }
 .dataTables_wrapper .dataTables_length  label{
-	display: flex;
-	margin: 5px 0 5px;
-	color: #333;
+  display: flex;
+  margin: 5px 0 5px;
+  color: #333;
 }
 .dataTables_wrapper .dataTables_length  label select {
     margin: -2px 0 0 7px;
-	width: 80px;
+  width: 80px;
 }
 .dataTables_wrapper .dataTables_filter {
   float: right;
